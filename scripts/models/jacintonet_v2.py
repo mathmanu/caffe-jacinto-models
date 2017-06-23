@@ -3,7 +3,9 @@ import caffe
 from models.model_libs import *
 
 def jacintonet11(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=1000, stride_list=None, dilation_list=None, freeze_layers=None):  
-   in_place = True #Top and Bottom blobs must be different for NVCaffe BN caffe-0.15
+   #Top and Bottom blobs must be different for NVCaffe BN caffe-0.15
+   #Inplace BN is slightly slower in NVCaffe caffe-0.16
+   in_place = True
    if stride_list == None:
      stride_list = [2,2,2,2,2]
    if dilation_list == None:
@@ -114,7 +116,9 @@ def jacintonet11(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
    
    
 def jsegnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None): 
-   in_place = True #Top and Bottom blobs must be different for NVCaffe BN caffe-0.15
+   #Top and Bottom blobs must be different for NVCaffe BN caffe-0.15
+   #Inplace BN is slightly slower in NVCaffe caffe-0.16
+   in_place = True 
    if stride_list == None:
      stride_list = [2,2,2,2,1]
    if dilation_list == None:
