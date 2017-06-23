@@ -123,7 +123,8 @@ def main():
     # snapshot prefix.
     config_param.snapshot_prefix = "{}/{}_{}".format(config_param.snapshot_dir, config_param.model_name, config_param.dataset)
     # job script path.
-    config_param.job_file_base = "{}/{}".format(config_param.job_dir, 'train')
+    job_file_base_name = 'test' if(config_param.caffe.split(' ')[1] == 'test') else 'train'
+    config_param.job_file_base = "{}/{}".format(config_param.job_dir, job_file_base_name)
     config_param.log_file = "{}.log".format(config_param.job_file_base)    
     config_param.job_file = "{}.sh".format(config_param.job_file_base)
 
