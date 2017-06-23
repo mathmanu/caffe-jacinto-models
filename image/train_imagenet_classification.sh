@@ -15,7 +15,7 @@ exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
 #------------------------------------------------
-caffe="../../build/tools/caffe.bin"
+caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 threshold_step_factor=1e-6
 type=SGD
@@ -26,11 +26,10 @@ base_lr=0.1
 solver_param="{'type':'SGD','base_lr':$base_lr,'max_iter':$max_iter}"
 
 #-------------------------------------------------------
-weights="training/jacintonet11_imagenet_iter_320000.caffemodel"
 
 stage="stage0"
 config_name=$folder_name/$stage;mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','pretrain_model':'$weights'}" 
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','pretrain_model':None}" 
 python ./models/image_classification.py --config_param="$config_param" --solver_param="$solver_param"
 config_name_prev=$config_name
 
