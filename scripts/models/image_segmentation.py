@@ -346,8 +346,11 @@ def main():
     # Create job file.
     with open(config_param.job_file, 'w') as f:
       f.write('cd {}\n'.format(config_param.caffe_root))
-      f.write('{} \\\n'.format(config_param.caffe))
-      f.write('--solver="{}" \\\n'.format(config_param.solver_file))
+      f.write('{} \\\n'.format(config_param.caffe))    
+      if(config_param.caffe.split(' ')[1] == 'test'):
+        f.write('--model="{}" \\\n'.format(config_param.test_net_file))
+      else:
+        f.write('--solver="{}" \\\n'.format(config_param.solver_file))      
       if train_src_param != None:
         f.write(train_src_param)
       if solver_param['solver_mode'] == P.Solver.GPU:
