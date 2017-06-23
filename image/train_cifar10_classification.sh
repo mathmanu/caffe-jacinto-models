@@ -15,7 +15,7 @@ exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
 #------------------------------------------------
-caffe="../../build/tools/caffe.bin"
+caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #-------------------------------------------------------
 max_iter=64000
@@ -27,12 +27,10 @@ stride_list="[1,1,2,1,2]"
 #-------------------------------------------------------
 solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'test_interval':1000}"
 
-weights=/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto/examples/tidsp/training/jacintonet11_cifar10_2017-06-19_13-30-37_91.89%/stage0/jacintonet11_cifar10_iter_64000.caffemodel
-
 #-------------------------------------------------------
 stage="stage0"
 config_name=$folder_name/$stage;mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','stride_list':$stride_list,'pretrain_model':'$weights',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','stride_list':$stride_list,'pretrain_model':None,\
 'num_output':10,'image_width':32,'image_height':32,'crop_size':32,\
 'accum_batch_size':$batch_size,'batch_size':$batch_size,\
 'train_data':'./data/cifar10_train_lmdb','test_data':'./data/cifar10_test_lmdb',\

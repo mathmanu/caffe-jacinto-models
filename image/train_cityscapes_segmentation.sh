@@ -15,7 +15,7 @@ exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
 #------------------------------------------------
-caffe="../../build/tools/caffe.bin"
+caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #------------------------------------------------
 max_iter=32000
