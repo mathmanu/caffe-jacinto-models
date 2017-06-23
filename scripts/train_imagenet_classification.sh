@@ -17,13 +17,12 @@ echo Logging output to "$LOG"
 #------------------------------------------------
 caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
-threshold_step_factor=1e-6
-type=SGD
-
 #-------------------------------------------------------
 gpus="0,1"
 max_iter=320000
 base_lr=0.1
+threshold_step_factor=1e-6
+type=SGD
 solver_param="{'type':'SGD','base_lr':$base_lr,'max_iter':$max_iter}"
 
 #-------------------------------------------------------
@@ -65,8 +64,7 @@ config_name_prev=$config_name
 #quantization
 stage="test"
 weights=$config_name_prev/"$model_name"_"$dataset"_iter_$max_iter.caffemodel
-max_iter=32000
-base_lr=1e-3  #use a lower lr for fine tuning
+
 test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
 'sparse_mode':1,'display_sparsity':1000}"
 
