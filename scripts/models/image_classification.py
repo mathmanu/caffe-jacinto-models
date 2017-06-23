@@ -35,13 +35,14 @@ def main():
     #Names
     config_param.config_name = 'image_classification'
     config_param.model_name = "jacintonet11"
-    config_param.dataset = "nodataset"       
+    config_param.dataset = "nodataset"    
     config_param.pretrain_model = None
                           
     ### Modify the following parameters accordingly ###
     # The directory which contains the caffe code.
     # We assume you are running the script at the CAFFE_ROOT.
     config_param.caffe_root = os.getcwd()
+    config_param.caffe = '../../caffe-jacinto/build/tools/caffe.bin train'
     
     # Set true if you want to start training right after generating all files.
     config_param.run_soon = True
@@ -51,19 +52,18 @@ def main():
     # If true, Remove old model files.
     config_param.remove_old_models = False
 
-    config_param.crop_size = 640
-    config_param.image_width = 640
-    config_param.image_height = 640
+    config_param.crop_size = 224
+    config_param.image_width = 224
+    config_param.image_height = 224
 
-    # Select betwen list based ImageData or lmdb
-    config_param.use_image_list = True
-    
-    config_param.stride_list = [2,2,2,2,1]
-    config_param.dilation_list = [1,1,1,1,2]
-	
-	#mean_value is used in a bias layer in the net.
-    config_param.mean_value = 128    
-	 
+    config_param.train_data = "./data/ilsvrc12_train_lmdb" 
+    config_param.test_data = "./data/ilsvrc12_val_lmdb"
+
+    config_param.stride_list = [2,2,2,2,2]
+    config_param.dilation_list = [1,1,1,1,1]
+    	
+    config_param.mean_value = 128 #used in a bias layer in the net.
+	    
     # Setup Default values
     # If true, use batch norm for all newly added layers.
     # Currently only the non batch norm version has been tested.
@@ -74,16 +74,16 @@ def main():
     # Defining which GPUs to use.
     config_param.gpus = "0,1" #gpus = "0"    
     
-    config_param.num_output = 20
-    config_param.batch_size = 16
-    config_param.accum_batch_size = 16
+    config_param.num_output = 1000
+    config_param.batch_size = 128
+    config_param.accum_batch_size = 256
 
     # Which layers to freeze (no backward) during training.
     config_param.freeze_layers = []
                             
     # Evaluate on whole test set.
-    config_param.num_test_image = 500
-    config_param.test_batch_size = 4
+    config_param.num_test_image = 50000
+    config_param.test_batch_size = 50
     config_param.test_batch_size_in_proto = config_param.test_batch_size      
     
     #Update from params given from outside
@@ -94,11 +94,6 @@ def main():
         config_param.__setattr__(k,args.config_param[k])
         config_param.__setitem__(k,args.config_param[k])		
               
-    config_param.train_data = "data/train-image-list.txt" if config_param.use_image_list else 'data/train-image-lmdb'
-    config_param.train_label = "data/train-label-list.txt" if config_param.use_image_list else 'data/train-label-lmdb'    
-    config_param.test_data = "data/val-image-list.txt" if config_param.use_image_list else 'data/val-image-lmdb'
-    config_param.test_label = "data/val-label-list.txt" if config_param.use_image_list else 'data/val-label-lmdb'
-                  
     # Modify the job name if you want.
     config_param.base_name = config_param.config_name
     config_param.job_name = config_param.base_name
@@ -140,12 +135,11 @@ def main():
     #Solver params                   
     solver_param = {
         # Train parameters
-		'type': 'Adam',
-        'base_lr': 1e-4,
-        'max_iter': 32000, 
+        'type': "SGD",
+        'base_lr': 1e-1,
+        'max_iter': 320000,        
         'weight_decay': 0.0001,
-        'lr_policy': 'multistep',
-		'stepvalue':[24000],
+        'lr_policy': "poly",
         'power': 1,
         'gamma': 0.1,
         'momentum': 0.9,
@@ -159,12 +153,11 @@ def main():
         'snapshot_after_train': True,
         # Test parameters
         'test_iter': [int(math.ceil(config_param.num_test_image/config_param.test_batch_size))],
-        'test_interval': 2000,
-        'test_initialization': False,
+        'test_interval': 1000,
+        'test_initialization': True,
         'random_seed': 33,
         }
-		
-    #Update from params given from outside
+
     #if args.solver_param != None:
     #  solver_param.update(args.solver_param)       
     if args.solver_param != None: 
@@ -174,12 +167,12 @@ def main():
 		
     config_param.train_transform_param = {
             'mirror': True,
-            'mean_value': [0], #specify 1 or 3 values
+            'mean_value': [0, 0, 0],
             'crop_size': config_param.crop_size
             }
     config_param.test_transform_param = {
             'mirror': False,
-            'mean_value': [0], #specify 1 or 3 values
+            'mean_value': [0, 0, 0],
             'crop_size': config_param.crop_size
             }
 						
@@ -206,30 +199,14 @@ def main():
         #get the proto string for the data layer in train phase seperately and return it
           
         train_proto_str = []
-        if phase=='train' and config_param.use_image_list:                 
-          data_kwargs = {'name': 'data', 'ntop':2, 
-             'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label, 
-             'batch_size': config_param.train_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25 } }      
-          net['data'], net['label'] = L.ImageLabelListData(transform_param=config_param.train_transform_param, **data_kwargs)
+        if phase=='train':                 
+          data_kwargs = { 'source': config_param.train_data, 'name': 'data', 'batch_size': config_param.train_batch_size_in_proto, 'backend': caffe_pb2.DataParameter.DB.Value('LMDB'), 'ntop':2 }          
+          net['data'], net['label'] = L.Data(transform_param=config_param.train_transform_param, **data_kwargs)
           out_layer = 'data' 
-        elif phase=='train':                 
-          data_kwargs = {'name': 'data', 'ntop':2, 
-             'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label,
-             'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB') } }      
-          net['data'], net['label'] = L.ImageLabelData(transform_param=config_param.train_transform_param, **data_kwargs)
-          out_layer = 'data'           
-        elif phase=='test' and config_param.use_image_list:
-          data_kwargs = { 'name': 'data', 'ntop':2, 
-             'image_label_data_param': { 'image_list_path': config_param.test_data, 'label_list_path': config_param.test_label, 
-              'batch_size': config_param.test_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25 } }         
-          net['data'], net['label'] = L.ImageLabelListData(transform_param=config_param.test_transform_param,**data_kwargs)
-          out_layer = 'data'
         elif phase=='test':
-          data_kwargs = { 'name': 'data', 'ntop':2, 
-             'image_label_data_param': { 'image_list_path': config_param.test_data, 'label_list_path': config_param.test_label,
-              'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB')} }         
-          net['data'], net['label'] = L.ImageLabelData(transform_param=config_param.test_transform_param,**data_kwargs)
-          out_layer = 'data'          
+          data_kwargs = { 'source': config_param.test_data, 'name': 'data', 'batch_size': config_param.test_batch_size_in_proto, 'backend': caffe_pb2.DataParameter.DB.Value('LMDB'), 'ntop':2 }        
+          net['data'], net['label'] = L.Data(transform_param=config_param.test_transform_param,**data_kwargs)
+          out_layer = 'data'
         elif phase=='deploy':
           net['data'] = L.Input(shape=[dict(dim=[1, 3, config_param.image_height, config_param.image_width])])
           out_layer = 'data'
@@ -239,26 +216,25 @@ def main():
             'filler': dict(type='constant', value=(-config_param.mean_value)),
             }       
         net['data/bias'] = L.Bias(net[out_layer], in_place=False, **bias_kwargs)
-        out_layer = 'data/bias'           
-        if config_param.model_name == 'jsegnet21':		
-            out_layer = models.jacintonet_v2.jsegnet21(net, from_layer=out_layer,\
+        out_layer = 'data/bias'
+                            
+        if config_param.model_name == 'jacintonet11':
+            out_layer = models.jacintonet_v2.jacintonet11(net, from_layer=out_layer,\
             num_output=config_param.num_output,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
             freeze_layers=config_param.freeze_layers)
         else:
             ValueError("Invalid model name")
 
         if phase=='train' or phase=='test':  
-            loss_param = {'ignore_label': 255, 'normalization':caffe_pb2.LossParameter.NormalizationMode.Value('VALID') }
-            net["loss"] = L.SoftmaxWithLoss(net[out_layer], net['label'], loss_param=loss_param,
+            net["loss"] = L.SoftmaxWithLoss(net[out_layer], net['label'],
                 propagate_down=[True, False])
 
-            accuracy_param = {'ignore_label': 255 }
-            net["accuracy/top1"] = L.Accuracy(net[out_layer], net['label'], accuracy_param=accuracy_param,
+            net["accuracy/top1"] = L.Accuracy(net[out_layer], net['label'],
                 include=dict(phase=caffe_pb2.Phase.Value('TEST')))
-            
-            accuracy_param_top5 = {'ignore_label': 255, 'top_k': 5 }          
-            net["accuracy/top5"] = L.Accuracy(net[out_layer], net['label'], accuracy_param=accuracy_param_top5, 
-                include=dict(phase=caffe_pb2.Phase.Value('TEST')))
+        
+            accuracy_param_top5 = { 'top_k': 5 }            
+            net["accuracy/top5"] = L.Accuracy(net[out_layer], net['label'],
+                accuracy_param=accuracy_param_top5, include=dict(phase=caffe_pb2.Phase.Value('TEST')))
         elif phase=='deploy':
             net['prob'] = L.Softmax(net[out_layer]) 
                  
@@ -345,7 +321,7 @@ def main():
     # Create job file.
     with open(config_param.job_file, 'w') as f:
       f.write('cd {}\n'.format(config_param.caffe_root))
-      f.write('../../build/tools/caffe train \\\n')
+      f.write('{} \\\n'.format(config_param.caffe))
       f.write('--solver="{}" \\\n'.format(config_param.solver_file))
       if train_src_param != None:
         f.write(train_src_param)
