@@ -42,9 +42,10 @@ def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
         }
     # parameters for batchnorm layer.
     bn_kwargs = {
-        'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=1, decay_mult=1), dict(lr_mult=0, decay_mult=0), dict(lr_mult=0, decay_mult=0)],     
-        'scale_filler': dict(type='constant', value=1.0),
-        'bias_filler': dict(type='constant', value=0.0),
+        #not needed (and wrong order) for caffe-0.16
+        #'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=1, decay_mult=1), dict(lr_mult=0, decay_mult=0), dict(lr_mult=0, decay_mult=0)],     
+        #'scale_filler': dict(type='constant', value=1.0),
+        #'bias_filler': dict(type='constant', value=0.0),
         'moving_average_fraction': moving_average_fraction, 'eps': eps                  
         }
     # parameters for scale bias layer after batchnorm.
