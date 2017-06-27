@@ -19,26 +19,20 @@ caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #-------------------------------------------------------
 gpus="0,1"
-max_iter=320000
-base_lr=0.1
+max_iter=100 #320000
+base_lr=0 #0.1
 threshold_step_factor=1e-6
 type=SGD
 solver_param="{'type':'SGD','base_lr':$base_lr,'max_iter':$max_iter}"
 
 #-------------------------------------------------------
+weights='/data/mmcodec_video2_tier3/users/manu/experiments/object/classification/2017.06.new_script/caffe-0.15/jacintonet11_imagenet_2017.06.12_lmdb_caffe-0.15-2gpu(60.89%)/stage0/jacintonet11_iter_320000.caffemodel'
 
 stage="initial"
 config_name=$folder_name/$stage;mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':None}" 
+'pretrain_model':'$weights'}" 
 python ./models/image_classification.py --config_param="$config_param" --solver_param="$solver_param"
-config_name_prev=$config_name
-
-#Threshold step
-stage="threshold"
-weights=$config_name_prev/"$model_name"_"$dataset"_iter_$max_iter.caffemodel
-config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-$caffe threshold --threshold_fraction_low 0.40 --threshold_fraction_mid 0.80 --threshold_fraction_high 0.80 --threshold_value_max 0.2 --threshold_value_maxratio 0.2 --threshold_step_factor $threshold_step_factor --model="$config_name_prev/deploy.prototxt" --gpu="0" --weights=$weights --output=$config_name/"$model_name"_"$dataset"_iter_$max_iter.caffemodel
 config_name_prev=$config_name
 
 
@@ -47,11 +41,13 @@ config_name_prev=$config_name
 stage="sparse"
 weights=$config_name_prev/"$model_name"_"$dataset"_iter_$max_iter.caffemodel
 
-max_iter=64000
+max_iter=160000
 type=SGD
 base_lr=0.01  #use a lower lr for fine tuning
 sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
-'sparse_mode':1,'display_sparsity':1000}"
+'sparse_mode':1,'display_sparsity':1000,\
+'sparsity_target':0.8,'sparsity_start_iter':20000,'sparsity_start_factor':0.50,\
+'sparsity_step_iter':2000,'sparsity_step_factor':0.01}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
@@ -70,7 +66,13 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights','caffe':'$caffe test'}" 
+'stride_list':$stride_list,'pretrain_model':'$weights',\
+'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
+'accum_batch_size':$batch_size,'batch_size':$batch_size,\
+'train_data':'./data/ilsvrc12_train_lmdb','test_data':'./data/ilsvrc12_val_lmdb',\
+'num_test_image':50000,'test_batch_size':50,\
+'caffe':'$caffe test'}" 
+
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
 config_name_prev=$config_name
 
