@@ -115,7 +115,7 @@ def main():
     config_param.deploy_net_file = "{}/deploy.prototxt".format(config_param.save_dir)
     config_param.solver_file = "{}/solver.prototxt".format(config_param.save_dir)
     # snapshot prefix.
-    config_param.snapshot_prefix = "{}/{}_{}".format(config_param.snapshot_dir, config_param.model_name, config_param.dataset)
+    config_param.snapshot_prefix = "{}/{}_{}".format(config_param.snapshot_dir, config_param.dataset, config_param.model_name)
     # job script path.
     job_file_base_name = 'test' if(config_param.caffe.split(' ')[1] == 'test') else 'train'
     config_param.job_file_base = "{}/{}".format(config_param.job_dir, job_file_base_name)
