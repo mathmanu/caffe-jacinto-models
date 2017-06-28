@@ -5,9 +5,9 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
 #-------------------------------------------------------
-model_name=jsegnet21
+model_name=jsegnet21v2
 dataset=cityscapes20
-folder_name=training/"$model_name"_"$dataset"_"$DATE_TIME";mkdir $folder_name
+folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
 #------------------------------------------------
 LOG=$folder_name/train-log_"$DATE_TIME".txt

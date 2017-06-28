@@ -5,9 +5,9 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
 #-------------------------------------------------------
-model_name=jacintonet11
+model_name=jacintonet11v2
 dataset=cifar10
-folder_name=training/"$model_name"_"$dataset"_"$DATE_TIME";mkdir $folder_name
+folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
 #------------------------------------------------
 LOG=$folder_name/train-log_"$DATE_TIME".txt
@@ -56,7 +56,7 @@ base_lr=0.01
 sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'test_interval':1000,\
 'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'sparse_mode':1,'display_sparsity':1000,\
-'sparsity_target':0.8,'sparsity_start_iter':10000,'sparsity_start_factor':0.50,\
+'sparsity_target':0.8,'sparsity_start_iter':2000,'sparsity_start_factor':0.50,\
 'sparsity_step_iter':1000,'sparsity_step_factor':0.01}"
 
 
