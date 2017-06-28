@@ -18,7 +18,7 @@ echo Logging output to "$LOG"
 caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #-------------------------------------------------------
-gpus="0,1"
+gpus="0,1,2"
 max_iter=64000
 base_lr=0.1
 type=SGD
