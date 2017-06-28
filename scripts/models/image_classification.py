@@ -219,7 +219,7 @@ def main():
         net['data/bias'] = L.Bias(net[out_layer], in_place=False, **bias_kwargs)
         out_layer = 'data/bias'
                             
-        if config_param.model_name == 'jacintonet11':
+        if config_param.model_name == 'jacintonet11v2':
             out_layer = models.jacintonet_v2.jacintonet11(net, from_layer=out_layer,\
             num_output=config_param.num_output,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
             freeze_layers=config_param.freeze_layers)
