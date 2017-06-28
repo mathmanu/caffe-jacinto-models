@@ -50,7 +50,7 @@ config_name_prev=$config_name
 #-------------------------------------------------------
 #Threshold step
 stage="threshold"
-weights=$config_name_prev/$model_name"_$dataset"_iter_$max_iter.caffemodel
+weights=$config_name_prev/"$dataset"_$model_name_iter_$max_iter.caffemodel
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list}" 
@@ -59,9 +59,9 @@ $caffe threshold --threshold_fraction_low 0.40 --threshold_fraction_mid 0.70 --t
 config_name_prev=$config_name
 
 #-------------------------------------------------------
-#fine tuning
+#incremental sparsification and finetuning
 stage="sparse"
-weights=$config_name_prev/"$model_name"_"$dataset"_iter_$max_iter.caffemodel
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 base_lr=1e-5  #use a lower lr for fine tuning
 sparse_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
@@ -74,9 +74,9 @@ python ./models/image_segmentation.py --config_param="$config_param" --solver_pa
 config_name_prev=$config_name
 
 #-------------------------------------------------------
-#quantization
+#test
 stage="test"
-weights=$config_name_prev/"$model_name"_"$dataset"_iter_$max_iter.caffemodel
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
 'sparse_mode':1,'display_sparsity':1000}"
