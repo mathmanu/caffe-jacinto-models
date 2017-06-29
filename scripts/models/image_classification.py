@@ -202,12 +202,13 @@ def main():
         #set threads and parser_threads to 1 for the time being until an occassional random crash in NVIDIAcaffe:caffe-0.16 is fixed
         
         train_proto_str = []
+        threads = 1
         if phase=='train':                 
-          data_kwargs = {'source':config_param.train_data, 'name':'data', 'batch_size':config_param.train_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'),'ntop':2,'threads':1, 'parser_threads':1}          
+          data_kwargs = {'source':config_param.train_data, 'name':'data', 'batch_size':config_param.train_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'),'ntop':2,'threads':threads, 'parser_threads':threads}          
           net['data'], net['label'] = L.Data(transform_param=config_param.train_transform_param, **data_kwargs)
           out_layer = 'data' 
         elif phase=='test':
-          data_kwargs = {'source':config_param.test_data, 'name':'data', 'batch_size':config_param.test_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'ntop':2, 'threads':1, 'parser_threads':1}        
+          data_kwargs = {'source':config_param.test_data, 'name':'data', 'batch_size':config_param.test_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'ntop':2, 'threads':threads, 'parser_threads':threads}        
           net['data'], net['label'] = L.Data(transform_param=config_param.test_transform_param,**data_kwargs)
           out_layer = 'data'
         elif phase=='deploy':
