@@ -41,7 +41,8 @@ stage="initial"
 weights=$weights_dst
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights','use_image_list':$use_image_list}" 
+'pretrain_model':'$weights','use_image_list':$use_image_list,\
+'image_width':1024,'image_height':512}" 
 
 python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$solver_param
 config_name_prev=$config_name
@@ -74,6 +75,7 @@ test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_po
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list,\
+'image_width':1024,'image_height':512,\
 'num_test_image':500,'test_batch_size':10,\
 'caffe':'$caffe test'}"
 
