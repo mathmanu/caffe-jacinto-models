@@ -327,6 +327,7 @@ def main():
       f.write('{} \\\n'.format(config_param.caffe))    
       if(config_param.caffe.split(' ')[1] == 'test'):
         f.write('--model="{}" \\\n'.format(config_param.test_net_file))
+        f.write('--iterations="{}" \\\n'.format(solver_param['test_iter'][0]))       
       else:
         f.write('--solver="{}" \\\n'.format(config_param.solver_file))      
       if train_src_param != None:
