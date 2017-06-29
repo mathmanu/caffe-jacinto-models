@@ -211,25 +211,25 @@ def main():
         if phase=='train' and config_param.use_image_list:                 
           data_kwargs = {'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label, 
-             'batch_size': config_param.train_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25 } }      
+             'batch_size': config_param.train_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25, 'threads':1 } }      
           net['data'], net['label'] = L.ImageLabelListData(transform_param=config_param.train_transform_param, **data_kwargs)
           out_layer = 'data' 
         elif phase=='train':                 
           data_kwargs = {'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label,
-             'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB') } }      
+             'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB'), 'threads':1 } }      
           net['data'], net['label'] = L.ImageLabelData(transform_param=config_param.train_transform_param, **data_kwargs)
           out_layer = 'data'           
         elif phase=='test' and config_param.use_image_list:
           data_kwargs = { 'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.test_data, 'label_list_path': config_param.test_label, 
-              'batch_size': config_param.test_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25 } }         
+              'batch_size': config_param.test_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25, 'threads':1 } }         
           net['data'], net['label'] = L.ImageLabelListData(transform_param=config_param.test_transform_param,**data_kwargs)
           out_layer = 'data'
         elif phase=='test':
           data_kwargs = { 'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.test_data, 'label_list_path': config_param.test_label,
-              'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB')} }         
+              'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB'), 'threads':1 } }         
           net['data'], net['label'] = L.ImageLabelData(transform_param=config_param.test_transform_param,**data_kwargs)
           out_layer = 'data'          
         elif phase=='deploy':
@@ -350,6 +350,7 @@ def main():
       f.write('{} \\\n'.format(config_param.caffe))    
       if(config_param.caffe.split(' ')[1] == 'test'):
         f.write('--model="{}" \\\n'.format(config_param.test_net_file))
+        f.write('--iterations="{}" \\\n'.format(solver_param['test_iter'][0]))            
       else:
         f.write('--solver="{}" \\\n'.format(config_param.solver_file))      
       if train_src_param != None:
