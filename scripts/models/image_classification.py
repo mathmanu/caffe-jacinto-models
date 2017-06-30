@@ -154,7 +154,7 @@ def main():
         'snapshot_after_train': True,
         # Test parameters
         'test_iter': [int(math.ceil(config_param.num_test_image/config_param.test_batch_size))],
-        'test_interval': 1000,
+        'test_interval': 2000,
         'test_initialization': True,
         'random_seed': 33,
         }
