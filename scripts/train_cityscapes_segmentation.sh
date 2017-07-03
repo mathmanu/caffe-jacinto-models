@@ -31,7 +31,7 @@ weights_dst="training/imagenet_jacintonet11_v2_bn_iter_160000.caffemodel"
 if [ -f $weights_dst ]; then
   echo "Using pretrained model $weights_dst"
 else
-  weights_src="https://github.com/tidsp/caffe-jacinto-models/blob/master/examples/tidsp/models/non_sparse/imagenet_classification/jacintonet11_v2/imagenet_jacintonet11_v2_bn_iter_160000.caffemodel?raw=true"
+  weights_src="https://github.com/tidsp/caffe-jacinto-models/blob/caffe-0.15/trained/image_classification/imagenet_jacintonet11v2/initial/jacintonet11_imagenet_iter_320000.caffemodel?raw=true"
   wget $weights_src -O $weights_dst
 fi
 
