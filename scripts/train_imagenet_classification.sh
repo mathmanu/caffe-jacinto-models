@@ -19,19 +19,16 @@ caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #-------------------------------------------------------
 gpus="0,1,2"
-max_iter=100 #320000
-base_lr=0 #0.1
-#threshold_step_factor=1e-6
+max_iter=320000
+base_lr=0.1
 type=SGD
 solver_param="{'type':'SGD','base_lr':$base_lr,'max_iter':$max_iter}"
 
 #-------------------------------------------------------
-weights='/data/mmcodec_video2_tier3/users/manu/experiments/object/classification/2017.06.new_script/caffe-0.15/jacintonet11_imagenet_2017.06.12_lmdb_caffe-0.15-2gpu(60.89%)/stage0/jacintonet11_iter_320000.caffemodel'
-
 stage="initial"
 config_name=$folder_name/$stage;mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights'}" 
+'pretrain_model':None}" 
 python ./models/image_classification.py --config_param="$config_param" --solver_param="$solver_param"
 config_name_prev=$config_name
 
