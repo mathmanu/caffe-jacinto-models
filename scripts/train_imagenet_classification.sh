@@ -45,9 +45,10 @@ max_iter=320000
 type=SGD
 base_lr=0.01  #use a lower lr for fine tuning
 sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
+'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000,\
-'sparsity_target':0.8,'sparsity_start_iter':0,'sparsity_start_factor':0.0,\
-'sparsity_step_iter':2000,'sparsity_step_factor':0.01}"
+'sparsity_target':0.8,'sparsity_start_iter':40000,'sparsity_start_factor':0.0,\
+'sparsity_step_iter':1000,'sparsity_step_factor':0.01}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
@@ -62,6 +63,7 @@ stage="test"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
+'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name

@@ -1,10 +1,8 @@
-WARNING: gnome-keyring:: couldn't connect to: /run/user/30409/keyring-KJvviu/pkcs11: Connection refused
-p11-kit: skipping module 'gnome-keyring' whose initialization failed: An error occurred on the device
-I0630 02:07:44.975304 27297 caffe.cpp:264] Not using GPU #2 for single-GPU function
-I0630 02:07:44.975421 27297 caffe.cpp:264] Not using GPU #1 for single-GPU function
-I0630 02:07:45.161372 27297 caffe.cpp:273] Use GPU with device ID 0
-I0630 02:07:45.161731 27297 caffe.cpp:277] GPU device name: GeForce GTX 1080
-I0630 02:07:45.560605 27297 net.cpp:56] Initializing net from parameters: 
+I0701 15:15:56.368963  4639 caffe.cpp:264] Not using GPU #2 for single-GPU function
+I0701 15:15:56.370664  4639 caffe.cpp:264] Not using GPU #1 for single-GPU function
+I0701 15:15:56.573829  4639 caffe.cpp:273] Use GPU with device ID 0
+I0701 15:15:56.574179  4639 caffe.cpp:277] GPU device name: GeForce GTX 1080
+I0701 15:15:56.960472  4639 net.cpp:56] Initializing net from parameters: 
 name: "jacintonet11v2_test"
 state {
   phase: TEST
@@ -854,973 +852,973 @@ layer {
     top_k: 5
   }
 }
-I0630 02:07:45.560739 27297 layer_factory.hpp:77] Creating layer data
-I0630 02:07:45.561100 27297 net.cpp:98] Creating Layer data
-I0630 02:07:45.561110 27297 net.cpp:413] data -> data
-I0630 02:07:45.561131 27297 net.cpp:413] data -> label
-I0630 02:07:45.561998 27327 db_lmdb.cpp:35] Opened lmdb ./data/cifar10_test_lmdb
-I0630 02:07:45.562799 27297 data_layer.cpp:78] ReshapePrefetch 50, 3, 32, 32
-I0630 02:07:45.562844 27297 data_layer.cpp:83] output data size: 50,3,32,32
-I0630 02:07:45.564374 27297 net.cpp:148] Setting up data
-I0630 02:07:45.564386 27297 net.cpp:155] Top shape: 50 3 32 32 (153600)
-I0630 02:07:45.564393 27297 net.cpp:155] Top shape: 50 (50)
-I0630 02:07:45.564396 27297 net.cpp:163] Memory required for data: 614600
-I0630 02:07:45.564404 27297 layer_factory.hpp:77] Creating layer label_data_1_split
-I0630 02:07:45.564415 27297 net.cpp:98] Creating Layer label_data_1_split
-I0630 02:07:45.564420 27297 net.cpp:439] label_data_1_split <- label
-I0630 02:07:45.564430 27297 net.cpp:413] label_data_1_split -> label_data_1_split_0
-I0630 02:07:45.564437 27297 net.cpp:413] label_data_1_split -> label_data_1_split_1
-I0630 02:07:45.564443 27297 net.cpp:413] label_data_1_split -> label_data_1_split_2
-I0630 02:07:45.564505 27297 net.cpp:148] Setting up label_data_1_split
-I0630 02:07:45.564510 27297 net.cpp:155] Top shape: 50 (50)
-I0630 02:07:45.564515 27297 net.cpp:155] Top shape: 50 (50)
-I0630 02:07:45.564520 27297 net.cpp:155] Top shape: 50 (50)
-I0630 02:07:45.564523 27297 net.cpp:163] Memory required for data: 615200
-I0630 02:07:45.564527 27297 layer_factory.hpp:77] Creating layer data/bias
-I0630 02:07:45.564538 27297 net.cpp:98] Creating Layer data/bias
-I0630 02:07:45.564541 27297 net.cpp:439] data/bias <- data
-I0630 02:07:45.564546 27297 net.cpp:413] data/bias -> data/bias
-I0630 02:07:45.565104 27297 net.cpp:148] Setting up data/bias
-I0630 02:07:45.565112 27297 net.cpp:155] Top shape: 50 3 32 32 (153600)
-I0630 02:07:45.565115 27297 net.cpp:163] Memory required for data: 1229600
-I0630 02:07:45.565127 27297 layer_factory.hpp:77] Creating layer conv1a
-I0630 02:07:45.565137 27297 net.cpp:98] Creating Layer conv1a
-I0630 02:07:45.565141 27297 net.cpp:439] conv1a <- data/bias
-I0630 02:07:45.565147 27297 net.cpp:413] conv1a -> conv1a
-I0630 02:07:45.565878 27297 net.cpp:148] Setting up conv1a
-I0630 02:07:45.565886 27297 net.cpp:155] Top shape: 50 32 32 32 (1638400)
-I0630 02:07:45.565891 27297 net.cpp:163] Memory required for data: 7783200
-I0630 02:07:45.565897 27297 layer_factory.hpp:77] Creating layer conv1a/bn
-I0630 02:07:45.565906 27297 net.cpp:98] Creating Layer conv1a/bn
-I0630 02:07:45.565908 27297 net.cpp:439] conv1a/bn <- conv1a
-I0630 02:07:45.565913 27297 net.cpp:413] conv1a/bn -> conv1a/bn
-I0630 02:07:45.566277 27297 net.cpp:148] Setting up conv1a/bn
-I0630 02:07:45.566283 27297 net.cpp:155] Top shape: 50 32 32 32 (1638400)
-I0630 02:07:45.566287 27297 net.cpp:163] Memory required for data: 14336800
-I0630 02:07:45.566296 27297 layer_factory.hpp:77] Creating layer conv1a/relu
-I0630 02:07:45.566303 27297 net.cpp:98] Creating Layer conv1a/relu
-I0630 02:07:45.566306 27297 net.cpp:439] conv1a/relu <- conv1a/bn
-I0630 02:07:45.566310 27297 net.cpp:400] conv1a/relu -> conv1a/bn (in-place)
-I0630 02:07:45.566321 27297 net.cpp:148] Setting up conv1a/relu
-I0630 02:07:45.566326 27297 net.cpp:155] Top shape: 50 32 32 32 (1638400)
-I0630 02:07:45.566330 27297 net.cpp:163] Memory required for data: 20890400
-I0630 02:07:45.566334 27297 layer_factory.hpp:77] Creating layer conv1b
-I0630 02:07:45.566342 27297 net.cpp:98] Creating Layer conv1b
-I0630 02:07:45.566352 27297 net.cpp:439] conv1b <- conv1a/bn
-I0630 02:07:45.566359 27297 net.cpp:413] conv1b -> conv1b
-I0630 02:07:45.566659 27297 net.cpp:148] Setting up conv1b
-I0630 02:07:45.566666 27297 net.cpp:155] Top shape: 50 32 32 32 (1638400)
-I0630 02:07:45.566670 27297 net.cpp:163] Memory required for data: 27444000
-I0630 02:07:45.566678 27297 layer_factory.hpp:77] Creating layer conv1b/bn
-I0630 02:07:45.566684 27297 net.cpp:98] Creating Layer conv1b/bn
-I0630 02:07:45.566687 27297 net.cpp:439] conv1b/bn <- conv1b
-I0630 02:07:45.566692 27297 net.cpp:413] conv1b/bn -> conv1b/bn
-I0630 02:07:45.567000 27297 net.cpp:148] Setting up conv1b/bn
-I0630 02:07:45.567008 27297 net.cpp:155] Top shape: 50 32 32 32 (1638400)
-I0630 02:07:45.567010 27297 net.cpp:163] Memory required for data: 33997600
-I0630 02:07:45.567019 27297 layer_factory.hpp:77] Creating layer conv1b/relu
-I0630 02:07:45.567024 27297 net.cpp:98] Creating Layer conv1b/relu
-I0630 02:07:45.567028 27297 net.cpp:439] conv1b/relu <- conv1b/bn
-I0630 02:07:45.567034 27297 net.cpp:400] conv1b/relu -> conv1b/bn (in-place)
-I0630 02:07:45.567039 27297 net.cpp:148] Setting up conv1b/relu
-I0630 02:07:45.567044 27297 net.cpp:155] Top shape: 50 32 32 32 (1638400)
-I0630 02:07:45.567049 27297 net.cpp:163] Memory required for data: 40551200
-I0630 02:07:45.567051 27297 layer_factory.hpp:77] Creating layer pool1
-I0630 02:07:45.567059 27297 net.cpp:98] Creating Layer pool1
-I0630 02:07:45.567061 27297 net.cpp:439] pool1 <- conv1b/bn
-I0630 02:07:45.567066 27297 net.cpp:413] pool1 -> pool1
-I0630 02:07:45.567092 27297 net.cpp:148] Setting up pool1
-I0630 02:07:45.567097 27297 net.cpp:155] Top shape: 50 32 32 32 (1638400)
-I0630 02:07:45.567101 27297 net.cpp:163] Memory required for data: 47104800
-I0630 02:07:45.567104 27297 layer_factory.hpp:77] Creating layer res2a_branch2a
-I0630 02:07:45.567112 27297 net.cpp:98] Creating Layer res2a_branch2a
-I0630 02:07:45.567116 27297 net.cpp:439] res2a_branch2a <- pool1
-I0630 02:07:45.567121 27297 net.cpp:413] res2a_branch2a -> res2a_branch2a
-I0630 02:07:45.568189 27297 net.cpp:148] Setting up res2a_branch2a
-I0630 02:07:45.568198 27297 net.cpp:155] Top shape: 50 64 32 32 (3276800)
-I0630 02:07:45.568202 27297 net.cpp:163] Memory required for data: 60212000
-I0630 02:07:45.568209 27297 layer_factory.hpp:77] Creating layer res2a_branch2a/bn
-I0630 02:07:45.568215 27297 net.cpp:98] Creating Layer res2a_branch2a/bn
-I0630 02:07:45.568220 27297 net.cpp:439] res2a_branch2a/bn <- res2a_branch2a
-I0630 02:07:45.568225 27297 net.cpp:413] res2a_branch2a/bn -> res2a_branch2a/bn
-I0630 02:07:45.568526 27297 net.cpp:148] Setting up res2a_branch2a/bn
-I0630 02:07:45.568532 27297 net.cpp:155] Top shape: 50 64 32 32 (3276800)
-I0630 02:07:45.568536 27297 net.cpp:163] Memory required for data: 73319200
-I0630 02:07:45.568544 27297 layer_factory.hpp:77] Creating layer res2a_branch2a/relu
-I0630 02:07:45.568549 27297 net.cpp:98] Creating Layer res2a_branch2a/relu
-I0630 02:07:45.568553 27297 net.cpp:439] res2a_branch2a/relu <- res2a_branch2a/bn
-I0630 02:07:45.568557 27297 net.cpp:400] res2a_branch2a/relu -> res2a_branch2a/bn (in-place)
-I0630 02:07:45.568564 27297 net.cpp:148] Setting up res2a_branch2a/relu
-I0630 02:07:45.568568 27297 net.cpp:155] Top shape: 50 64 32 32 (3276800)
-I0630 02:07:45.568572 27297 net.cpp:163] Memory required for data: 86426400
-I0630 02:07:45.568575 27297 layer_factory.hpp:77] Creating layer res2a_branch2b
-I0630 02:07:45.568583 27297 net.cpp:98] Creating Layer res2a_branch2b
-I0630 02:07:45.568585 27297 net.cpp:439] res2a_branch2b <- res2a_branch2a/bn
-I0630 02:07:45.568590 27297 net.cpp:413] res2a_branch2b -> res2a_branch2b
-I0630 02:07:45.569409 27297 net.cpp:148] Setting up res2a_branch2b
-I0630 02:07:45.569418 27297 net.cpp:155] Top shape: 50 64 32 32 (3276800)
-I0630 02:07:45.569422 27297 net.cpp:163] Memory required for data: 99533600
-I0630 02:07:45.569427 27297 layer_factory.hpp:77] Creating layer res2a_branch2b/bn
-I0630 02:07:45.569434 27297 net.cpp:98] Creating Layer res2a_branch2b/bn
-I0630 02:07:45.569439 27297 net.cpp:439] res2a_branch2b/bn <- res2a_branch2b
-I0630 02:07:45.569452 27297 net.cpp:413] res2a_branch2b/bn -> res2a_branch2b/bn
-I0630 02:07:45.569748 27297 net.cpp:148] Setting up res2a_branch2b/bn
-I0630 02:07:45.569756 27297 net.cpp:155] Top shape: 50 64 32 32 (3276800)
-I0630 02:07:45.569758 27297 net.cpp:163] Memory required for data: 112640800
-I0630 02:07:45.569767 27297 layer_factory.hpp:77] Creating layer res2a_branch2b/relu
-I0630 02:07:45.569772 27297 net.cpp:98] Creating Layer res2a_branch2b/relu
-I0630 02:07:45.569777 27297 net.cpp:439] res2a_branch2b/relu <- res2a_branch2b/bn
-I0630 02:07:45.569782 27297 net.cpp:400] res2a_branch2b/relu -> res2a_branch2b/bn (in-place)
-I0630 02:07:45.569787 27297 net.cpp:148] Setting up res2a_branch2b/relu
-I0630 02:07:45.569792 27297 net.cpp:155] Top shape: 50 64 32 32 (3276800)
-I0630 02:07:45.569795 27297 net.cpp:163] Memory required for data: 125748000
-I0630 02:07:45.569798 27297 layer_factory.hpp:77] Creating layer pool2
-I0630 02:07:45.569804 27297 net.cpp:98] Creating Layer pool2
-I0630 02:07:45.569808 27297 net.cpp:439] pool2 <- res2a_branch2b/bn
-I0630 02:07:45.569813 27297 net.cpp:413] pool2 -> pool2
-I0630 02:07:45.569833 27297 net.cpp:148] Setting up pool2
-I0630 02:07:45.569836 27297 net.cpp:155] Top shape: 50 64 16 16 (819200)
-I0630 02:07:45.569840 27297 net.cpp:163] Memory required for data: 129024800
-I0630 02:07:45.569844 27297 layer_factory.hpp:77] Creating layer res3a_branch2a
-I0630 02:07:45.569854 27297 net.cpp:98] Creating Layer res3a_branch2a
-I0630 02:07:45.569859 27297 net.cpp:439] res3a_branch2a <- pool2
-I0630 02:07:45.569864 27297 net.cpp:413] res3a_branch2a -> res3a_branch2a
-I0630 02:07:45.571950 27297 net.cpp:148] Setting up res3a_branch2a
-I0630 02:07:45.571960 27297 net.cpp:155] Top shape: 50 128 16 16 (1638400)
-I0630 02:07:45.571964 27297 net.cpp:163] Memory required for data: 135578400
-I0630 02:07:45.571970 27297 layer_factory.hpp:77] Creating layer res3a_branch2a/bn
-I0630 02:07:45.571980 27297 net.cpp:98] Creating Layer res3a_branch2a/bn
-I0630 02:07:45.571985 27297 net.cpp:439] res3a_branch2a/bn <- res3a_branch2a
-I0630 02:07:45.571990 27297 net.cpp:413] res3a_branch2a/bn -> res3a_branch2a/bn
-I0630 02:07:45.572249 27297 net.cpp:148] Setting up res3a_branch2a/bn
-I0630 02:07:45.572255 27297 net.cpp:155] Top shape: 50 128 16 16 (1638400)
-I0630 02:07:45.572259 27297 net.cpp:163] Memory required for data: 142132000
-I0630 02:07:45.572268 27297 layer_factory.hpp:77] Creating layer res3a_branch2a/relu
-I0630 02:07:45.572274 27297 net.cpp:98] Creating Layer res3a_branch2a/relu
-I0630 02:07:45.572278 27297 net.cpp:439] res3a_branch2a/relu <- res3a_branch2a/bn
-I0630 02:07:45.572283 27297 net.cpp:400] res3a_branch2a/relu -> res3a_branch2a/bn (in-place)
-I0630 02:07:45.572289 27297 net.cpp:148] Setting up res3a_branch2a/relu
-I0630 02:07:45.572293 27297 net.cpp:155] Top shape: 50 128 16 16 (1638400)
-I0630 02:07:45.572298 27297 net.cpp:163] Memory required for data: 148685600
-I0630 02:07:45.572300 27297 layer_factory.hpp:77] Creating layer res3a_branch2b
-I0630 02:07:45.572307 27297 net.cpp:98] Creating Layer res3a_branch2b
-I0630 02:07:45.572311 27297 net.cpp:439] res3a_branch2b <- res3a_branch2a/bn
-I0630 02:07:45.572315 27297 net.cpp:413] res3a_branch2b -> res3a_branch2b
-I0630 02:07:45.573201 27297 net.cpp:148] Setting up res3a_branch2b
-I0630 02:07:45.573210 27297 net.cpp:155] Top shape: 50 128 16 16 (1638400)
-I0630 02:07:45.573212 27297 net.cpp:163] Memory required for data: 155239200
-I0630 02:07:45.573220 27297 layer_factory.hpp:77] Creating layer res3a_branch2b/bn
-I0630 02:07:45.573225 27297 net.cpp:98] Creating Layer res3a_branch2b/bn
-I0630 02:07:45.573230 27297 net.cpp:439] res3a_branch2b/bn <- res3a_branch2b
-I0630 02:07:45.573235 27297 net.cpp:413] res3a_branch2b/bn -> res3a_branch2b/bn
-I0630 02:07:45.573500 27297 net.cpp:148] Setting up res3a_branch2b/bn
-I0630 02:07:45.573508 27297 net.cpp:155] Top shape: 50 128 16 16 (1638400)
-I0630 02:07:45.573510 27297 net.cpp:163] Memory required for data: 161792800
-I0630 02:07:45.573518 27297 layer_factory.hpp:77] Creating layer res3a_branch2b/relu
-I0630 02:07:45.573529 27297 net.cpp:98] Creating Layer res3a_branch2b/relu
-I0630 02:07:45.573532 27297 net.cpp:439] res3a_branch2b/relu <- res3a_branch2b/bn
-I0630 02:07:45.573537 27297 net.cpp:400] res3a_branch2b/relu -> res3a_branch2b/bn (in-place)
-I0630 02:07:45.573544 27297 net.cpp:148] Setting up res3a_branch2b/relu
-I0630 02:07:45.573547 27297 net.cpp:155] Top shape: 50 128 16 16 (1638400)
-I0630 02:07:45.573551 27297 net.cpp:163] Memory required for data: 168346400
-I0630 02:07:45.573555 27297 layer_factory.hpp:77] Creating layer pool3
-I0630 02:07:45.573560 27297 net.cpp:98] Creating Layer pool3
-I0630 02:07:45.573565 27297 net.cpp:439] pool3 <- res3a_branch2b/bn
-I0630 02:07:45.573568 27297 net.cpp:413] pool3 -> pool3
-I0630 02:07:45.573590 27297 net.cpp:148] Setting up pool3
-I0630 02:07:45.573593 27297 net.cpp:155] Top shape: 50 128 16 16 (1638400)
-I0630 02:07:45.573597 27297 net.cpp:163] Memory required for data: 174900000
-I0630 02:07:45.573601 27297 layer_factory.hpp:77] Creating layer res4a_branch2a
-I0630 02:07:45.573608 27297 net.cpp:98] Creating Layer res4a_branch2a
-I0630 02:07:45.573611 27297 net.cpp:439] res4a_branch2a <- pool3
-I0630 02:07:45.573616 27297 net.cpp:413] res4a_branch2a -> res4a_branch2a
-I0630 02:07:45.579524 27297 net.cpp:148] Setting up res4a_branch2a
-I0630 02:07:45.579531 27297 net.cpp:155] Top shape: 50 256 16 16 (3276800)
-I0630 02:07:45.579535 27297 net.cpp:163] Memory required for data: 188007200
-I0630 02:07:45.579540 27297 layer_factory.hpp:77] Creating layer res4a_branch2a/bn
-I0630 02:07:45.579546 27297 net.cpp:98] Creating Layer res4a_branch2a/bn
-I0630 02:07:45.579550 27297 net.cpp:439] res4a_branch2a/bn <- res4a_branch2a
-I0630 02:07:45.579555 27297 net.cpp:413] res4a_branch2a/bn -> res4a_branch2a/bn
-I0630 02:07:45.579812 27297 net.cpp:148] Setting up res4a_branch2a/bn
-I0630 02:07:45.579818 27297 net.cpp:155] Top shape: 50 256 16 16 (3276800)
-I0630 02:07:45.579823 27297 net.cpp:163] Memory required for data: 201114400
-I0630 02:07:45.579830 27297 layer_factory.hpp:77] Creating layer res4a_branch2a/relu
-I0630 02:07:45.579834 27297 net.cpp:98] Creating Layer res4a_branch2a/relu
-I0630 02:07:45.579838 27297 net.cpp:439] res4a_branch2a/relu <- res4a_branch2a/bn
-I0630 02:07:45.579843 27297 net.cpp:400] res4a_branch2a/relu -> res4a_branch2a/bn (in-place)
-I0630 02:07:45.579849 27297 net.cpp:148] Setting up res4a_branch2a/relu
-I0630 02:07:45.579854 27297 net.cpp:155] Top shape: 50 256 16 16 (3276800)
-I0630 02:07:45.579856 27297 net.cpp:163] Memory required for data: 214221600
-I0630 02:07:45.579860 27297 layer_factory.hpp:77] Creating layer res4a_branch2b
-I0630 02:07:45.579866 27297 net.cpp:98] Creating Layer res4a_branch2b
-I0630 02:07:45.579870 27297 net.cpp:439] res4a_branch2b <- res4a_branch2a/bn
-I0630 02:07:45.579875 27297 net.cpp:413] res4a_branch2b -> res4a_branch2b
-I0630 02:07:45.582893 27297 net.cpp:148] Setting up res4a_branch2b
-I0630 02:07:45.582900 27297 net.cpp:155] Top shape: 50 256 16 16 (3276800)
-I0630 02:07:45.582902 27297 net.cpp:163] Memory required for data: 227328800
-I0630 02:07:45.582908 27297 layer_factory.hpp:77] Creating layer res4a_branch2b/bn
-I0630 02:07:45.582914 27297 net.cpp:98] Creating Layer res4a_branch2b/bn
-I0630 02:07:45.582918 27297 net.cpp:439] res4a_branch2b/bn <- res4a_branch2b
-I0630 02:07:45.582924 27297 net.cpp:413] res4a_branch2b/bn -> res4a_branch2b/bn
-I0630 02:07:45.583183 27297 net.cpp:148] Setting up res4a_branch2b/bn
-I0630 02:07:45.583189 27297 net.cpp:155] Top shape: 50 256 16 16 (3276800)
-I0630 02:07:45.583191 27297 net.cpp:163] Memory required for data: 240436000
-I0630 02:07:45.583199 27297 layer_factory.hpp:77] Creating layer res4a_branch2b/relu
-I0630 02:07:45.583204 27297 net.cpp:98] Creating Layer res4a_branch2b/relu
-I0630 02:07:45.583209 27297 net.cpp:439] res4a_branch2b/relu <- res4a_branch2b/bn
-I0630 02:07:45.583212 27297 net.cpp:400] res4a_branch2b/relu -> res4a_branch2b/bn (in-place)
-I0630 02:07:45.583219 27297 net.cpp:148] Setting up res4a_branch2b/relu
-I0630 02:07:45.583222 27297 net.cpp:155] Top shape: 50 256 16 16 (3276800)
-I0630 02:07:45.583231 27297 net.cpp:163] Memory required for data: 253543200
-I0630 02:07:45.583235 27297 layer_factory.hpp:77] Creating layer pool4
-I0630 02:07:45.583240 27297 net.cpp:98] Creating Layer pool4
-I0630 02:07:45.583245 27297 net.cpp:439] pool4 <- res4a_branch2b/bn
-I0630 02:07:45.583250 27297 net.cpp:413] pool4 -> pool4
-I0630 02:07:45.583271 27297 net.cpp:148] Setting up pool4
-I0630 02:07:45.583276 27297 net.cpp:155] Top shape: 50 256 8 8 (819200)
-I0630 02:07:45.583279 27297 net.cpp:163] Memory required for data: 256820000
-I0630 02:07:45.583282 27297 layer_factory.hpp:77] Creating layer res5a_branch2a
-I0630 02:07:45.583289 27297 net.cpp:98] Creating Layer res5a_branch2a
-I0630 02:07:45.583293 27297 net.cpp:439] res5a_branch2a <- pool4
-I0630 02:07:45.583298 27297 net.cpp:413] res5a_branch2a -> res5a_branch2a
-I0630 02:07:45.607550 27297 net.cpp:148] Setting up res5a_branch2a
-I0630 02:07:45.607573 27297 net.cpp:155] Top shape: 50 512 8 8 (1638400)
-I0630 02:07:45.607576 27297 net.cpp:163] Memory required for data: 263373600
-I0630 02:07:45.607583 27297 layer_factory.hpp:77] Creating layer res5a_branch2a/bn
-I0630 02:07:45.607594 27297 net.cpp:98] Creating Layer res5a_branch2a/bn
-I0630 02:07:45.607599 27297 net.cpp:439] res5a_branch2a/bn <- res5a_branch2a
-I0630 02:07:45.607605 27297 net.cpp:413] res5a_branch2a/bn -> res5a_branch2a/bn
-I0630 02:07:45.607903 27297 net.cpp:148] Setting up res5a_branch2a/bn
-I0630 02:07:45.607909 27297 net.cpp:155] Top shape: 50 512 8 8 (1638400)
-I0630 02:07:45.607914 27297 net.cpp:163] Memory required for data: 269927200
-I0630 02:07:45.607923 27297 layer_factory.hpp:77] Creating layer res5a_branch2a/relu
-I0630 02:07:45.607928 27297 net.cpp:98] Creating Layer res5a_branch2a/relu
-I0630 02:07:45.607931 27297 net.cpp:439] res5a_branch2a/relu <- res5a_branch2a/bn
-I0630 02:07:45.607936 27297 net.cpp:400] res5a_branch2a/relu -> res5a_branch2a/bn (in-place)
-I0630 02:07:45.607944 27297 net.cpp:148] Setting up res5a_branch2a/relu
-I0630 02:07:45.607947 27297 net.cpp:155] Top shape: 50 512 8 8 (1638400)
-I0630 02:07:45.607951 27297 net.cpp:163] Memory required for data: 276480800
-I0630 02:07:45.607954 27297 layer_factory.hpp:77] Creating layer res5a_branch2b
-I0630 02:07:45.607962 27297 net.cpp:98] Creating Layer res5a_branch2b
-I0630 02:07:45.607965 27297 net.cpp:439] res5a_branch2b <- res5a_branch2a/bn
-I0630 02:07:45.607970 27297 net.cpp:413] res5a_branch2b -> res5a_branch2b
-I0630 02:07:45.620391 27297 net.cpp:148] Setting up res5a_branch2b
-I0630 02:07:45.620415 27297 net.cpp:155] Top shape: 50 512 8 8 (1638400)
-I0630 02:07:45.620419 27297 net.cpp:163] Memory required for data: 283034400
-I0630 02:07:45.620434 27297 layer_factory.hpp:77] Creating layer res5a_branch2b/bn
-I0630 02:07:45.620445 27297 net.cpp:98] Creating Layer res5a_branch2b/bn
-I0630 02:07:45.620451 27297 net.cpp:439] res5a_branch2b/bn <- res5a_branch2b
-I0630 02:07:45.620460 27297 net.cpp:413] res5a_branch2b/bn -> res5a_branch2b/bn
-I0630 02:07:45.620774 27297 net.cpp:148] Setting up res5a_branch2b/bn
-I0630 02:07:45.620780 27297 net.cpp:155] Top shape: 50 512 8 8 (1638400)
-I0630 02:07:45.620784 27297 net.cpp:163] Memory required for data: 289588000
-I0630 02:07:45.620793 27297 layer_factory.hpp:77] Creating layer res5a_branch2b/relu
-I0630 02:07:45.620797 27297 net.cpp:98] Creating Layer res5a_branch2b/relu
-I0630 02:07:45.620802 27297 net.cpp:439] res5a_branch2b/relu <- res5a_branch2b/bn
-I0630 02:07:45.620806 27297 net.cpp:400] res5a_branch2b/relu -> res5a_branch2b/bn (in-place)
-I0630 02:07:45.620813 27297 net.cpp:148] Setting up res5a_branch2b/relu
-I0630 02:07:45.620817 27297 net.cpp:155] Top shape: 50 512 8 8 (1638400)
-I0630 02:07:45.620820 27297 net.cpp:163] Memory required for data: 296141600
-I0630 02:07:45.620824 27297 layer_factory.hpp:77] Creating layer pool5
-I0630 02:07:45.620832 27297 net.cpp:98] Creating Layer pool5
-I0630 02:07:45.620837 27297 net.cpp:439] pool5 <- res5a_branch2b/bn
-I0630 02:07:45.620841 27297 net.cpp:413] pool5 -> pool5
-I0630 02:07:45.620864 27297 net.cpp:148] Setting up pool5
-I0630 02:07:45.620869 27297 net.cpp:155] Top shape: 50 512 1 1 (25600)
-I0630 02:07:45.620880 27297 net.cpp:163] Memory required for data: 296244000
-I0630 02:07:45.620884 27297 layer_factory.hpp:77] Creating layer fc10
-I0630 02:07:45.620892 27297 net.cpp:98] Creating Layer fc10
-I0630 02:07:45.620894 27297 net.cpp:439] fc10 <- pool5
-I0630 02:07:45.620899 27297 net.cpp:413] fc10 -> fc10
-I0630 02:07:45.621070 27297 net.cpp:148] Setting up fc10
-I0630 02:07:45.621075 27297 net.cpp:155] Top shape: 50 10 (500)
-I0630 02:07:45.621079 27297 net.cpp:163] Memory required for data: 296246000
-I0630 02:07:45.621084 27297 layer_factory.hpp:77] Creating layer fc10_fc10_0_split
-I0630 02:07:45.621090 27297 net.cpp:98] Creating Layer fc10_fc10_0_split
-I0630 02:07:45.621094 27297 net.cpp:439] fc10_fc10_0_split <- fc10
-I0630 02:07:45.621100 27297 net.cpp:413] fc10_fc10_0_split -> fc10_fc10_0_split_0
-I0630 02:07:45.621106 27297 net.cpp:413] fc10_fc10_0_split -> fc10_fc10_0_split_1
-I0630 02:07:45.621111 27297 net.cpp:413] fc10_fc10_0_split -> fc10_fc10_0_split_2
-I0630 02:07:45.621139 27297 net.cpp:148] Setting up fc10_fc10_0_split
-I0630 02:07:45.621143 27297 net.cpp:155] Top shape: 50 10 (500)
-I0630 02:07:45.621148 27297 net.cpp:155] Top shape: 50 10 (500)
-I0630 02:07:45.621152 27297 net.cpp:155] Top shape: 50 10 (500)
-I0630 02:07:45.621156 27297 net.cpp:163] Memory required for data: 296252000
-I0630 02:07:45.621160 27297 layer_factory.hpp:77] Creating layer loss
-I0630 02:07:45.621165 27297 net.cpp:98] Creating Layer loss
-I0630 02:07:45.621168 27297 net.cpp:439] loss <- fc10_fc10_0_split_0
-I0630 02:07:45.621173 27297 net.cpp:439] loss <- label_data_1_split_0
-I0630 02:07:45.621178 27297 net.cpp:413] loss -> loss
-I0630 02:07:45.621186 27297 layer_factory.hpp:77] Creating layer loss
-I0630 02:07:45.621245 27297 net.cpp:148] Setting up loss
-I0630 02:07:45.621250 27297 net.cpp:155] Top shape: (1)
-I0630 02:07:45.621254 27297 net.cpp:158]     with loss weight 1
-I0630 02:07:45.621269 27297 net.cpp:163] Memory required for data: 296252004
-I0630 02:07:45.621273 27297 layer_factory.hpp:77] Creating layer accuracy/top1
-I0630 02:07:45.621279 27297 net.cpp:98] Creating Layer accuracy/top1
-I0630 02:07:45.621282 27297 net.cpp:439] accuracy/top1 <- fc10_fc10_0_split_1
-I0630 02:07:45.621286 27297 net.cpp:439] accuracy/top1 <- label_data_1_split_1
-I0630 02:07:45.621291 27297 net.cpp:413] accuracy/top1 -> accuracy/top1
-I0630 02:07:45.621302 27297 net.cpp:148] Setting up accuracy/top1
-I0630 02:07:45.621306 27297 net.cpp:155] Top shape: (1)
-I0630 02:07:45.621310 27297 net.cpp:163] Memory required for data: 296252008
-I0630 02:07:45.621314 27297 layer_factory.hpp:77] Creating layer accuracy/top5
-I0630 02:07:45.621318 27297 net.cpp:98] Creating Layer accuracy/top5
-I0630 02:07:45.621321 27297 net.cpp:439] accuracy/top5 <- fc10_fc10_0_split_2
-I0630 02:07:45.621325 27297 net.cpp:439] accuracy/top5 <- label_data_1_split_2
-I0630 02:07:45.621330 27297 net.cpp:413] accuracy/top5 -> accuracy/top5
-I0630 02:07:45.621338 27297 net.cpp:148] Setting up accuracy/top5
-I0630 02:07:45.621342 27297 net.cpp:155] Top shape: (1)
-I0630 02:07:45.621345 27297 net.cpp:163] Memory required for data: 296252012
-I0630 02:07:45.621350 27297 net.cpp:226] accuracy/top5 does not need backward computation.
-I0630 02:07:45.621353 27297 net.cpp:226] accuracy/top1 does not need backward computation.
-I0630 02:07:45.621357 27297 net.cpp:224] loss needs backward computation.
-I0630 02:07:45.621361 27297 net.cpp:224] fc10_fc10_0_split needs backward computation.
-I0630 02:07:45.621366 27297 net.cpp:224] fc10 needs backward computation.
-I0630 02:07:45.621369 27297 net.cpp:224] pool5 needs backward computation.
-I0630 02:07:45.621373 27297 net.cpp:224] res5a_branch2b/relu needs backward computation.
-I0630 02:07:45.621376 27297 net.cpp:224] res5a_branch2b/bn needs backward computation.
-I0630 02:07:45.621381 27297 net.cpp:224] res5a_branch2b needs backward computation.
-I0630 02:07:45.621383 27297 net.cpp:224] res5a_branch2a/relu needs backward computation.
-I0630 02:07:45.621387 27297 net.cpp:224] res5a_branch2a/bn needs backward computation.
-I0630 02:07:45.621397 27297 net.cpp:224] res5a_branch2a needs backward computation.
-I0630 02:07:45.621400 27297 net.cpp:224] pool4 needs backward computation.
-I0630 02:07:45.621404 27297 net.cpp:224] res4a_branch2b/relu needs backward computation.
-I0630 02:07:45.621409 27297 net.cpp:224] res4a_branch2b/bn needs backward computation.
-I0630 02:07:45.621413 27297 net.cpp:224] res4a_branch2b needs backward computation.
-I0630 02:07:45.621417 27297 net.cpp:224] res4a_branch2a/relu needs backward computation.
-I0630 02:07:45.621421 27297 net.cpp:224] res4a_branch2a/bn needs backward computation.
-I0630 02:07:45.621425 27297 net.cpp:224] res4a_branch2a needs backward computation.
-I0630 02:07:45.621429 27297 net.cpp:224] pool3 needs backward computation.
-I0630 02:07:45.621433 27297 net.cpp:224] res3a_branch2b/relu needs backward computation.
-I0630 02:07:45.621438 27297 net.cpp:224] res3a_branch2b/bn needs backward computation.
-I0630 02:07:45.621440 27297 net.cpp:224] res3a_branch2b needs backward computation.
-I0630 02:07:45.621444 27297 net.cpp:224] res3a_branch2a/relu needs backward computation.
-I0630 02:07:45.621448 27297 net.cpp:224] res3a_branch2a/bn needs backward computation.
-I0630 02:07:45.621451 27297 net.cpp:224] res3a_branch2a needs backward computation.
-I0630 02:07:45.621455 27297 net.cpp:224] pool2 needs backward computation.
-I0630 02:07:45.621459 27297 net.cpp:224] res2a_branch2b/relu needs backward computation.
-I0630 02:07:45.621464 27297 net.cpp:224] res2a_branch2b/bn needs backward computation.
-I0630 02:07:45.621467 27297 net.cpp:224] res2a_branch2b needs backward computation.
-I0630 02:07:45.621471 27297 net.cpp:224] res2a_branch2a/relu needs backward computation.
-I0630 02:07:45.621475 27297 net.cpp:224] res2a_branch2a/bn needs backward computation.
-I0630 02:07:45.621479 27297 net.cpp:224] res2a_branch2a needs backward computation.
-I0630 02:07:45.621484 27297 net.cpp:224] pool1 needs backward computation.
-I0630 02:07:45.621486 27297 net.cpp:224] conv1b/relu needs backward computation.
-I0630 02:07:45.621490 27297 net.cpp:224] conv1b/bn needs backward computation.
-I0630 02:07:45.621495 27297 net.cpp:224] conv1b needs backward computation.
-I0630 02:07:45.621500 27297 net.cpp:224] conv1a/relu needs backward computation.
-I0630 02:07:45.621502 27297 net.cpp:224] conv1a/bn needs backward computation.
-I0630 02:07:45.621506 27297 net.cpp:224] conv1a needs backward computation.
-I0630 02:07:45.621511 27297 net.cpp:226] data/bias does not need backward computation.
-I0630 02:07:45.621515 27297 net.cpp:226] label_data_1_split does not need backward computation.
-I0630 02:07:45.621520 27297 net.cpp:226] data does not need backward computation.
-I0630 02:07:45.621525 27297 net.cpp:268] This network produces output accuracy/top1
-I0630 02:07:45.621527 27297 net.cpp:268] This network produces output accuracy/top5
-I0630 02:07:45.621531 27297 net.cpp:268] This network produces output loss
-I0630 02:07:45.621552 27297 net.cpp:288] Network initialization done.
-I0630 02:07:45.631685 27297 caffe.cpp:289] Running for 200 iterations.
-I0630 02:07:45.654253 27297 caffe.cpp:312] Batch 0, accuracy/top1 = 0.88
-I0630 02:07:45.654276 27297 caffe.cpp:312] Batch 0, accuracy/top5 = 1
-I0630 02:07:45.654281 27297 caffe.cpp:312] Batch 0, loss = 0.14
-I0630 02:07:45.662513 27297 caffe.cpp:312] Batch 1, accuracy/top1 = 0.9
-I0630 02:07:45.662551 27297 caffe.cpp:312] Batch 1, accuracy/top5 = 1
-I0630 02:07:45.662556 27297 caffe.cpp:312] Batch 1, loss = 0.18
-I0630 02:07:45.670703 27297 caffe.cpp:312] Batch 2, accuracy/top1 = 0.94
-I0630 02:07:45.670722 27297 caffe.cpp:312] Batch 2, accuracy/top5 = 1
-I0630 02:07:45.670727 27297 caffe.cpp:312] Batch 2, loss = 0.18
-I0630 02:07:45.678936 27297 caffe.cpp:312] Batch 3, accuracy/top1 = 0.92
-I0630 02:07:45.678951 27297 caffe.cpp:312] Batch 3, accuracy/top5 = 1
-I0630 02:07:45.678954 27297 caffe.cpp:312] Batch 3, loss = 0.1
-I0630 02:07:45.687098 27297 caffe.cpp:312] Batch 4, accuracy/top1 = 0.9
-I0630 02:07:45.687116 27297 caffe.cpp:312] Batch 4, accuracy/top5 = 1
-I0630 02:07:45.687120 27297 caffe.cpp:312] Batch 4, loss = 0.12
-I0630 02:07:45.695289 27297 caffe.cpp:312] Batch 5, accuracy/top1 = 0.92
-I0630 02:07:45.695297 27297 caffe.cpp:312] Batch 5, accuracy/top5 = 0.98
-I0630 02:07:45.695302 27297 caffe.cpp:312] Batch 5, loss = 0.14
-I0630 02:07:45.703456 27297 caffe.cpp:312] Batch 6, accuracy/top1 = 0.96
-I0630 02:07:45.703464 27297 caffe.cpp:312] Batch 6, accuracy/top5 = 1
-I0630 02:07:45.703469 27297 caffe.cpp:312] Batch 6, loss = 0.1
-I0630 02:07:45.711649 27297 caffe.cpp:312] Batch 7, accuracy/top1 = 0.9
-I0630 02:07:45.711658 27297 caffe.cpp:312] Batch 7, accuracy/top5 = 1
-I0630 02:07:45.711661 27297 caffe.cpp:312] Batch 7, loss = 0.36
-I0630 02:07:45.719823 27297 caffe.cpp:312] Batch 8, accuracy/top1 = 0.9
-I0630 02:07:45.719837 27297 caffe.cpp:312] Batch 8, accuracy/top5 = 1
-I0630 02:07:45.719841 27297 caffe.cpp:312] Batch 8, loss = 0.16
-I0630 02:07:45.728086 27297 caffe.cpp:312] Batch 9, accuracy/top1 = 0.94
-I0630 02:07:45.728094 27297 caffe.cpp:312] Batch 9, accuracy/top5 = 1
-I0630 02:07:45.728098 27297 caffe.cpp:312] Batch 9, loss = 0.08
-I0630 02:07:45.736114 27297 caffe.cpp:312] Batch 10, accuracy/top1 = 0.94
-I0630 02:07:45.736122 27297 caffe.cpp:312] Batch 10, accuracy/top5 = 1
-I0630 02:07:45.736126 27297 caffe.cpp:312] Batch 10, loss = 0.08
-I0630 02:07:45.744282 27297 caffe.cpp:312] Batch 11, accuracy/top1 = 0.98
-I0630 02:07:45.744293 27297 caffe.cpp:312] Batch 11, accuracy/top5 = 1
-I0630 02:07:45.744297 27297 caffe.cpp:312] Batch 11, loss = 0.1
-I0630 02:07:45.752499 27297 caffe.cpp:312] Batch 12, accuracy/top1 = 0.92
-I0630 02:07:45.752508 27297 caffe.cpp:312] Batch 12, accuracy/top5 = 1
-I0630 02:07:45.752512 27297 caffe.cpp:312] Batch 12, loss = 0.06
-I0630 02:07:45.760668 27297 caffe.cpp:312] Batch 13, accuracy/top1 = 0.88
-I0630 02:07:45.760676 27297 caffe.cpp:312] Batch 13, accuracy/top5 = 1
-I0630 02:07:45.760680 27297 caffe.cpp:312] Batch 13, loss = 0.48
-I0630 02:07:45.768815 27297 caffe.cpp:312] Batch 14, accuracy/top1 = 0.88
-I0630 02:07:45.768823 27297 caffe.cpp:312] Batch 14, accuracy/top5 = 1
-I0630 02:07:45.768826 27297 caffe.cpp:312] Batch 14, loss = 0.32
-I0630 02:07:45.777077 27297 caffe.cpp:312] Batch 15, accuracy/top1 = 0.82
-I0630 02:07:45.777094 27297 caffe.cpp:312] Batch 15, accuracy/top5 = 1
-I0630 02:07:45.777097 27297 caffe.cpp:312] Batch 15, loss = 0.42
-I0630 02:07:45.785259 27297 caffe.cpp:312] Batch 16, accuracy/top1 = 0.94
-I0630 02:07:45.785266 27297 caffe.cpp:312] Batch 16, accuracy/top5 = 1
-I0630 02:07:45.785270 27297 caffe.cpp:312] Batch 16, loss = 0.26
-I0630 02:07:45.793349 27297 caffe.cpp:312] Batch 17, accuracy/top1 = 0.88
-I0630 02:07:45.793357 27297 caffe.cpp:312] Batch 17, accuracy/top5 = 0.98
-I0630 02:07:45.793361 27297 caffe.cpp:312] Batch 17, loss = 0.56
-I0630 02:07:45.801525 27297 caffe.cpp:312] Batch 18, accuracy/top1 = 0.88
-I0630 02:07:45.801533 27297 caffe.cpp:312] Batch 18, accuracy/top5 = 1
-I0630 02:07:45.801538 27297 caffe.cpp:312] Batch 18, loss = 0.16
-I0630 02:07:45.809681 27297 caffe.cpp:312] Batch 19, accuracy/top1 = 0.92
-I0630 02:07:45.809700 27297 caffe.cpp:312] Batch 19, accuracy/top5 = 1
-I0630 02:07:45.809703 27297 caffe.cpp:312] Batch 19, loss = 0.14
-I0630 02:07:45.817883 27297 caffe.cpp:312] Batch 20, accuracy/top1 = 0.88
-I0630 02:07:45.817891 27297 caffe.cpp:312] Batch 20, accuracy/top5 = 1
-I0630 02:07:45.817895 27297 caffe.cpp:312] Batch 20, loss = 0.2
-I0630 02:07:45.826041 27297 caffe.cpp:312] Batch 21, accuracy/top1 = 0.94
-I0630 02:07:45.826050 27297 caffe.cpp:312] Batch 21, accuracy/top5 = 1
-I0630 02:07:45.826053 27297 caffe.cpp:312] Batch 21, loss = 0.2
-I0630 02:07:45.834205 27297 caffe.cpp:312] Batch 22, accuracy/top1 = 0.84
-I0630 02:07:45.834215 27297 caffe.cpp:312] Batch 22, accuracy/top5 = 1
-I0630 02:07:45.834218 27297 caffe.cpp:312] Batch 22, loss = 0.3
-I0630 02:07:45.842427 27297 caffe.cpp:312] Batch 23, accuracy/top1 = 0.88
-I0630 02:07:45.842437 27297 caffe.cpp:312] Batch 23, accuracy/top5 = 0.98
-I0630 02:07:45.842440 27297 caffe.cpp:312] Batch 23, loss = 0.42
-I0630 02:07:45.850589 27297 caffe.cpp:312] Batch 24, accuracy/top1 = 0.92
-I0630 02:07:45.850597 27297 caffe.cpp:312] Batch 24, accuracy/top5 = 0.98
-I0630 02:07:45.850610 27297 caffe.cpp:312] Batch 24, loss = 0.28
-I0630 02:07:45.858597 27297 caffe.cpp:312] Batch 25, accuracy/top1 = 0.94
-I0630 02:07:45.858605 27297 caffe.cpp:312] Batch 25, accuracy/top5 = 1
-I0630 02:07:45.858609 27297 caffe.cpp:312] Batch 25, loss = 0.1
-I0630 02:07:45.866783 27297 caffe.cpp:312] Batch 26, accuracy/top1 = 0.92
-I0630 02:07:45.866796 27297 caffe.cpp:312] Batch 26, accuracy/top5 = 1
-I0630 02:07:45.866799 27297 caffe.cpp:312] Batch 26, loss = 0.28
-I0630 02:07:45.874938 27297 caffe.cpp:312] Batch 27, accuracy/top1 = 0.9
-I0630 02:07:45.874946 27297 caffe.cpp:312] Batch 27, accuracy/top5 = 1
-I0630 02:07:45.874950 27297 caffe.cpp:312] Batch 27, loss = 0.24
-I0630 02:07:45.883059 27297 caffe.cpp:312] Batch 28, accuracy/top1 = 0.92
-I0630 02:07:45.883067 27297 caffe.cpp:312] Batch 28, accuracy/top5 = 1
-I0630 02:07:45.883071 27297 caffe.cpp:312] Batch 28, loss = 0.18
-I0630 02:07:45.891263 27297 caffe.cpp:312] Batch 29, accuracy/top1 = 0.88
-I0630 02:07:45.891270 27297 caffe.cpp:312] Batch 29, accuracy/top5 = 1
-I0630 02:07:45.891274 27297 caffe.cpp:312] Batch 29, loss = 0.36
-I0630 02:07:45.899479 27297 caffe.cpp:312] Batch 30, accuracy/top1 = 0.9
-I0630 02:07:45.899497 27297 caffe.cpp:312] Batch 30, accuracy/top5 = 1
-I0630 02:07:45.899500 27297 caffe.cpp:312] Batch 30, loss = 0.28
-I0630 02:07:45.907656 27297 caffe.cpp:312] Batch 31, accuracy/top1 = 0.9
-I0630 02:07:45.907665 27297 caffe.cpp:312] Batch 31, accuracy/top5 = 1
-I0630 02:07:45.907668 27297 caffe.cpp:312] Batch 31, loss = 0.14
-I0630 02:07:45.915861 27297 caffe.cpp:312] Batch 32, accuracy/top1 = 0.88
-I0630 02:07:45.915868 27297 caffe.cpp:312] Batch 32, accuracy/top5 = 1
-I0630 02:07:45.915873 27297 caffe.cpp:312] Batch 32, loss = 0.2
-I0630 02:07:45.923897 27297 caffe.cpp:312] Batch 33, accuracy/top1 = 0.96
-I0630 02:07:45.923905 27297 caffe.cpp:312] Batch 33, accuracy/top5 = 0.98
-I0630 02:07:45.923909 27297 caffe.cpp:312] Batch 33, loss = 0.12
-I0630 02:07:45.932098 27297 caffe.cpp:312] Batch 34, accuracy/top1 = 0.88
-I0630 02:07:45.932116 27297 caffe.cpp:312] Batch 34, accuracy/top5 = 1
-I0630 02:07:45.932121 27297 caffe.cpp:312] Batch 34, loss = 0.22
-I0630 02:07:45.940312 27297 caffe.cpp:312] Batch 35, accuracy/top1 = 0.92
-I0630 02:07:45.940321 27297 caffe.cpp:312] Batch 35, accuracy/top5 = 1
-I0630 02:07:45.940325 27297 caffe.cpp:312] Batch 35, loss = 0.1
-I0630 02:07:45.948504 27297 caffe.cpp:312] Batch 36, accuracy/top1 = 0.92
-I0630 02:07:45.948513 27297 caffe.cpp:312] Batch 36, accuracy/top5 = 0.98
-I0630 02:07:45.948516 27297 caffe.cpp:312] Batch 36, loss = 0.18
-I0630 02:07:45.956715 27297 caffe.cpp:312] Batch 37, accuracy/top1 = 0.9
-I0630 02:07:45.956724 27297 caffe.cpp:312] Batch 37, accuracy/top5 = 1
-I0630 02:07:45.956728 27297 caffe.cpp:312] Batch 37, loss = 0.2
-I0630 02:07:45.964915 27297 caffe.cpp:312] Batch 38, accuracy/top1 = 0.86
-I0630 02:07:45.964925 27297 caffe.cpp:312] Batch 38, accuracy/top5 = 0.96
-I0630 02:07:45.964927 27297 caffe.cpp:312] Batch 38, loss = 0.62
-I0630 02:07:45.973088 27297 caffe.cpp:312] Batch 39, accuracy/top1 = 0.94
-I0630 02:07:45.973095 27297 caffe.cpp:312] Batch 39, accuracy/top5 = 0.98
-I0630 02:07:45.973099 27297 caffe.cpp:312] Batch 39, loss = 0.34
-I0630 02:07:45.981307 27297 caffe.cpp:312] Batch 40, accuracy/top1 = 0.88
-I0630 02:07:45.981315 27297 caffe.cpp:312] Batch 40, accuracy/top5 = 1
-I0630 02:07:45.981319 27297 caffe.cpp:312] Batch 40, loss = 0.18
-I0630 02:07:45.989517 27297 caffe.cpp:312] Batch 41, accuracy/top1 = 0.9
-I0630 02:07:45.989528 27297 caffe.cpp:312] Batch 41, accuracy/top5 = 1
-I0630 02:07:45.989532 27297 caffe.cpp:312] Batch 41, loss = 0.2
-I0630 02:07:45.997722 27297 caffe.cpp:312] Batch 42, accuracy/top1 = 0.94
-I0630 02:07:45.997731 27297 caffe.cpp:312] Batch 42, accuracy/top5 = 1
-I0630 02:07:45.997735 27297 caffe.cpp:312] Batch 42, loss = 0.2
-I0630 02:07:46.005900 27297 caffe.cpp:312] Batch 43, accuracy/top1 = 0.88
-I0630 02:07:46.005908 27297 caffe.cpp:312] Batch 43, accuracy/top5 = 1
-I0630 02:07:46.005913 27297 caffe.cpp:312] Batch 43, loss = 0.18
-I0630 02:07:46.014091 27297 caffe.cpp:312] Batch 44, accuracy/top1 = 0.86
-I0630 02:07:46.014098 27297 caffe.cpp:312] Batch 44, accuracy/top5 = 0.98
-I0630 02:07:46.014102 27297 caffe.cpp:312] Batch 44, loss = 0.38
-I0630 02:07:46.022328 27297 caffe.cpp:312] Batch 45, accuracy/top1 = 0.84
-I0630 02:07:46.022348 27297 caffe.cpp:312] Batch 45, accuracy/top5 = 1
-I0630 02:07:46.022352 27297 caffe.cpp:312] Batch 45, loss = 0.42
-I0630 02:07:46.030549 27297 caffe.cpp:312] Batch 46, accuracy/top1 = 0.92
-I0630 02:07:46.030558 27297 caffe.cpp:312] Batch 46, accuracy/top5 = 1
-I0630 02:07:46.030561 27297 caffe.cpp:312] Batch 46, loss = 0.1
-I0630 02:07:46.038686 27297 caffe.cpp:312] Batch 47, accuracy/top1 = 0.82
-I0630 02:07:46.038693 27297 caffe.cpp:312] Batch 47, accuracy/top5 = 1
-I0630 02:07:46.038697 27297 caffe.cpp:312] Batch 47, loss = 0.4
-I0630 02:07:46.046886 27297 caffe.cpp:312] Batch 48, accuracy/top1 = 0.88
-I0630 02:07:46.046893 27297 caffe.cpp:312] Batch 48, accuracy/top5 = 0.98
-I0630 02:07:46.046897 27297 caffe.cpp:312] Batch 48, loss = 0.46
-I0630 02:07:46.055061 27297 caffe.cpp:312] Batch 49, accuracy/top1 = 0.84
-I0630 02:07:46.055079 27297 caffe.cpp:312] Batch 49, accuracy/top5 = 1
-I0630 02:07:46.055083 27297 caffe.cpp:312] Batch 49, loss = 0.26
-I0630 02:07:46.063300 27297 caffe.cpp:312] Batch 50, accuracy/top1 = 0.86
-I0630 02:07:46.063308 27297 caffe.cpp:312] Batch 50, accuracy/top5 = 1
-I0630 02:07:46.063311 27297 caffe.cpp:312] Batch 50, loss = 0.46
-I0630 02:07:46.071497 27297 caffe.cpp:312] Batch 51, accuracy/top1 = 0.92
-I0630 02:07:46.071506 27297 caffe.cpp:312] Batch 51, accuracy/top5 = 0.98
-I0630 02:07:46.071509 27297 caffe.cpp:312] Batch 51, loss = 0.26
-I0630 02:07:46.079725 27297 caffe.cpp:312] Batch 52, accuracy/top1 = 0.94
-I0630 02:07:46.079735 27297 caffe.cpp:312] Batch 52, accuracy/top5 = 1
-I0630 02:07:46.079737 27297 caffe.cpp:312] Batch 52, loss = 0.02
-I0630 02:07:46.087896 27297 caffe.cpp:312] Batch 53, accuracy/top1 = 0.96
-I0630 02:07:46.087908 27297 caffe.cpp:312] Batch 53, accuracy/top5 = 1
-I0630 02:07:46.087911 27297 caffe.cpp:312] Batch 53, loss = 0.04
-I0630 02:07:46.096112 27297 caffe.cpp:312] Batch 54, accuracy/top1 = 0.9
-I0630 02:07:46.096119 27297 caffe.cpp:312] Batch 54, accuracy/top5 = 1
-I0630 02:07:46.096123 27297 caffe.cpp:312] Batch 54, loss = 0.24
-I0630 02:07:46.104315 27297 caffe.cpp:312] Batch 55, accuracy/top1 = 0.9
-I0630 02:07:46.104322 27297 caffe.cpp:312] Batch 55, accuracy/top5 = 0.98
-I0630 02:07:46.104326 27297 caffe.cpp:312] Batch 55, loss = 0.38
-I0630 02:07:46.112478 27297 caffe.cpp:312] Batch 56, accuracy/top1 = 0.86
-I0630 02:07:46.112490 27297 caffe.cpp:312] Batch 56, accuracy/top5 = 0.98
-I0630 02:07:46.112494 27297 caffe.cpp:312] Batch 56, loss = 0.52
-I0630 02:07:46.120659 27297 caffe.cpp:312] Batch 57, accuracy/top1 = 0.94
-I0630 02:07:46.120667 27297 caffe.cpp:312] Batch 57, accuracy/top5 = 1
-I0630 02:07:46.120671 27297 caffe.cpp:312] Batch 57, loss = 0.1
-I0630 02:07:46.128850 27297 caffe.cpp:312] Batch 58, accuracy/top1 = 0.92
-I0630 02:07:46.128859 27297 caffe.cpp:312] Batch 58, accuracy/top5 = 1
-I0630 02:07:46.128862 27297 caffe.cpp:312] Batch 58, loss = 0.16
-I0630 02:07:46.136986 27297 caffe.cpp:312] Batch 59, accuracy/top1 = 0.92
-I0630 02:07:46.136993 27297 caffe.cpp:312] Batch 59, accuracy/top5 = 1
-I0630 02:07:46.136997 27297 caffe.cpp:312] Batch 59, loss = 0.22
-I0630 02:07:46.145151 27297 caffe.cpp:312] Batch 60, accuracy/top1 = 0.88
-I0630 02:07:46.145167 27297 caffe.cpp:312] Batch 60, accuracy/top5 = 1
-I0630 02:07:46.145171 27297 caffe.cpp:312] Batch 60, loss = 0.36
-I0630 02:07:46.153347 27297 caffe.cpp:312] Batch 61, accuracy/top1 = 0.92
-I0630 02:07:46.153354 27297 caffe.cpp:312] Batch 61, accuracy/top5 = 0.98
-I0630 02:07:46.153358 27297 caffe.cpp:312] Batch 61, loss = 0.24
-I0630 02:07:46.161582 27297 caffe.cpp:312] Batch 62, accuracy/top1 = 0.98
-I0630 02:07:46.161589 27297 caffe.cpp:312] Batch 62, accuracy/top5 = 1
-I0630 02:07:46.161593 27297 caffe.cpp:312] Batch 62, loss = 0.02
-I0630 02:07:46.169607 27297 caffe.cpp:312] Batch 63, accuracy/top1 = 0.88
-I0630 02:07:46.169615 27297 caffe.cpp:312] Batch 63, accuracy/top5 = 1
-I0630 02:07:46.169627 27297 caffe.cpp:312] Batch 63, loss = 0.24
-I0630 02:07:46.177821 27297 caffe.cpp:312] Batch 64, accuracy/top1 = 0.86
-I0630 02:07:46.177839 27297 caffe.cpp:312] Batch 64, accuracy/top5 = 1
-I0630 02:07:46.177844 27297 caffe.cpp:312] Batch 64, loss = 0.22
-I0630 02:07:46.186022 27297 caffe.cpp:312] Batch 65, accuracy/top1 = 0.94
-I0630 02:07:46.186029 27297 caffe.cpp:312] Batch 65, accuracy/top5 = 1
-I0630 02:07:46.186033 27297 caffe.cpp:312] Batch 65, loss = 0.12
-I0630 02:07:46.194183 27297 caffe.cpp:312] Batch 66, accuracy/top1 = 0.92
-I0630 02:07:46.194191 27297 caffe.cpp:312] Batch 66, accuracy/top5 = 1
-I0630 02:07:46.194195 27297 caffe.cpp:312] Batch 66, loss = 0.16
-I0630 02:07:46.202353 27297 caffe.cpp:312] Batch 67, accuracy/top1 = 0.92
-I0630 02:07:46.202363 27297 caffe.cpp:312] Batch 67, accuracy/top5 = 1
-I0630 02:07:46.202366 27297 caffe.cpp:312] Batch 67, loss = 0.12
-I0630 02:07:46.210562 27297 caffe.cpp:312] Batch 68, accuracy/top1 = 0.92
-I0630 02:07:46.210572 27297 caffe.cpp:312] Batch 68, accuracy/top5 = 1
-I0630 02:07:46.210575 27297 caffe.cpp:312] Batch 68, loss = 0.28
-I0630 02:07:46.218742 27297 caffe.cpp:312] Batch 69, accuracy/top1 = 0.94
-I0630 02:07:46.218750 27297 caffe.cpp:312] Batch 69, accuracy/top5 = 1
-I0630 02:07:46.218755 27297 caffe.cpp:312] Batch 69, loss = 0.24
-I0630 02:07:46.226951 27297 caffe.cpp:312] Batch 70, accuracy/top1 = 0.96
-I0630 02:07:46.226958 27297 caffe.cpp:312] Batch 70, accuracy/top5 = 0.98
-I0630 02:07:46.226963 27297 caffe.cpp:312] Batch 70, loss = 0.32
-I0630 02:07:46.235163 27297 caffe.cpp:312] Batch 71, accuracy/top1 = 0.86
-I0630 02:07:46.235175 27297 caffe.cpp:312] Batch 71, accuracy/top5 = 1
-I0630 02:07:46.235179 27297 caffe.cpp:312] Batch 71, loss = 0.24
-I0630 02:07:46.243381 27297 caffe.cpp:312] Batch 72, accuracy/top1 = 0.84
-I0630 02:07:46.243388 27297 caffe.cpp:312] Batch 72, accuracy/top5 = 0.98
-I0630 02:07:46.243392 27297 caffe.cpp:312] Batch 72, loss = 0.46
-I0630 02:07:46.251556 27297 caffe.cpp:312] Batch 73, accuracy/top1 = 0.9
-I0630 02:07:46.251564 27297 caffe.cpp:312] Batch 73, accuracy/top5 = 1
-I0630 02:07:46.251569 27297 caffe.cpp:312] Batch 73, loss = 0.24
-I0630 02:07:46.259759 27297 caffe.cpp:312] Batch 74, accuracy/top1 = 0.88
-I0630 02:07:46.259766 27297 caffe.cpp:312] Batch 74, accuracy/top5 = 1
-I0630 02:07:46.259770 27297 caffe.cpp:312] Batch 74, loss = 0.18
-I0630 02:07:46.267994 27297 caffe.cpp:312] Batch 75, accuracy/top1 = 0.9
-I0630 02:07:46.268010 27297 caffe.cpp:312] Batch 75, accuracy/top5 = 1
-I0630 02:07:46.268014 27297 caffe.cpp:312] Batch 75, loss = 0.28
-I0630 02:07:46.276198 27297 caffe.cpp:312] Batch 76, accuracy/top1 = 0.9
-I0630 02:07:46.276206 27297 caffe.cpp:312] Batch 76, accuracy/top5 = 1
-I0630 02:07:46.276211 27297 caffe.cpp:312] Batch 76, loss = 0.14
-I0630 02:07:46.284261 27297 caffe.cpp:312] Batch 77, accuracy/top1 = 0.9
-I0630 02:07:46.284268 27297 caffe.cpp:312] Batch 77, accuracy/top5 = 1
-I0630 02:07:46.284272 27297 caffe.cpp:312] Batch 77, loss = 0.18
-I0630 02:07:46.292464 27297 caffe.cpp:312] Batch 78, accuracy/top1 = 0.92
-I0630 02:07:46.292471 27297 caffe.cpp:312] Batch 78, accuracy/top5 = 1
-I0630 02:07:46.292475 27297 caffe.cpp:312] Batch 78, loss = 0.18
-I0630 02:07:46.300704 27297 caffe.cpp:312] Batch 79, accuracy/top1 = 0.94
-I0630 02:07:46.300720 27297 caffe.cpp:312] Batch 79, accuracy/top5 = 1
-I0630 02:07:46.300724 27297 caffe.cpp:312] Batch 79, loss = 0.24
-I0630 02:07:46.308949 27297 caffe.cpp:312] Batch 80, accuracy/top1 = 0.96
-I0630 02:07:46.308957 27297 caffe.cpp:312] Batch 80, accuracy/top5 = 0.98
-I0630 02:07:46.308961 27297 caffe.cpp:312] Batch 80, loss = 0.12
-I0630 02:07:46.317067 27297 caffe.cpp:312] Batch 81, accuracy/top1 = 0.92
-I0630 02:07:46.317075 27297 caffe.cpp:312] Batch 81, accuracy/top5 = 1
-I0630 02:07:46.317080 27297 caffe.cpp:312] Batch 81, loss = 0.12
-I0630 02:07:46.325270 27297 caffe.cpp:312] Batch 82, accuracy/top1 = 0.88
-I0630 02:07:46.325280 27297 caffe.cpp:312] Batch 82, accuracy/top5 = 1
-I0630 02:07:46.325284 27297 caffe.cpp:312] Batch 82, loss = 0.48
-I0630 02:07:46.333367 27297 caffe.cpp:312] Batch 83, accuracy/top1 = 0.94
-I0630 02:07:46.333375 27297 caffe.cpp:312] Batch 83, accuracy/top5 = 1
-I0630 02:07:46.333379 27297 caffe.cpp:312] Batch 83, loss = 0.14
-I0630 02:07:46.341547 27297 caffe.cpp:312] Batch 84, accuracy/top1 = 0.98
-I0630 02:07:46.341555 27297 caffe.cpp:312] Batch 84, accuracy/top5 = 1
-I0630 02:07:46.341559 27297 caffe.cpp:312] Batch 84, loss = 0.12
-I0630 02:07:46.349701 27297 caffe.cpp:312] Batch 85, accuracy/top1 = 0.92
-I0630 02:07:46.349709 27297 caffe.cpp:312] Batch 85, accuracy/top5 = 1
-I0630 02:07:46.349714 27297 caffe.cpp:312] Batch 85, loss = 0.08
-I0630 02:07:46.357916 27297 caffe.cpp:312] Batch 86, accuracy/top1 = 0.92
-I0630 02:07:46.357928 27297 caffe.cpp:312] Batch 86, accuracy/top5 = 1
-I0630 02:07:46.357931 27297 caffe.cpp:312] Batch 86, loss = 0.2
-I0630 02:07:46.366111 27297 caffe.cpp:312] Batch 87, accuracy/top1 = 0.98
-I0630 02:07:46.366119 27297 caffe.cpp:312] Batch 87, accuracy/top5 = 1
-I0630 02:07:46.366123 27297 caffe.cpp:312] Batch 87, loss = 0.1
-I0630 02:07:46.374229 27297 caffe.cpp:312] Batch 88, accuracy/top1 = 0.92
-I0630 02:07:46.374238 27297 caffe.cpp:312] Batch 88, accuracy/top5 = 1
-I0630 02:07:46.374241 27297 caffe.cpp:312] Batch 88, loss = 0.16
-I0630 02:07:46.382446 27297 caffe.cpp:312] Batch 89, accuracy/top1 = 0.92
-I0630 02:07:46.382453 27297 caffe.cpp:312] Batch 89, accuracy/top5 = 1
-I0630 02:07:46.382457 27297 caffe.cpp:312] Batch 89, loss = 0.14
-I0630 02:07:46.390636 27297 caffe.cpp:312] Batch 90, accuracy/top1 = 0.88
-I0630 02:07:46.390653 27297 caffe.cpp:312] Batch 90, accuracy/top5 = 1
-I0630 02:07:46.390657 27297 caffe.cpp:312] Batch 90, loss = 0.22
-I0630 02:07:46.398646 27297 caffe.cpp:312] Batch 91, accuracy/top1 = 0.92
-I0630 02:07:46.398654 27297 caffe.cpp:312] Batch 91, accuracy/top5 = 1
-I0630 02:07:46.398658 27297 caffe.cpp:312] Batch 91, loss = 0.24
-I0630 02:07:46.406771 27297 caffe.cpp:312] Batch 92, accuracy/top1 = 0.88
-I0630 02:07:46.406779 27297 caffe.cpp:312] Batch 92, accuracy/top5 = 1
-I0630 02:07:46.406782 27297 caffe.cpp:312] Batch 92, loss = 0.16
-I0630 02:07:46.414925 27297 caffe.cpp:312] Batch 93, accuracy/top1 = 0.92
-I0630 02:07:46.414932 27297 caffe.cpp:312] Batch 93, accuracy/top5 = 1
-I0630 02:07:46.414937 27297 caffe.cpp:312] Batch 93, loss = 0.18
-I0630 02:07:46.423072 27297 caffe.cpp:312] Batch 94, accuracy/top1 = 0.92
-I0630 02:07:46.423087 27297 caffe.cpp:312] Batch 94, accuracy/top5 = 0.98
-I0630 02:07:46.423091 27297 caffe.cpp:312] Batch 94, loss = 0.32
-I0630 02:07:46.431278 27297 caffe.cpp:312] Batch 95, accuracy/top1 = 0.92
-I0630 02:07:46.431287 27297 caffe.cpp:312] Batch 95, accuracy/top5 = 0.98
-I0630 02:07:46.431289 27297 caffe.cpp:312] Batch 95, loss = 0.36
-I0630 02:07:46.439409 27297 caffe.cpp:312] Batch 96, accuracy/top1 = 1
-I0630 02:07:46.439416 27297 caffe.cpp:312] Batch 96, accuracy/top5 = 1
-I0630 02:07:46.439420 27297 caffe.cpp:312] Batch 96, loss = 0
-I0630 02:07:46.447546 27297 caffe.cpp:312] Batch 97, accuracy/top1 = 0.94
-I0630 02:07:46.447556 27297 caffe.cpp:312] Batch 97, accuracy/top5 = 1
-I0630 02:07:46.447561 27297 caffe.cpp:312] Batch 97, loss = 0.14
-I0630 02:07:46.455755 27297 caffe.cpp:312] Batch 98, accuracy/top1 = 0.92
-I0630 02:07:46.455765 27297 caffe.cpp:312] Batch 98, accuracy/top5 = 1
-I0630 02:07:46.455768 27297 caffe.cpp:312] Batch 98, loss = 0.14
-I0630 02:07:46.463953 27297 caffe.cpp:312] Batch 99, accuracy/top1 = 0.88
-I0630 02:07:46.463961 27297 caffe.cpp:312] Batch 99, accuracy/top5 = 1
-I0630 02:07:46.463965 27297 caffe.cpp:312] Batch 99, loss = 0.34
-I0630 02:07:46.472072 27297 caffe.cpp:312] Batch 100, accuracy/top1 = 0.96
-I0630 02:07:46.472080 27297 caffe.cpp:312] Batch 100, accuracy/top5 = 1
-I0630 02:07:46.472084 27297 caffe.cpp:312] Batch 100, loss = 0.1
-I0630 02:07:46.480275 27297 caffe.cpp:312] Batch 101, accuracy/top1 = 0.88
-I0630 02:07:46.480288 27297 caffe.cpp:312] Batch 101, accuracy/top5 = 1
-I0630 02:07:46.480291 27297 caffe.cpp:312] Batch 101, loss = 0.1
-I0630 02:07:46.488435 27297 caffe.cpp:312] Batch 102, accuracy/top1 = 0.94
-I0630 02:07:46.488445 27297 caffe.cpp:312] Batch 102, accuracy/top5 = 1
-I0630 02:07:46.488457 27297 caffe.cpp:312] Batch 102, loss = 0.06
-I0630 02:07:46.496610 27297 caffe.cpp:312] Batch 103, accuracy/top1 = 0.88
-I0630 02:07:46.496618 27297 caffe.cpp:312] Batch 103, accuracy/top5 = 1
-I0630 02:07:46.496623 27297 caffe.cpp:312] Batch 103, loss = 0.3
-I0630 02:07:46.504784 27297 caffe.cpp:312] Batch 104, accuracy/top1 = 0.88
-I0630 02:07:46.504792 27297 caffe.cpp:312] Batch 104, accuracy/top5 = 1
-I0630 02:07:46.504796 27297 caffe.cpp:312] Batch 104, loss = 0.26
-I0630 02:07:46.513046 27297 caffe.cpp:312] Batch 105, accuracy/top1 = 0.94
-I0630 02:07:46.513065 27297 caffe.cpp:312] Batch 105, accuracy/top5 = 0.98
-I0630 02:07:46.513068 27297 caffe.cpp:312] Batch 105, loss = 0.14
-I0630 02:07:46.521219 27297 caffe.cpp:312] Batch 106, accuracy/top1 = 0.94
-I0630 02:07:46.521229 27297 caffe.cpp:312] Batch 106, accuracy/top5 = 1
-I0630 02:07:46.521232 27297 caffe.cpp:312] Batch 106, loss = 0.12
-I0630 02:07:46.529398 27297 caffe.cpp:312] Batch 107, accuracy/top1 = 0.9
-I0630 02:07:46.529407 27297 caffe.cpp:312] Batch 107, accuracy/top5 = 1
-I0630 02:07:46.529410 27297 caffe.cpp:312] Batch 107, loss = 0.16
-I0630 02:07:46.537549 27297 caffe.cpp:312] Batch 108, accuracy/top1 = 0.86
-I0630 02:07:46.537556 27297 caffe.cpp:312] Batch 108, accuracy/top5 = 1
-I0630 02:07:46.537560 27297 caffe.cpp:312] Batch 108, loss = 0.36
-I0630 02:07:46.545775 27297 caffe.cpp:312] Batch 109, accuracy/top1 = 0.9
-I0630 02:07:46.545792 27297 caffe.cpp:312] Batch 109, accuracy/top5 = 1
-I0630 02:07:46.545796 27297 caffe.cpp:312] Batch 109, loss = 0.14
-I0630 02:07:46.553964 27297 caffe.cpp:312] Batch 110, accuracy/top1 = 0.88
-I0630 02:07:46.553972 27297 caffe.cpp:312] Batch 110, accuracy/top5 = 0.98
-I0630 02:07:46.553977 27297 caffe.cpp:312] Batch 110, loss = 0.6
-I0630 02:07:46.562141 27297 caffe.cpp:312] Batch 111, accuracy/top1 = 0.98
-I0630 02:07:46.562150 27297 caffe.cpp:312] Batch 111, accuracy/top5 = 1
-I0630 02:07:46.562153 27297 caffe.cpp:312] Batch 111, loss = 0.02
-I0630 02:07:46.570121 27297 caffe.cpp:312] Batch 112, accuracy/top1 = 0.88
-I0630 02:07:46.570128 27297 caffe.cpp:312] Batch 112, accuracy/top5 = 1
-I0630 02:07:46.570132 27297 caffe.cpp:312] Batch 112, loss = 0.34
-I0630 02:07:46.578361 27297 caffe.cpp:312] Batch 113, accuracy/top1 = 0.86
-I0630 02:07:46.578374 27297 caffe.cpp:312] Batch 113, accuracy/top5 = 1
-I0630 02:07:46.578378 27297 caffe.cpp:312] Batch 113, loss = 0.28
-I0630 02:07:46.586575 27297 caffe.cpp:312] Batch 114, accuracy/top1 = 0.88
-I0630 02:07:46.586582 27297 caffe.cpp:312] Batch 114, accuracy/top5 = 1
-I0630 02:07:46.586586 27297 caffe.cpp:312] Batch 114, loss = 0.22
-I0630 02:07:46.594761 27297 caffe.cpp:312] Batch 115, accuracy/top1 = 0.96
-I0630 02:07:46.594769 27297 caffe.cpp:312] Batch 115, accuracy/top5 = 1
-I0630 02:07:46.594774 27297 caffe.cpp:312] Batch 115, loss = 0.04
-I0630 02:07:46.602962 27297 caffe.cpp:312] Batch 116, accuracy/top1 = 0.84
-I0630 02:07:46.602973 27297 caffe.cpp:312] Batch 116, accuracy/top5 = 1
-I0630 02:07:46.602977 27297 caffe.cpp:312] Batch 116, loss = 0.2
-I0630 02:07:46.611171 27297 caffe.cpp:312] Batch 117, accuracy/top1 = 0.88
-I0630 02:07:46.611179 27297 caffe.cpp:312] Batch 117, accuracy/top5 = 1
-I0630 02:07:46.611182 27297 caffe.cpp:312] Batch 117, loss = 0.3
-I0630 02:07:46.619289 27297 caffe.cpp:312] Batch 118, accuracy/top1 = 0.92
-I0630 02:07:46.619297 27297 caffe.cpp:312] Batch 118, accuracy/top5 = 1
-I0630 02:07:46.619302 27297 caffe.cpp:312] Batch 118, loss = 0.14
-I0630 02:07:46.627470 27297 caffe.cpp:312] Batch 119, accuracy/top1 = 0.92
-I0630 02:07:46.627477 27297 caffe.cpp:312] Batch 119, accuracy/top5 = 1
-I0630 02:07:46.627481 27297 caffe.cpp:312] Batch 119, loss = 0.18
-I0630 02:07:46.635707 27297 caffe.cpp:312] Batch 120, accuracy/top1 = 0.9
-I0630 02:07:46.635725 27297 caffe.cpp:312] Batch 120, accuracy/top5 = 1
-I0630 02:07:46.635727 27297 caffe.cpp:312] Batch 120, loss = 0.14
-I0630 02:07:46.643915 27297 caffe.cpp:312] Batch 121, accuracy/top1 = 0.9
-I0630 02:07:46.643923 27297 caffe.cpp:312] Batch 121, accuracy/top5 = 1
-I0630 02:07:46.643944 27297 caffe.cpp:312] Batch 121, loss = 0.32
-I0630 02:07:46.652132 27297 caffe.cpp:312] Batch 122, accuracy/top1 = 0.92
-I0630 02:07:46.652139 27297 caffe.cpp:312] Batch 122, accuracy/top5 = 1
-I0630 02:07:46.652143 27297 caffe.cpp:312] Batch 122, loss = 0.08
-I0630 02:07:46.660354 27297 caffe.cpp:312] Batch 123, accuracy/top1 = 0.9
-I0630 02:07:46.660362 27297 caffe.cpp:312] Batch 123, accuracy/top5 = 1
-I0630 02:07:46.660365 27297 caffe.cpp:312] Batch 123, loss = 0.22
-I0630 02:07:46.668615 27297 caffe.cpp:312] Batch 124, accuracy/top1 = 0.94
-I0630 02:07:46.668642 27297 caffe.cpp:312] Batch 124, accuracy/top5 = 1
-I0630 02:07:46.668647 27297 caffe.cpp:312] Batch 124, loss = 0.22
-I0630 02:07:46.677000 27297 caffe.cpp:312] Batch 125, accuracy/top1 = 0.96
-I0630 02:07:46.677016 27297 caffe.cpp:312] Batch 125, accuracy/top5 = 1
-I0630 02:07:46.677021 27297 caffe.cpp:312] Batch 125, loss = 0.1
-I0630 02:07:46.685287 27297 caffe.cpp:312] Batch 126, accuracy/top1 = 0.96
-I0630 02:07:46.685302 27297 caffe.cpp:312] Batch 126, accuracy/top5 = 1
-I0630 02:07:46.685305 27297 caffe.cpp:312] Batch 126, loss = 0.04
-I0630 02:07:46.693514 27297 caffe.cpp:312] Batch 127, accuracy/top1 = 0.94
-I0630 02:07:46.693524 27297 caffe.cpp:312] Batch 127, accuracy/top5 = 1
-I0630 02:07:46.693528 27297 caffe.cpp:312] Batch 127, loss = 0.06
-I0630 02:07:46.701731 27297 caffe.cpp:312] Batch 128, accuracy/top1 = 0.86
-I0630 02:07:46.701745 27297 caffe.cpp:312] Batch 128, accuracy/top5 = 1
-I0630 02:07:46.701748 27297 caffe.cpp:312] Batch 128, loss = 0.58
-I0630 02:07:46.709926 27297 caffe.cpp:312] Batch 129, accuracy/top1 = 0.94
-I0630 02:07:46.709934 27297 caffe.cpp:312] Batch 129, accuracy/top5 = 1
-I0630 02:07:46.709939 27297 caffe.cpp:312] Batch 129, loss = 0.04
-I0630 02:07:46.718096 27297 caffe.cpp:312] Batch 130, accuracy/top1 = 0.88
-I0630 02:07:46.718102 27297 caffe.cpp:312] Batch 130, accuracy/top5 = 1
-I0630 02:07:46.718107 27297 caffe.cpp:312] Batch 130, loss = 0.26
-I0630 02:07:46.726217 27297 caffe.cpp:312] Batch 131, accuracy/top1 = 0.94
-I0630 02:07:46.726228 27297 caffe.cpp:312] Batch 131, accuracy/top5 = 1
-I0630 02:07:46.726233 27297 caffe.cpp:312] Batch 131, loss = 0.22
-I0630 02:07:46.734433 27297 caffe.cpp:312] Batch 132, accuracy/top1 = 0.92
-I0630 02:07:46.734442 27297 caffe.cpp:312] Batch 132, accuracy/top5 = 1
-I0630 02:07:46.734447 27297 caffe.cpp:312] Batch 132, loss = 0.08
-I0630 02:07:46.742576 27297 caffe.cpp:312] Batch 133, accuracy/top1 = 0.9
-I0630 02:07:46.742584 27297 caffe.cpp:312] Batch 133, accuracy/top5 = 1
-I0630 02:07:46.742588 27297 caffe.cpp:312] Batch 133, loss = 0.36
-I0630 02:07:46.750699 27297 caffe.cpp:312] Batch 134, accuracy/top1 = 0.94
-I0630 02:07:46.750706 27297 caffe.cpp:312] Batch 134, accuracy/top5 = 0.98
-I0630 02:07:46.750710 27297 caffe.cpp:312] Batch 134, loss = 0.22
-I0630 02:07:46.758954 27297 caffe.cpp:312] Batch 135, accuracy/top1 = 0.86
-I0630 02:07:46.758970 27297 caffe.cpp:312] Batch 135, accuracy/top5 = 0.98
-I0630 02:07:46.758973 27297 caffe.cpp:312] Batch 135, loss = 0.5
-I0630 02:07:46.767140 27297 caffe.cpp:312] Batch 136, accuracy/top1 = 0.94
-I0630 02:07:46.767148 27297 caffe.cpp:312] Batch 136, accuracy/top5 = 1
-I0630 02:07:46.767153 27297 caffe.cpp:312] Batch 136, loss = 0.08
-I0630 02:07:46.775292 27297 caffe.cpp:312] Batch 137, accuracy/top1 = 0.84
-I0630 02:07:46.775300 27297 caffe.cpp:312] Batch 137, accuracy/top5 = 1
-I0630 02:07:46.775305 27297 caffe.cpp:312] Batch 137, loss = 0.26
-I0630 02:07:46.783470 27297 caffe.cpp:312] Batch 138, accuracy/top1 = 0.9
-I0630 02:07:46.783478 27297 caffe.cpp:312] Batch 138, accuracy/top5 = 0.98
-I0630 02:07:46.783483 27297 caffe.cpp:312] Batch 138, loss = 0.2
-I0630 02:07:46.791568 27297 caffe.cpp:312] Batch 139, accuracy/top1 = 0.8
-I0630 02:07:46.791584 27297 caffe.cpp:312] Batch 139, accuracy/top5 = 0.98
-I0630 02:07:46.791587 27297 caffe.cpp:312] Batch 139, loss = 0.42
-I0630 02:07:46.799744 27297 caffe.cpp:312] Batch 140, accuracy/top1 = 0.88
-I0630 02:07:46.799753 27297 caffe.cpp:312] Batch 140, accuracy/top5 = 1
-I0630 02:07:46.799757 27297 caffe.cpp:312] Batch 140, loss = 0.22
-I0630 02:07:46.807893 27297 caffe.cpp:312] Batch 141, accuracy/top1 = 0.9
-I0630 02:07:46.807901 27297 caffe.cpp:312] Batch 141, accuracy/top5 = 1
-I0630 02:07:46.807905 27297 caffe.cpp:312] Batch 141, loss = 0.36
-I0630 02:07:46.816052 27297 caffe.cpp:312] Batch 142, accuracy/top1 = 0.88
-I0630 02:07:46.816066 27297 caffe.cpp:312] Batch 142, accuracy/top5 = 1
-I0630 02:07:46.816068 27297 caffe.cpp:312] Batch 142, loss = 0.28
-I0630 02:07:46.824229 27297 caffe.cpp:312] Batch 143, accuracy/top1 = 0.92
-I0630 02:07:46.824239 27297 caffe.cpp:312] Batch 143, accuracy/top5 = 1
-I0630 02:07:46.824242 27297 caffe.cpp:312] Batch 143, loss = 0.24
-I0630 02:07:46.832402 27297 caffe.cpp:312] Batch 144, accuracy/top1 = 0.92
-I0630 02:07:46.832411 27297 caffe.cpp:312] Batch 144, accuracy/top5 = 1
-I0630 02:07:46.832414 27297 caffe.cpp:312] Batch 144, loss = 0.1
-I0630 02:07:46.840409 27297 caffe.cpp:312] Batch 145, accuracy/top1 = 0.94
-I0630 02:07:46.840416 27297 caffe.cpp:312] Batch 145, accuracy/top5 = 1
-I0630 02:07:46.840420 27297 caffe.cpp:312] Batch 145, loss = 0.16
-I0630 02:07:46.848639 27297 caffe.cpp:312] Batch 146, accuracy/top1 = 0.92
-I0630 02:07:46.848650 27297 caffe.cpp:312] Batch 146, accuracy/top5 = 1
-I0630 02:07:46.848654 27297 caffe.cpp:312] Batch 146, loss = 0.28
-I0630 02:07:46.856772 27297 caffe.cpp:312] Batch 147, accuracy/top1 = 0.9
-I0630 02:07:46.856781 27297 caffe.cpp:312] Batch 147, accuracy/top5 = 1
-I0630 02:07:46.856784 27297 caffe.cpp:312] Batch 147, loss = 0.3
-I0630 02:07:46.864890 27297 caffe.cpp:312] Batch 148, accuracy/top1 = 0.9
-I0630 02:07:46.864898 27297 caffe.cpp:312] Batch 148, accuracy/top5 = 1
-I0630 02:07:46.864902 27297 caffe.cpp:312] Batch 148, loss = 0.12
-I0630 02:07:46.872993 27297 caffe.cpp:312] Batch 149, accuracy/top1 = 0.94
-I0630 02:07:46.873001 27297 caffe.cpp:312] Batch 149, accuracy/top5 = 1
-I0630 02:07:46.873005 27297 caffe.cpp:312] Batch 149, loss = 0.18
-I0630 02:07:46.881178 27297 caffe.cpp:312] Batch 150, accuracy/top1 = 0.94
-I0630 02:07:46.881196 27297 caffe.cpp:312] Batch 150, accuracy/top5 = 0.98
-I0630 02:07:46.881198 27297 caffe.cpp:312] Batch 150, loss = 0.26
-I0630 02:07:46.889343 27297 caffe.cpp:312] Batch 151, accuracy/top1 = 0.92
-I0630 02:07:46.889351 27297 caffe.cpp:312] Batch 151, accuracy/top5 = 0.98
-I0630 02:07:46.889355 27297 caffe.cpp:312] Batch 151, loss = 0.26
-I0630 02:07:46.897523 27297 caffe.cpp:312] Batch 152, accuracy/top1 = 0.9
-I0630 02:07:46.897531 27297 caffe.cpp:312] Batch 152, accuracy/top5 = 1
-I0630 02:07:46.897536 27297 caffe.cpp:312] Batch 152, loss = 0.26
-I0630 02:07:46.905632 27297 caffe.cpp:312] Batch 153, accuracy/top1 = 0.9
-I0630 02:07:46.905639 27297 caffe.cpp:312] Batch 153, accuracy/top5 = 0.98
-I0630 02:07:46.905643 27297 caffe.cpp:312] Batch 153, loss = 0.42
-I0630 02:07:46.913908 27297 caffe.cpp:312] Batch 154, accuracy/top1 = 0.94
-I0630 02:07:46.913924 27297 caffe.cpp:312] Batch 154, accuracy/top5 = 1
-I0630 02:07:46.913928 27297 caffe.cpp:312] Batch 154, loss = 0.12
-I0630 02:07:46.922122 27297 caffe.cpp:312] Batch 155, accuracy/top1 = 0.88
-I0630 02:07:46.922129 27297 caffe.cpp:312] Batch 155, accuracy/top5 = 1
-I0630 02:07:46.922133 27297 caffe.cpp:312] Batch 155, loss = 0.36
-I0630 02:07:46.930361 27297 caffe.cpp:312] Batch 156, accuracy/top1 = 0.86
-I0630 02:07:46.930369 27297 caffe.cpp:312] Batch 156, accuracy/top5 = 1
-I0630 02:07:46.930372 27297 caffe.cpp:312] Batch 156, loss = 0.26
-I0630 02:07:46.938580 27297 caffe.cpp:312] Batch 157, accuracy/top1 = 0.94
-I0630 02:07:46.938590 27297 caffe.cpp:312] Batch 157, accuracy/top5 = 0.98
-I0630 02:07:46.938592 27297 caffe.cpp:312] Batch 157, loss = 0.24
-I0630 02:07:46.946802 27297 caffe.cpp:312] Batch 158, accuracy/top1 = 0.96
-I0630 02:07:46.946812 27297 caffe.cpp:312] Batch 158, accuracy/top5 = 0.98
-I0630 02:07:46.946816 27297 caffe.cpp:312] Batch 158, loss = 0.18
-I0630 02:07:46.954994 27297 caffe.cpp:312] Batch 159, accuracy/top1 = 0.86
-I0630 02:07:46.955003 27297 caffe.cpp:312] Batch 159, accuracy/top5 = 1
-I0630 02:07:46.955006 27297 caffe.cpp:312] Batch 159, loss = 0.2
-I0630 02:07:46.963217 27297 caffe.cpp:312] Batch 160, accuracy/top1 = 0.96
-I0630 02:07:46.963232 27297 caffe.cpp:312] Batch 160, accuracy/top5 = 1
-I0630 02:07:46.963237 27297 caffe.cpp:312] Batch 160, loss = 0.12
-I0630 02:07:46.971408 27297 caffe.cpp:312] Batch 161, accuracy/top1 = 0.92
-I0630 02:07:46.971421 27297 caffe.cpp:312] Batch 161, accuracy/top5 = 1
-I0630 02:07:46.971424 27297 caffe.cpp:312] Batch 161, loss = 0.16
-I0630 02:07:46.979601 27297 caffe.cpp:312] Batch 162, accuracy/top1 = 0.9
-I0630 02:07:46.979609 27297 caffe.cpp:312] Batch 162, accuracy/top5 = 0.98
-I0630 02:07:46.979614 27297 caffe.cpp:312] Batch 162, loss = 0.24
-I0630 02:07:46.987802 27297 caffe.cpp:312] Batch 163, accuracy/top1 = 0.92
-I0630 02:07:46.987808 27297 caffe.cpp:312] Batch 163, accuracy/top5 = 0.98
-I0630 02:07:46.987812 27297 caffe.cpp:312] Batch 163, loss = 0.28
-I0630 02:07:46.995965 27297 caffe.cpp:312] Batch 164, accuracy/top1 = 0.86
-I0630 02:07:46.995973 27297 caffe.cpp:312] Batch 164, accuracy/top5 = 1
-I0630 02:07:46.995976 27297 caffe.cpp:312] Batch 164, loss = 0.26
-I0630 02:07:47.004179 27297 caffe.cpp:312] Batch 165, accuracy/top1 = 0.9
-I0630 02:07:47.004195 27297 caffe.cpp:312] Batch 165, accuracy/top5 = 1
-I0630 02:07:47.004199 27297 caffe.cpp:312] Batch 165, loss = 0.12
-I0630 02:07:47.012322 27297 caffe.cpp:312] Batch 166, accuracy/top1 = 0.94
-I0630 02:07:47.012331 27297 caffe.cpp:312] Batch 166, accuracy/top5 = 1
-I0630 02:07:47.012334 27297 caffe.cpp:312] Batch 166, loss = 0.1
-I0630 02:07:47.020495 27297 caffe.cpp:312] Batch 167, accuracy/top1 = 0.88
-I0630 02:07:47.020503 27297 caffe.cpp:312] Batch 167, accuracy/top5 = 1
-I0630 02:07:47.020506 27297 caffe.cpp:312] Batch 167, loss = 0.14
-I0630 02:07:47.028671 27297 caffe.cpp:312] Batch 168, accuracy/top1 = 0.9
-I0630 02:07:47.028681 27297 caffe.cpp:312] Batch 168, accuracy/top5 = 1
-I0630 02:07:47.028684 27297 caffe.cpp:312] Batch 168, loss = 0.22
-I0630 02:07:47.036855 27297 caffe.cpp:312] Batch 169, accuracy/top1 = 0.82
-I0630 02:07:47.036873 27297 caffe.cpp:312] Batch 169, accuracy/top5 = 0.98
-I0630 02:07:47.036877 27297 caffe.cpp:312] Batch 169, loss = 0.48
-I0630 02:07:47.045079 27297 caffe.cpp:312] Batch 170, accuracy/top1 = 0.92
-I0630 02:07:47.045086 27297 caffe.cpp:312] Batch 170, accuracy/top5 = 0.98
-I0630 02:07:47.045090 27297 caffe.cpp:312] Batch 170, loss = 0.24
-I0630 02:07:47.053200 27297 caffe.cpp:312] Batch 171, accuracy/top1 = 0.88
-I0630 02:07:47.053208 27297 caffe.cpp:312] Batch 171, accuracy/top5 = 1
-I0630 02:07:47.053212 27297 caffe.cpp:312] Batch 171, loss = 0.46
-I0630 02:07:47.061355 27297 caffe.cpp:312] Batch 172, accuracy/top1 = 0.88
-I0630 02:07:47.061364 27297 caffe.cpp:312] Batch 172, accuracy/top5 = 1
-I0630 02:07:47.061368 27297 caffe.cpp:312] Batch 172, loss = 0.16
-I0630 02:07:47.069562 27297 caffe.cpp:312] Batch 173, accuracy/top1 = 0.94
-I0630 02:07:47.069572 27297 caffe.cpp:312] Batch 173, accuracy/top5 = 1
-I0630 02:07:47.069576 27297 caffe.cpp:312] Batch 173, loss = 0.02
-I0630 02:07:47.077726 27297 caffe.cpp:312] Batch 174, accuracy/top1 = 0.86
-I0630 02:07:47.077734 27297 caffe.cpp:312] Batch 174, accuracy/top5 = 1
-I0630 02:07:47.077739 27297 caffe.cpp:312] Batch 174, loss = 0.44
-I0630 02:07:47.085880 27297 caffe.cpp:312] Batch 175, accuracy/top1 = 0.92
-I0630 02:07:47.085887 27297 caffe.cpp:312] Batch 175, accuracy/top5 = 1
-I0630 02:07:47.085891 27297 caffe.cpp:312] Batch 175, loss = 0.12
-I0630 02:07:47.094075 27297 caffe.cpp:312] Batch 176, accuracy/top1 = 0.9
-I0630 02:07:47.094087 27297 caffe.cpp:312] Batch 176, accuracy/top5 = 1
-I0630 02:07:47.094090 27297 caffe.cpp:312] Batch 176, loss = 0.36
-I0630 02:07:47.102241 27297 caffe.cpp:312] Batch 177, accuracy/top1 = 0.96
-I0630 02:07:47.102248 27297 caffe.cpp:312] Batch 177, accuracy/top5 = 1
-I0630 02:07:47.102252 27297 caffe.cpp:312] Batch 177, loss = 0.06
-I0630 02:07:47.110467 27297 caffe.cpp:312] Batch 178, accuracy/top1 = 0.86
-I0630 02:07:47.110476 27297 caffe.cpp:312] Batch 178, accuracy/top5 = 1
-I0630 02:07:47.110479 27297 caffe.cpp:312] Batch 178, loss = 0.4
-I0630 02:07:47.118620 27297 caffe.cpp:312] Batch 179, accuracy/top1 = 0.9
-I0630 02:07:47.118634 27297 caffe.cpp:312] Batch 179, accuracy/top5 = 1
-I0630 02:07:47.118638 27297 caffe.cpp:312] Batch 179, loss = 0.42
-I0630 02:07:47.126811 27297 caffe.cpp:312] Batch 180, accuracy/top1 = 0.9
-I0630 02:07:47.126829 27297 caffe.cpp:312] Batch 180, accuracy/top5 = 1
-I0630 02:07:47.126837 27297 caffe.cpp:312] Batch 180, loss = 0.16
-I0630 02:07:47.135051 27297 caffe.cpp:312] Batch 181, accuracy/top1 = 0.9
-I0630 02:07:47.135061 27297 caffe.cpp:312] Batch 181, accuracy/top5 = 1
-I0630 02:07:47.135064 27297 caffe.cpp:312] Batch 181, loss = 0.16
-I0630 02:07:47.143234 27297 caffe.cpp:312] Batch 182, accuracy/top1 = 0.92
-I0630 02:07:47.143241 27297 caffe.cpp:312] Batch 182, accuracy/top5 = 0.98
-I0630 02:07:47.143245 27297 caffe.cpp:312] Batch 182, loss = 0.18
-I0630 02:07:47.151397 27297 caffe.cpp:312] Batch 183, accuracy/top1 = 0.94
-I0630 02:07:47.151404 27297 caffe.cpp:312] Batch 183, accuracy/top5 = 1
-I0630 02:07:47.151408 27297 caffe.cpp:312] Batch 183, loss = 0.08
-I0630 02:07:47.159597 27297 caffe.cpp:312] Batch 184, accuracy/top1 = 0.88
-I0630 02:07:47.159615 27297 caffe.cpp:312] Batch 184, accuracy/top5 = 1
-I0630 02:07:47.159617 27297 caffe.cpp:312] Batch 184, loss = 0.46
-I0630 02:07:47.167810 27297 caffe.cpp:312] Batch 185, accuracy/top1 = 0.88
-I0630 02:07:47.167819 27297 caffe.cpp:312] Batch 185, accuracy/top5 = 1
-I0630 02:07:47.167824 27297 caffe.cpp:312] Batch 185, loss = 0.28
-I0630 02:07:47.175920 27297 caffe.cpp:312] Batch 186, accuracy/top1 = 0.96
-I0630 02:07:47.175927 27297 caffe.cpp:312] Batch 186, accuracy/top5 = 1
-I0630 02:07:47.175931 27297 caffe.cpp:312] Batch 186, loss = 0.1
-I0630 02:07:47.184053 27297 caffe.cpp:312] Batch 187, accuracy/top1 = 0.84
-I0630 02:07:47.184062 27297 caffe.cpp:312] Batch 187, accuracy/top5 = 0.98
-I0630 02:07:47.184067 27297 caffe.cpp:312] Batch 187, loss = 0.34
-I0630 02:07:47.192291 27297 caffe.cpp:312] Batch 188, accuracy/top1 = 0.86
-I0630 02:07:47.192302 27297 caffe.cpp:312] Batch 188, accuracy/top5 = 1
-I0630 02:07:47.192306 27297 caffe.cpp:312] Batch 188, loss = 0.16
-I0630 02:07:47.200448 27297 caffe.cpp:312] Batch 189, accuracy/top1 = 0.94
-I0630 02:07:47.200455 27297 caffe.cpp:312] Batch 189, accuracy/top5 = 0.98
-I0630 02:07:47.200459 27297 caffe.cpp:312] Batch 189, loss = 0.2
-I0630 02:07:47.208534 27297 caffe.cpp:312] Batch 190, accuracy/top1 = 0.88
-I0630 02:07:47.208542 27297 caffe.cpp:312] Batch 190, accuracy/top5 = 1
-I0630 02:07:47.208546 27297 caffe.cpp:312] Batch 190, loss = 0.26
-I0630 02:07:47.216706 27297 caffe.cpp:312] Batch 191, accuracy/top1 = 0.92
-I0630 02:07:47.216718 27297 caffe.cpp:312] Batch 191, accuracy/top5 = 1
-I0630 02:07:47.216722 27297 caffe.cpp:312] Batch 191, loss = 0.14
-I0630 02:07:47.224875 27297 caffe.cpp:312] Batch 192, accuracy/top1 = 0.9
-I0630 02:07:47.224884 27297 caffe.cpp:312] Batch 192, accuracy/top5 = 1
-I0630 02:07:47.224887 27297 caffe.cpp:312] Batch 192, loss = 0.26
-I0630 02:07:47.233038 27297 caffe.cpp:312] Batch 193, accuracy/top1 = 0.96
-I0630 02:07:47.233047 27297 caffe.cpp:312] Batch 193, accuracy/top5 = 1
-I0630 02:07:47.233050 27297 caffe.cpp:312] Batch 193, loss = 0.08
-I0630 02:07:47.241236 27297 caffe.cpp:312] Batch 194, accuracy/top1 = 0.88
-I0630 02:07:47.241245 27297 caffe.cpp:312] Batch 194, accuracy/top5 = 0.98
-I0630 02:07:47.241248 27297 caffe.cpp:312] Batch 194, loss = 0.38
-I0630 02:07:47.249413 27297 caffe.cpp:312] Batch 195, accuracy/top1 = 0.94
-I0630 02:07:47.249428 27297 caffe.cpp:312] Batch 195, accuracy/top5 = 1
-I0630 02:07:47.249431 27297 caffe.cpp:312] Batch 195, loss = 0.18
-I0630 02:07:47.257593 27297 caffe.cpp:312] Batch 196, accuracy/top1 = 0.86
-I0630 02:07:47.257601 27297 caffe.cpp:312] Batch 196, accuracy/top5 = 1
-I0630 02:07:47.257606 27297 caffe.cpp:312] Batch 196, loss = 0.66
-I0630 02:07:47.265806 27297 caffe.cpp:312] Batch 197, accuracy/top1 = 0.86
-I0630 02:07:47.265815 27297 caffe.cpp:312] Batch 197, accuracy/top5 = 0.98
-I0630 02:07:47.265818 27297 caffe.cpp:312] Batch 197, loss = 0.22
-I0630 02:07:47.273963 27297 caffe.cpp:312] Batch 198, accuracy/top1 = 0.92
-I0630 02:07:47.273972 27297 caffe.cpp:312] Batch 198, accuracy/top5 = 0.98
-I0630 02:07:47.273985 27297 caffe.cpp:312] Batch 198, loss = 0.14
-I0630 02:07:47.282193 27297 caffe.cpp:312] Batch 199, accuracy/top1 = 0.94
-I0630 02:07:47.282209 27297 caffe.cpp:312] Batch 199, accuracy/top5 = 1
-I0630 02:07:47.282213 27297 caffe.cpp:312] Batch 199, loss = 0.14
-I0630 02:07:47.282217 27297 caffe.cpp:317] Loss: 0.2257
-I0630 02:07:47.282227 27297 caffe.cpp:329] accuracy/top1 = 0.9068
-I0630 02:07:47.282233 27297 caffe.cpp:329] accuracy/top5 = 0.9959
-I0630 02:07:47.282241 27297 caffe.cpp:329] loss = 0.2257 (* 1 = 0.2257 loss)
+I0701 15:15:56.960614  4639 layer_factory.hpp:77] Creating layer data
+I0701 15:15:56.960996  4639 net.cpp:98] Creating Layer data
+I0701 15:15:56.961005  4639 net.cpp:413] data -> data
+I0701 15:15:56.961028  4639 net.cpp:413] data -> label
+I0701 15:15:56.962054  4656 db_lmdb.cpp:35] Opened lmdb ./data/cifar10_test_lmdb
+I0701 15:15:56.962885  4639 data_layer.cpp:78] ReshapePrefetch 50, 3, 32, 32
+I0701 15:15:56.962929  4639 data_layer.cpp:83] output data size: 50,3,32,32
+I0701 15:15:56.965003  4639 net.cpp:148] Setting up data
+I0701 15:15:56.965024  4639 net.cpp:155] Top shape: 50 3 32 32 (153600)
+I0701 15:15:56.965029  4639 net.cpp:155] Top shape: 50 (50)
+I0701 15:15:56.965032  4639 net.cpp:163] Memory required for data: 614600
+I0701 15:15:56.965042  4639 layer_factory.hpp:77] Creating layer label_data_1_split
+I0701 15:15:56.965055  4639 net.cpp:98] Creating Layer label_data_1_split
+I0701 15:15:56.965061  4639 net.cpp:439] label_data_1_split <- label
+I0701 15:15:56.965070  4639 net.cpp:413] label_data_1_split -> label_data_1_split_0
+I0701 15:15:56.965080  4639 net.cpp:413] label_data_1_split -> label_data_1_split_1
+I0701 15:15:56.965083  4639 net.cpp:413] label_data_1_split -> label_data_1_split_2
+I0701 15:15:56.965124  4639 net.cpp:148] Setting up label_data_1_split
+I0701 15:15:56.965129  4639 net.cpp:155] Top shape: 50 (50)
+I0701 15:15:56.965132  4639 net.cpp:155] Top shape: 50 (50)
+I0701 15:15:56.965137  4639 net.cpp:155] Top shape: 50 (50)
+I0701 15:15:56.965139  4639 net.cpp:163] Memory required for data: 615200
+I0701 15:15:56.965142  4639 layer_factory.hpp:77] Creating layer data/bias
+I0701 15:15:56.965152  4639 net.cpp:98] Creating Layer data/bias
+I0701 15:15:56.965155  4639 net.cpp:439] data/bias <- data
+I0701 15:15:56.965159  4639 net.cpp:413] data/bias -> data/bias
+I0701 15:15:56.965898  4639 net.cpp:148] Setting up data/bias
+I0701 15:15:56.965909  4639 net.cpp:155] Top shape: 50 3 32 32 (153600)
+I0701 15:15:56.965912  4639 net.cpp:163] Memory required for data: 1229600
+I0701 15:15:56.965924  4639 layer_factory.hpp:77] Creating layer conv1a
+I0701 15:15:56.965936  4639 net.cpp:98] Creating Layer conv1a
+I0701 15:15:56.965940  4639 net.cpp:439] conv1a <- data/bias
+I0701 15:15:56.965945  4639 net.cpp:413] conv1a -> conv1a
+I0701 15:15:56.967720  4639 net.cpp:148] Setting up conv1a
+I0701 15:15:56.967770  4639 net.cpp:155] Top shape: 50 32 32 32 (1638400)
+I0701 15:15:56.967787  4639 net.cpp:163] Memory required for data: 7783200
+I0701 15:15:56.967804  4639 layer_factory.hpp:77] Creating layer conv1a/bn
+I0701 15:15:56.967823  4639 net.cpp:98] Creating Layer conv1a/bn
+I0701 15:15:56.967834  4639 net.cpp:439] conv1a/bn <- conv1a
+I0701 15:15:56.967849  4639 net.cpp:413] conv1a/bn -> conv1a/bn
+I0701 15:15:56.968281  4639 net.cpp:148] Setting up conv1a/bn
+I0701 15:15:56.968303  4639 net.cpp:155] Top shape: 50 32 32 32 (1638400)
+I0701 15:15:56.968318  4639 net.cpp:163] Memory required for data: 14336800
+I0701 15:15:56.968338  4639 layer_factory.hpp:77] Creating layer conv1a/relu
+I0701 15:15:56.968354  4639 net.cpp:98] Creating Layer conv1a/relu
+I0701 15:15:56.968367  4639 net.cpp:439] conv1a/relu <- conv1a/bn
+I0701 15:15:56.968380  4639 net.cpp:400] conv1a/relu -> conv1a/bn (in-place)
+I0701 15:15:56.968401  4639 net.cpp:148] Setting up conv1a/relu
+I0701 15:15:56.968416  4639 net.cpp:155] Top shape: 50 32 32 32 (1638400)
+I0701 15:15:56.968427  4639 net.cpp:163] Memory required for data: 20890400
+I0701 15:15:56.968442  4639 layer_factory.hpp:77] Creating layer conv1b
+I0701 15:15:56.968459  4639 net.cpp:98] Creating Layer conv1b
+I0701 15:15:56.968482  4639 net.cpp:439] conv1b <- conv1a/bn
+I0701 15:15:56.968497  4639 net.cpp:413] conv1b -> conv1b
+I0701 15:15:56.968752  4639 net.cpp:148] Setting up conv1b
+I0701 15:15:56.968773  4639 net.cpp:155] Top shape: 50 32 32 32 (1638400)
+I0701 15:15:56.968787  4639 net.cpp:163] Memory required for data: 27444000
+I0701 15:15:56.968804  4639 layer_factory.hpp:77] Creating layer conv1b/bn
+I0701 15:15:56.968821  4639 net.cpp:98] Creating Layer conv1b/bn
+I0701 15:15:56.968832  4639 net.cpp:439] conv1b/bn <- conv1b
+I0701 15:15:56.968847  4639 net.cpp:413] conv1b/bn -> conv1b/bn
+I0701 15:15:56.969247  4639 net.cpp:148] Setting up conv1b/bn
+I0701 15:15:56.969269  4639 net.cpp:155] Top shape: 50 32 32 32 (1638400)
+I0701 15:15:56.969282  4639 net.cpp:163] Memory required for data: 33997600
+I0701 15:15:56.969300  4639 layer_factory.hpp:77] Creating layer conv1b/relu
+I0701 15:15:56.969316  4639 net.cpp:98] Creating Layer conv1b/relu
+I0701 15:15:56.969328  4639 net.cpp:439] conv1b/relu <- conv1b/bn
+I0701 15:15:56.969341  4639 net.cpp:400] conv1b/relu -> conv1b/bn (in-place)
+I0701 15:15:56.969357  4639 net.cpp:148] Setting up conv1b/relu
+I0701 15:15:56.969372  4639 net.cpp:155] Top shape: 50 32 32 32 (1638400)
+I0701 15:15:56.969383  4639 net.cpp:163] Memory required for data: 40551200
+I0701 15:15:56.969394  4639 layer_factory.hpp:77] Creating layer pool1
+I0701 15:15:56.969410  4639 net.cpp:98] Creating Layer pool1
+I0701 15:15:56.969422  4639 net.cpp:439] pool1 <- conv1b/bn
+I0701 15:15:56.969434  4639 net.cpp:413] pool1 -> pool1
+I0701 15:15:56.969480  4639 net.cpp:148] Setting up pool1
+I0701 15:15:56.969498  4639 net.cpp:155] Top shape: 50 32 32 32 (1638400)
+I0701 15:15:56.969509  4639 net.cpp:163] Memory required for data: 47104800
+I0701 15:15:56.969521  4639 layer_factory.hpp:77] Creating layer res2a_branch2a
+I0701 15:15:56.969537  4639 net.cpp:98] Creating Layer res2a_branch2a
+I0701 15:15:56.969549  4639 net.cpp:439] res2a_branch2a <- pool1
+I0701 15:15:56.969563  4639 net.cpp:413] res2a_branch2a -> res2a_branch2a
+I0701 15:15:56.970973  4639 net.cpp:148] Setting up res2a_branch2a
+I0701 15:15:56.971249  4639 net.cpp:155] Top shape: 50 64 32 32 (3276800)
+I0701 15:15:56.971263  4639 net.cpp:163] Memory required for data: 60212000
+I0701 15:15:56.971282  4639 layer_factory.hpp:77] Creating layer res2a_branch2a/bn
+I0701 15:15:56.971299  4639 net.cpp:98] Creating Layer res2a_branch2a/bn
+I0701 15:15:56.971313  4639 net.cpp:439] res2a_branch2a/bn <- res2a_branch2a
+I0701 15:15:56.971326  4639 net.cpp:413] res2a_branch2a/bn -> res2a_branch2a/bn
+I0701 15:15:56.971748  4639 net.cpp:148] Setting up res2a_branch2a/bn
+I0701 15:15:56.971770  4639 net.cpp:155] Top shape: 50 64 32 32 (3276800)
+I0701 15:15:56.971782  4639 net.cpp:163] Memory required for data: 73319200
+I0701 15:15:56.971799  4639 layer_factory.hpp:77] Creating layer res2a_branch2a/relu
+I0701 15:15:56.971820  4639 net.cpp:98] Creating Layer res2a_branch2a/relu
+I0701 15:15:56.971833  4639 net.cpp:439] res2a_branch2a/relu <- res2a_branch2a/bn
+I0701 15:15:56.971845  4639 net.cpp:400] res2a_branch2a/relu -> res2a_branch2a/bn (in-place)
+I0701 15:15:56.971861  4639 net.cpp:148] Setting up res2a_branch2a/relu
+I0701 15:15:56.971876  4639 net.cpp:155] Top shape: 50 64 32 32 (3276800)
+I0701 15:15:56.971887  4639 net.cpp:163] Memory required for data: 86426400
+I0701 15:15:56.971899  4639 layer_factory.hpp:77] Creating layer res2a_branch2b
+I0701 15:15:56.971913  4639 net.cpp:98] Creating Layer res2a_branch2b
+I0701 15:15:56.971925  4639 net.cpp:439] res2a_branch2b <- res2a_branch2a/bn
+I0701 15:15:56.971937  4639 net.cpp:413] res2a_branch2b -> res2a_branch2b
+I0701 15:15:56.973083  4639 net.cpp:148] Setting up res2a_branch2b
+I0701 15:15:56.973109  4639 net.cpp:155] Top shape: 50 64 32 32 (3276800)
+I0701 15:15:56.973122  4639 net.cpp:163] Memory required for data: 99533600
+I0701 15:15:56.973137  4639 layer_factory.hpp:77] Creating layer res2a_branch2b/bn
+I0701 15:15:56.973157  4639 net.cpp:98] Creating Layer res2a_branch2b/bn
+I0701 15:15:56.973170  4639 net.cpp:439] res2a_branch2b/bn <- res2a_branch2b
+I0701 15:15:56.973192  4639 net.cpp:413] res2a_branch2b/bn -> res2a_branch2b/bn
+I0701 15:15:56.973615  4639 net.cpp:148] Setting up res2a_branch2b/bn
+I0701 15:15:56.973636  4639 net.cpp:155] Top shape: 50 64 32 32 (3276800)
+I0701 15:15:56.973650  4639 net.cpp:163] Memory required for data: 112640800
+I0701 15:15:56.973666  4639 layer_factory.hpp:77] Creating layer res2a_branch2b/relu
+I0701 15:15:56.973682  4639 net.cpp:98] Creating Layer res2a_branch2b/relu
+I0701 15:15:56.973695  4639 net.cpp:439] res2a_branch2b/relu <- res2a_branch2b/bn
+I0701 15:15:56.973707  4639 net.cpp:400] res2a_branch2b/relu -> res2a_branch2b/bn (in-place)
+I0701 15:15:56.973721  4639 net.cpp:148] Setting up res2a_branch2b/relu
+I0701 15:15:56.973737  4639 net.cpp:155] Top shape: 50 64 32 32 (3276800)
+I0701 15:15:56.973748  4639 net.cpp:163] Memory required for data: 125748000
+I0701 15:15:56.973759  4639 layer_factory.hpp:77] Creating layer pool2
+I0701 15:15:56.973773  4639 net.cpp:98] Creating Layer pool2
+I0701 15:15:56.973784  4639 net.cpp:439] pool2 <- res2a_branch2b/bn
+I0701 15:15:56.973796  4639 net.cpp:413] pool2 -> pool2
+I0701 15:15:56.973832  4639 net.cpp:148] Setting up pool2
+I0701 15:15:56.973848  4639 net.cpp:155] Top shape: 50 64 16 16 (819200)
+I0701 15:15:56.973860  4639 net.cpp:163] Memory required for data: 129024800
+I0701 15:15:56.973870  4639 layer_factory.hpp:77] Creating layer res3a_branch2a
+I0701 15:15:56.973889  4639 net.cpp:98] Creating Layer res3a_branch2a
+I0701 15:15:56.973901  4639 net.cpp:439] res3a_branch2a <- pool2
+I0701 15:15:56.973914  4639 net.cpp:413] res3a_branch2a -> res3a_branch2a
+I0701 15:15:56.976910  4639 net.cpp:148] Setting up res3a_branch2a
+I0701 15:15:56.976943  4639 net.cpp:155] Top shape: 50 128 16 16 (1638400)
+I0701 15:15:56.976958  4639 net.cpp:163] Memory required for data: 135578400
+I0701 15:15:56.976972  4639 layer_factory.hpp:77] Creating layer res3a_branch2a/bn
+I0701 15:15:56.976995  4639 net.cpp:98] Creating Layer res3a_branch2a/bn
+I0701 15:15:56.977010  4639 net.cpp:439] res3a_branch2a/bn <- res3a_branch2a
+I0701 15:15:56.977023  4639 net.cpp:413] res3a_branch2a/bn -> res3a_branch2a/bn
+I0701 15:15:56.977519  4639 net.cpp:148] Setting up res3a_branch2a/bn
+I0701 15:15:56.977541  4639 net.cpp:155] Top shape: 50 128 16 16 (1638400)
+I0701 15:15:56.977555  4639 net.cpp:163] Memory required for data: 142132000
+I0701 15:15:56.977574  4639 layer_factory.hpp:77] Creating layer res3a_branch2a/relu
+I0701 15:15:56.977591  4639 net.cpp:98] Creating Layer res3a_branch2a/relu
+I0701 15:15:56.977603  4639 net.cpp:439] res3a_branch2a/relu <- res3a_branch2a/bn
+I0701 15:15:56.977617  4639 net.cpp:400] res3a_branch2a/relu -> res3a_branch2a/bn (in-place)
+I0701 15:15:56.977632  4639 net.cpp:148] Setting up res3a_branch2a/relu
+I0701 15:15:56.977646  4639 net.cpp:155] Top shape: 50 128 16 16 (1638400)
+I0701 15:15:56.977663  4639 net.cpp:163] Memory required for data: 148685600
+I0701 15:15:56.977674  4639 layer_factory.hpp:77] Creating layer res3a_branch2b
+I0701 15:15:56.977689  4639 net.cpp:98] Creating Layer res3a_branch2b
+I0701 15:15:56.977700  4639 net.cpp:439] res3a_branch2b <- res3a_branch2a/bn
+I0701 15:15:56.977713  4639 net.cpp:413] res3a_branch2b -> res3a_branch2b
+I0701 15:15:56.978870  4639 net.cpp:148] Setting up res3a_branch2b
+I0701 15:15:56.978880  4639 net.cpp:155] Top shape: 50 128 16 16 (1638400)
+I0701 15:15:56.978883  4639 net.cpp:163] Memory required for data: 155239200
+I0701 15:15:56.978889  4639 layer_factory.hpp:77] Creating layer res3a_branch2b/bn
+I0701 15:15:56.978895  4639 net.cpp:98] Creating Layer res3a_branch2b/bn
+I0701 15:15:56.978899  4639 net.cpp:439] res3a_branch2b/bn <- res3a_branch2b
+I0701 15:15:56.978904  4639 net.cpp:413] res3a_branch2b/bn -> res3a_branch2b/bn
+I0701 15:15:56.979192  4639 net.cpp:148] Setting up res3a_branch2b/bn
+I0701 15:15:56.979198  4639 net.cpp:155] Top shape: 50 128 16 16 (1638400)
+I0701 15:15:56.979200  4639 net.cpp:163] Memory required for data: 161792800
+I0701 15:15:56.979205  4639 layer_factory.hpp:77] Creating layer res3a_branch2b/relu
+I0701 15:15:56.979216  4639 net.cpp:98] Creating Layer res3a_branch2b/relu
+I0701 15:15:56.979218  4639 net.cpp:439] res3a_branch2b/relu <- res3a_branch2b/bn
+I0701 15:15:56.979221  4639 net.cpp:400] res3a_branch2b/relu -> res3a_branch2b/bn (in-place)
+I0701 15:15:56.979226  4639 net.cpp:148] Setting up res3a_branch2b/relu
+I0701 15:15:56.979229  4639 net.cpp:155] Top shape: 50 128 16 16 (1638400)
+I0701 15:15:56.979231  4639 net.cpp:163] Memory required for data: 168346400
+I0701 15:15:56.979233  4639 layer_factory.hpp:77] Creating layer pool3
+I0701 15:15:56.979236  4639 net.cpp:98] Creating Layer pool3
+I0701 15:15:56.979238  4639 net.cpp:439] pool3 <- res3a_branch2b/bn
+I0701 15:15:56.979241  4639 net.cpp:413] pool3 -> pool3
+I0701 15:15:56.979261  4639 net.cpp:148] Setting up pool3
+I0701 15:15:56.979267  4639 net.cpp:155] Top shape: 50 128 16 16 (1638400)
+I0701 15:15:56.979270  4639 net.cpp:163] Memory required for data: 174900000
+I0701 15:15:56.979274  4639 layer_factory.hpp:77] Creating layer res4a_branch2a
+I0701 15:15:56.979279  4639 net.cpp:98] Creating Layer res4a_branch2a
+I0701 15:15:56.979281  4639 net.cpp:439] res4a_branch2a <- pool3
+I0701 15:15:56.979285  4639 net.cpp:413] res4a_branch2a -> res4a_branch2a
+I0701 15:15:56.987092  4639 net.cpp:148] Setting up res4a_branch2a
+I0701 15:15:56.987114  4639 net.cpp:155] Top shape: 50 256 16 16 (3276800)
+I0701 15:15:56.987118  4639 net.cpp:163] Memory required for data: 188007200
+I0701 15:15:56.987126  4639 layer_factory.hpp:77] Creating layer res4a_branch2a/bn
+I0701 15:15:56.987136  4639 net.cpp:98] Creating Layer res4a_branch2a/bn
+I0701 15:15:56.987140  4639 net.cpp:439] res4a_branch2a/bn <- res4a_branch2a
+I0701 15:15:56.987146  4639 net.cpp:413] res4a_branch2a/bn -> res4a_branch2a/bn
+I0701 15:15:56.987510  4639 net.cpp:148] Setting up res4a_branch2a/bn
+I0701 15:15:56.987519  4639 net.cpp:155] Top shape: 50 256 16 16 (3276800)
+I0701 15:15:56.987521  4639 net.cpp:163] Memory required for data: 201114400
+I0701 15:15:56.987529  4639 layer_factory.hpp:77] Creating layer res4a_branch2a/relu
+I0701 15:15:56.987534  4639 net.cpp:98] Creating Layer res4a_branch2a/relu
+I0701 15:15:56.987537  4639 net.cpp:439] res4a_branch2a/relu <- res4a_branch2a/bn
+I0701 15:15:56.987540  4639 net.cpp:400] res4a_branch2a/relu -> res4a_branch2a/bn (in-place)
+I0701 15:15:56.987546  4639 net.cpp:148] Setting up res4a_branch2a/relu
+I0701 15:15:56.987550  4639 net.cpp:155] Top shape: 50 256 16 16 (3276800)
+I0701 15:15:56.987553  4639 net.cpp:163] Memory required for data: 214221600
+I0701 15:15:56.987557  4639 layer_factory.hpp:77] Creating layer res4a_branch2b
+I0701 15:15:56.987565  4639 net.cpp:98] Creating Layer res4a_branch2b
+I0701 15:15:56.987570  4639 net.cpp:439] res4a_branch2b <- res4a_branch2a/bn
+I0701 15:15:56.987573  4639 net.cpp:413] res4a_branch2b -> res4a_branch2b
+I0701 15:15:56.991560  4639 net.cpp:148] Setting up res4a_branch2b
+I0701 15:15:56.991585  4639 net.cpp:155] Top shape: 50 256 16 16 (3276800)
+I0701 15:15:56.991587  4639 net.cpp:163] Memory required for data: 227328800
+I0701 15:15:56.991595  4639 layer_factory.hpp:77] Creating layer res4a_branch2b/bn
+I0701 15:15:56.991602  4639 net.cpp:98] Creating Layer res4a_branch2b/bn
+I0701 15:15:56.991606  4639 net.cpp:439] res4a_branch2b/bn <- res4a_branch2b
+I0701 15:15:56.991614  4639 net.cpp:413] res4a_branch2b/bn -> res4a_branch2b/bn
+I0701 15:15:56.991989  4639 net.cpp:148] Setting up res4a_branch2b/bn
+I0701 15:15:56.991997  4639 net.cpp:155] Top shape: 50 256 16 16 (3276800)
+I0701 15:15:56.991999  4639 net.cpp:163] Memory required for data: 240436000
+I0701 15:15:56.992007  4639 layer_factory.hpp:77] Creating layer res4a_branch2b/relu
+I0701 15:15:56.992012  4639 net.cpp:98] Creating Layer res4a_branch2b/relu
+I0701 15:15:56.992014  4639 net.cpp:439] res4a_branch2b/relu <- res4a_branch2b/bn
+I0701 15:15:56.992017  4639 net.cpp:400] res4a_branch2b/relu -> res4a_branch2b/bn (in-place)
+I0701 15:15:56.992023  4639 net.cpp:148] Setting up res4a_branch2b/relu
+I0701 15:15:56.992027  4639 net.cpp:155] Top shape: 50 256 16 16 (3276800)
+I0701 15:15:56.992039  4639 net.cpp:163] Memory required for data: 253543200
+I0701 15:15:56.992043  4639 layer_factory.hpp:77] Creating layer pool4
+I0701 15:15:56.992048  4639 net.cpp:98] Creating Layer pool4
+I0701 15:15:56.992053  4639 net.cpp:439] pool4 <- res4a_branch2b/bn
+I0701 15:15:56.992056  4639 net.cpp:413] pool4 -> pool4
+I0701 15:15:56.992082  4639 net.cpp:148] Setting up pool4
+I0701 15:15:56.992087  4639 net.cpp:155] Top shape: 50 256 8 8 (819200)
+I0701 15:15:56.992090  4639 net.cpp:163] Memory required for data: 256820000
+I0701 15:15:56.992094  4639 layer_factory.hpp:77] Creating layer res5a_branch2a
+I0701 15:15:56.992101  4639 net.cpp:98] Creating Layer res5a_branch2a
+I0701 15:15:56.992105  4639 net.cpp:439] res5a_branch2a <- pool4
+I0701 15:15:56.992110  4639 net.cpp:413] res5a_branch2a -> res5a_branch2a
+I0701 15:15:57.024737  4639 net.cpp:148] Setting up res5a_branch2a
+I0701 15:15:57.024761  4639 net.cpp:155] Top shape: 50 512 8 8 (1638400)
+I0701 15:15:57.024765  4639 net.cpp:163] Memory required for data: 263373600
+I0701 15:15:57.024773  4639 layer_factory.hpp:77] Creating layer res5a_branch2a/bn
+I0701 15:15:57.024785  4639 net.cpp:98] Creating Layer res5a_branch2a/bn
+I0701 15:15:57.024791  4639 net.cpp:439] res5a_branch2a/bn <- res5a_branch2a
+I0701 15:15:57.024797  4639 net.cpp:413] res5a_branch2a/bn -> res5a_branch2a/bn
+I0701 15:15:57.025182  4639 net.cpp:148] Setting up res5a_branch2a/bn
+I0701 15:15:57.025189  4639 net.cpp:155] Top shape: 50 512 8 8 (1638400)
+I0701 15:15:57.025192  4639 net.cpp:163] Memory required for data: 269927200
+I0701 15:15:57.025202  4639 layer_factory.hpp:77] Creating layer res5a_branch2a/relu
+I0701 15:15:57.025215  4639 net.cpp:98] Creating Layer res5a_branch2a/relu
+I0701 15:15:57.025219  4639 net.cpp:439] res5a_branch2a/relu <- res5a_branch2a/bn
+I0701 15:15:57.025224  4639 net.cpp:400] res5a_branch2a/relu -> res5a_branch2a/bn (in-place)
+I0701 15:15:57.025235  4639 net.cpp:148] Setting up res5a_branch2a/relu
+I0701 15:15:57.025240  4639 net.cpp:155] Top shape: 50 512 8 8 (1638400)
+I0701 15:15:57.025243  4639 net.cpp:163] Memory required for data: 276480800
+I0701 15:15:57.025251  4639 layer_factory.hpp:77] Creating layer res5a_branch2b
+I0701 15:15:57.025259  4639 net.cpp:98] Creating Layer res5a_branch2b
+I0701 15:15:57.025269  4639 net.cpp:439] res5a_branch2b <- res5a_branch2a/bn
+I0701 15:15:57.025275  4639 net.cpp:413] res5a_branch2b -> res5a_branch2b
+I0701 15:15:57.038326  4639 net.cpp:148] Setting up res5a_branch2b
+I0701 15:15:57.038344  4639 net.cpp:155] Top shape: 50 512 8 8 (1638400)
+I0701 15:15:57.038347  4639 net.cpp:163] Memory required for data: 283034400
+I0701 15:15:57.038354  4639 layer_factory.hpp:77] Creating layer res5a_branch2b/bn
+I0701 15:15:57.038362  4639 net.cpp:98] Creating Layer res5a_branch2b/bn
+I0701 15:15:57.038364  4639 net.cpp:439] res5a_branch2b/bn <- res5a_branch2b
+I0701 15:15:57.038367  4639 net.cpp:413] res5a_branch2b/bn -> res5a_branch2b/bn
+I0701 15:15:57.038681  4639 net.cpp:148] Setting up res5a_branch2b/bn
+I0701 15:15:57.038688  4639 net.cpp:155] Top shape: 50 512 8 8 (1638400)
+I0701 15:15:57.038691  4639 net.cpp:163] Memory required for data: 289588000
+I0701 15:15:57.038696  4639 layer_factory.hpp:77] Creating layer res5a_branch2b/relu
+I0701 15:15:57.038699  4639 net.cpp:98] Creating Layer res5a_branch2b/relu
+I0701 15:15:57.038702  4639 net.cpp:439] res5a_branch2b/relu <- res5a_branch2b/bn
+I0701 15:15:57.038703  4639 net.cpp:400] res5a_branch2b/relu -> res5a_branch2b/bn (in-place)
+I0701 15:15:57.038707  4639 net.cpp:148] Setting up res5a_branch2b/relu
+I0701 15:15:57.038709  4639 net.cpp:155] Top shape: 50 512 8 8 (1638400)
+I0701 15:15:57.038712  4639 net.cpp:163] Memory required for data: 296141600
+I0701 15:15:57.038713  4639 layer_factory.hpp:77] Creating layer pool5
+I0701 15:15:57.038718  4639 net.cpp:98] Creating Layer pool5
+I0701 15:15:57.038722  4639 net.cpp:439] pool5 <- res5a_branch2b/bn
+I0701 15:15:57.038727  4639 net.cpp:413] pool5 -> pool5
+I0701 15:15:57.038749  4639 net.cpp:148] Setting up pool5
+I0701 15:15:57.038754  4639 net.cpp:155] Top shape: 50 512 1 1 (25600)
+I0701 15:15:57.038763  4639 net.cpp:163] Memory required for data: 296244000
+I0701 15:15:57.038765  4639 layer_factory.hpp:77] Creating layer fc10
+I0701 15:15:57.038772  4639 net.cpp:98] Creating Layer fc10
+I0701 15:15:57.038775  4639 net.cpp:439] fc10 <- pool5
+I0701 15:15:57.038777  4639 net.cpp:413] fc10 -> fc10
+I0701 15:15:57.038942  4639 net.cpp:148] Setting up fc10
+I0701 15:15:57.038947  4639 net.cpp:155] Top shape: 50 10 (500)
+I0701 15:15:57.038951  4639 net.cpp:163] Memory required for data: 296246000
+I0701 15:15:57.038957  4639 layer_factory.hpp:77] Creating layer fc10_fc10_0_split
+I0701 15:15:57.038964  4639 net.cpp:98] Creating Layer fc10_fc10_0_split
+I0701 15:15:57.038967  4639 net.cpp:439] fc10_fc10_0_split <- fc10
+I0701 15:15:57.038974  4639 net.cpp:413] fc10_fc10_0_split -> fc10_fc10_0_split_0
+I0701 15:15:57.038980  4639 net.cpp:413] fc10_fc10_0_split -> fc10_fc10_0_split_1
+I0701 15:15:57.038985  4639 net.cpp:413] fc10_fc10_0_split -> fc10_fc10_0_split_2
+I0701 15:15:57.039018  4639 net.cpp:148] Setting up fc10_fc10_0_split
+I0701 15:15:57.039023  4639 net.cpp:155] Top shape: 50 10 (500)
+I0701 15:15:57.039027  4639 net.cpp:155] Top shape: 50 10 (500)
+I0701 15:15:57.039041  4639 net.cpp:155] Top shape: 50 10 (500)
+I0701 15:15:57.039044  4639 net.cpp:163] Memory required for data: 296252000
+I0701 15:15:57.039047  4639 layer_factory.hpp:77] Creating layer loss
+I0701 15:15:57.039049  4639 net.cpp:98] Creating Layer loss
+I0701 15:15:57.039052  4639 net.cpp:439] loss <- fc10_fc10_0_split_0
+I0701 15:15:57.039054  4639 net.cpp:439] loss <- label_data_1_split_0
+I0701 15:15:57.039057  4639 net.cpp:413] loss -> loss
+I0701 15:15:57.039062  4639 layer_factory.hpp:77] Creating layer loss
+I0701 15:15:57.039124  4639 net.cpp:148] Setting up loss
+I0701 15:15:57.039129  4639 net.cpp:155] Top shape: (1)
+I0701 15:15:57.039134  4639 net.cpp:158]     with loss weight 1
+I0701 15:15:57.039146  4639 net.cpp:163] Memory required for data: 296252004
+I0701 15:15:57.039149  4639 layer_factory.hpp:77] Creating layer accuracy/top1
+I0701 15:15:57.039155  4639 net.cpp:98] Creating Layer accuracy/top1
+I0701 15:15:57.039160  4639 net.cpp:439] accuracy/top1 <- fc10_fc10_0_split_1
+I0701 15:15:57.039163  4639 net.cpp:439] accuracy/top1 <- label_data_1_split_1
+I0701 15:15:57.039170  4639 net.cpp:413] accuracy/top1 -> accuracy/top1
+I0701 15:15:57.039177  4639 net.cpp:148] Setting up accuracy/top1
+I0701 15:15:57.039181  4639 net.cpp:155] Top shape: (1)
+I0701 15:15:57.039186  4639 net.cpp:163] Memory required for data: 296252008
+I0701 15:15:57.039189  4639 layer_factory.hpp:77] Creating layer accuracy/top5
+I0701 15:15:57.039194  4639 net.cpp:98] Creating Layer accuracy/top5
+I0701 15:15:57.039198  4639 net.cpp:439] accuracy/top5 <- fc10_fc10_0_split_2
+I0701 15:15:57.039202  4639 net.cpp:439] accuracy/top5 <- label_data_1_split_2
+I0701 15:15:57.039208  4639 net.cpp:413] accuracy/top5 -> accuracy/top5
+I0701 15:15:57.039216  4639 net.cpp:148] Setting up accuracy/top5
+I0701 15:15:57.039222  4639 net.cpp:155] Top shape: (1)
+I0701 15:15:57.039224  4639 net.cpp:163] Memory required for data: 296252012
+I0701 15:15:57.039228  4639 net.cpp:226] accuracy/top5 does not need backward computation.
+I0701 15:15:57.039233  4639 net.cpp:226] accuracy/top1 does not need backward computation.
+I0701 15:15:57.039237  4639 net.cpp:224] loss needs backward computation.
+I0701 15:15:57.039242  4639 net.cpp:224] fc10_fc10_0_split needs backward computation.
+I0701 15:15:57.039247  4639 net.cpp:224] fc10 needs backward computation.
+I0701 15:15:57.039249  4639 net.cpp:224] pool5 needs backward computation.
+I0701 15:15:57.039253  4639 net.cpp:224] res5a_branch2b/relu needs backward computation.
+I0701 15:15:57.039258  4639 net.cpp:224] res5a_branch2b/bn needs backward computation.
+I0701 15:15:57.039261  4639 net.cpp:224] res5a_branch2b needs backward computation.
+I0701 15:15:57.039266  4639 net.cpp:224] res5a_branch2a/relu needs backward computation.
+I0701 15:15:57.039270  4639 net.cpp:224] res5a_branch2a/bn needs backward computation.
+I0701 15:15:57.039279  4639 net.cpp:224] res5a_branch2a needs backward computation.
+I0701 15:15:57.039283  4639 net.cpp:224] pool4 needs backward computation.
+I0701 15:15:57.039288  4639 net.cpp:224] res4a_branch2b/relu needs backward computation.
+I0701 15:15:57.039291  4639 net.cpp:224] res4a_branch2b/bn needs backward computation.
+I0701 15:15:57.039296  4639 net.cpp:224] res4a_branch2b needs backward computation.
+I0701 15:15:57.039300  4639 net.cpp:224] res4a_branch2a/relu needs backward computation.
+I0701 15:15:57.039304  4639 net.cpp:224] res4a_branch2a/bn needs backward computation.
+I0701 15:15:57.039309  4639 net.cpp:224] res4a_branch2a needs backward computation.
+I0701 15:15:57.039312  4639 net.cpp:224] pool3 needs backward computation.
+I0701 15:15:57.039317  4639 net.cpp:224] res3a_branch2b/relu needs backward computation.
+I0701 15:15:57.039321  4639 net.cpp:224] res3a_branch2b/bn needs backward computation.
+I0701 15:15:57.039325  4639 net.cpp:224] res3a_branch2b needs backward computation.
+I0701 15:15:57.039330  4639 net.cpp:224] res3a_branch2a/relu needs backward computation.
+I0701 15:15:57.039333  4639 net.cpp:224] res3a_branch2a/bn needs backward computation.
+I0701 15:15:57.039338  4639 net.cpp:224] res3a_branch2a needs backward computation.
+I0701 15:15:57.039342  4639 net.cpp:224] pool2 needs backward computation.
+I0701 15:15:57.039346  4639 net.cpp:224] res2a_branch2b/relu needs backward computation.
+I0701 15:15:57.039350  4639 net.cpp:224] res2a_branch2b/bn needs backward computation.
+I0701 15:15:57.039355  4639 net.cpp:224] res2a_branch2b needs backward computation.
+I0701 15:15:57.039360  4639 net.cpp:224] res2a_branch2a/relu needs backward computation.
+I0701 15:15:57.039363  4639 net.cpp:224] res2a_branch2a/bn needs backward computation.
+I0701 15:15:57.039367  4639 net.cpp:224] res2a_branch2a needs backward computation.
+I0701 15:15:57.039372  4639 net.cpp:224] pool1 needs backward computation.
+I0701 15:15:57.039376  4639 net.cpp:224] conv1b/relu needs backward computation.
+I0701 15:15:57.039381  4639 net.cpp:224] conv1b/bn needs backward computation.
+I0701 15:15:57.039384  4639 net.cpp:224] conv1b needs backward computation.
+I0701 15:15:57.039389  4639 net.cpp:224] conv1a/relu needs backward computation.
+I0701 15:15:57.039393  4639 net.cpp:224] conv1a/bn needs backward computation.
+I0701 15:15:57.039397  4639 net.cpp:224] conv1a needs backward computation.
+I0701 15:15:57.039402  4639 net.cpp:226] data/bias does not need backward computation.
+I0701 15:15:57.039407  4639 net.cpp:226] label_data_1_split does not need backward computation.
+I0701 15:15:57.039412  4639 net.cpp:226] data does not need backward computation.
+I0701 15:15:57.039415  4639 net.cpp:268] This network produces output accuracy/top1
+I0701 15:15:57.039419  4639 net.cpp:268] This network produces output accuracy/top5
+I0701 15:15:57.039423  4639 net.cpp:268] This network produces output loss
+I0701 15:15:57.039446  4639 net.cpp:288] Network initialization done.
+I0701 15:15:57.049998  4639 caffe.cpp:289] Running for 200 iterations.
+I0701 15:15:57.072227  4639 caffe.cpp:312] Batch 0, accuracy/top1 = 0.88
+I0701 15:15:57.072243  4639 caffe.cpp:312] Batch 0, accuracy/top5 = 1
+I0701 15:15:57.072247  4639 caffe.cpp:312] Batch 0, loss = 0.1
+I0701 15:15:57.080421  4639 caffe.cpp:312] Batch 1, accuracy/top1 = 0.92
+I0701 15:15:57.080430  4639 caffe.cpp:312] Batch 1, accuracy/top5 = 1
+I0701 15:15:57.080432  4639 caffe.cpp:312] Batch 1, loss = 0.18
+I0701 15:15:57.088606  4639 caffe.cpp:312] Batch 2, accuracy/top1 = 0.96
+I0701 15:15:57.088615  4639 caffe.cpp:312] Batch 2, accuracy/top5 = 0.98
+I0701 15:15:57.088618  4639 caffe.cpp:312] Batch 2, loss = 0.38
+I0701 15:15:57.096827  4639 caffe.cpp:312] Batch 3, accuracy/top1 = 0.9
+I0701 15:15:57.096835  4639 caffe.cpp:312] Batch 3, accuracy/top5 = 1
+I0701 15:15:57.096840  4639 caffe.cpp:312] Batch 3, loss = 0.2
+I0701 15:15:57.105043  4639 caffe.cpp:312] Batch 4, accuracy/top1 = 0.88
+I0701 15:15:57.105051  4639 caffe.cpp:312] Batch 4, accuracy/top5 = 1
+I0701 15:15:57.105057  4639 caffe.cpp:312] Batch 4, loss = 0.3
+I0701 15:15:57.113240  4639 caffe.cpp:312] Batch 5, accuracy/top1 = 0.96
+I0701 15:15:57.113247  4639 caffe.cpp:312] Batch 5, accuracy/top5 = 1
+I0701 15:15:57.113250  4639 caffe.cpp:312] Batch 5, loss = 0.06
+I0701 15:15:57.121495  4639 caffe.cpp:312] Batch 6, accuracy/top1 = 0.96
+I0701 15:15:57.121505  4639 caffe.cpp:312] Batch 6, accuracy/top5 = 1
+I0701 15:15:57.121507  4639 caffe.cpp:312] Batch 6, loss = 0.2
+I0701 15:15:57.129712  4639 caffe.cpp:312] Batch 7, accuracy/top1 = 0.92
+I0701 15:15:57.129732  4639 caffe.cpp:312] Batch 7, accuracy/top5 = 0.94
+I0701 15:15:57.129735  4639 caffe.cpp:312] Batch 7, loss = 0.54
+I0701 15:15:57.140334  4639 caffe.cpp:312] Batch 8, accuracy/top1 = 0.9
+I0701 15:15:57.140350  4639 caffe.cpp:312] Batch 8, accuracy/top5 = 1
+I0701 15:15:57.140352  4639 caffe.cpp:312] Batch 8, loss = 0.14
+I0701 15:15:57.148497  4639 caffe.cpp:312] Batch 9, accuracy/top1 = 0.9
+I0701 15:15:57.148505  4639 caffe.cpp:312] Batch 9, accuracy/top5 = 1
+I0701 15:15:57.148509  4639 caffe.cpp:312] Batch 9, loss = 0.14
+I0701 15:15:57.156723  4639 caffe.cpp:312] Batch 10, accuracy/top1 = 0.94
+I0701 15:15:57.156736  4639 caffe.cpp:312] Batch 10, accuracy/top5 = 1
+I0701 15:15:57.156739  4639 caffe.cpp:312] Batch 10, loss = 0.06
+I0701 15:15:57.164901  4639 caffe.cpp:312] Batch 11, accuracy/top1 = 0.98
+I0701 15:15:57.164909  4639 caffe.cpp:312] Batch 11, accuracy/top5 = 1
+I0701 15:15:57.164912  4639 caffe.cpp:312] Batch 11, loss = 0.1
+I0701 15:15:57.173084  4639 caffe.cpp:312] Batch 12, accuracy/top1 = 0.92
+I0701 15:15:57.173091  4639 caffe.cpp:312] Batch 12, accuracy/top5 = 1
+I0701 15:15:57.173094  4639 caffe.cpp:312] Batch 12, loss = 0.14
+I0701 15:15:57.181241  4639 caffe.cpp:312] Batch 13, accuracy/top1 = 0.86
+I0701 15:15:57.181249  4639 caffe.cpp:312] Batch 13, accuracy/top5 = 0.98
+I0701 15:15:57.181252  4639 caffe.cpp:312] Batch 13, loss = 0.58
+I0701 15:15:57.189476  4639 caffe.cpp:312] Batch 14, accuracy/top1 = 0.84
+I0701 15:15:57.189491  4639 caffe.cpp:312] Batch 14, accuracy/top5 = 1
+I0701 15:15:57.189493  4639 caffe.cpp:312] Batch 14, loss = 0.52
+I0701 15:15:57.197660  4639 caffe.cpp:312] Batch 15, accuracy/top1 = 0.84
+I0701 15:15:57.197669  4639 caffe.cpp:312] Batch 15, accuracy/top5 = 1
+I0701 15:15:57.197671  4639 caffe.cpp:312] Batch 15, loss = 0.54
+I0701 15:15:57.205866  4639 caffe.cpp:312] Batch 16, accuracy/top1 = 0.94
+I0701 15:15:57.205874  4639 caffe.cpp:312] Batch 16, accuracy/top5 = 1
+I0701 15:15:57.205878  4639 caffe.cpp:312] Batch 16, loss = 0.24
+I0701 15:15:57.214046  4639 caffe.cpp:312] Batch 17, accuracy/top1 = 0.88
+I0701 15:15:57.214054  4639 caffe.cpp:312] Batch 17, accuracy/top5 = 0.98
+I0701 15:15:57.214057  4639 caffe.cpp:312] Batch 17, loss = 0.62
+I0701 15:15:57.222157  4639 caffe.cpp:312] Batch 18, accuracy/top1 = 0.96
+I0701 15:15:57.222170  4639 caffe.cpp:312] Batch 18, accuracy/top5 = 1
+I0701 15:15:57.222173  4639 caffe.cpp:312] Batch 18, loss = 0.12
+I0701 15:15:57.230334  4639 caffe.cpp:312] Batch 19, accuracy/top1 = 0.9
+I0701 15:15:57.230342  4639 caffe.cpp:312] Batch 19, accuracy/top5 = 1
+I0701 15:15:57.230345  4639 caffe.cpp:312] Batch 19, loss = 0.3
+I0701 15:15:57.238519  4639 caffe.cpp:312] Batch 20, accuracy/top1 = 0.92
+I0701 15:15:57.238528  4639 caffe.cpp:312] Batch 20, accuracy/top5 = 1
+I0701 15:15:57.238530  4639 caffe.cpp:312] Batch 20, loss = 0.16
+I0701 15:15:57.246688  4639 caffe.cpp:312] Batch 21, accuracy/top1 = 0.9
+I0701 15:15:57.246696  4639 caffe.cpp:312] Batch 21, accuracy/top5 = 1
+I0701 15:15:57.246700  4639 caffe.cpp:312] Batch 21, loss = 0.28
+I0701 15:15:57.254870  4639 caffe.cpp:312] Batch 22, accuracy/top1 = 0.9
+I0701 15:15:57.254883  4639 caffe.cpp:312] Batch 22, accuracy/top5 = 1
+I0701 15:15:57.254885  4639 caffe.cpp:312] Batch 22, loss = 0.34
+I0701 15:15:57.262997  4639 caffe.cpp:312] Batch 23, accuracy/top1 = 0.9
+I0701 15:15:57.263005  4639 caffe.cpp:312] Batch 23, accuracy/top5 = 0.98
+I0701 15:15:57.263008  4639 caffe.cpp:312] Batch 23, loss = 0.46
+I0701 15:15:57.271198  4639 caffe.cpp:312] Batch 24, accuracy/top1 = 0.9
+I0701 15:15:57.271205  4639 caffe.cpp:312] Batch 24, accuracy/top5 = 0.98
+I0701 15:15:57.271219  4639 caffe.cpp:312] Batch 24, loss = 0.36
+I0701 15:15:57.279381  4639 caffe.cpp:312] Batch 25, accuracy/top1 = 0.94
+I0701 15:15:57.279392  4639 caffe.cpp:312] Batch 25, accuracy/top5 = 1
+I0701 15:15:57.279397  4639 caffe.cpp:312] Batch 25, loss = 0.1
+I0701 15:15:57.287600  4639 caffe.cpp:312] Batch 26, accuracy/top1 = 0.92
+I0701 15:15:57.287611  4639 caffe.cpp:312] Batch 26, accuracy/top5 = 1
+I0701 15:15:57.287613  4639 caffe.cpp:312] Batch 26, loss = 0.32
+I0701 15:15:57.295809  4639 caffe.cpp:312] Batch 27, accuracy/top1 = 0.88
+I0701 15:15:57.295817  4639 caffe.cpp:312] Batch 27, accuracy/top5 = 1
+I0701 15:15:57.295820  4639 caffe.cpp:312] Batch 27, loss = 0.22
+I0701 15:15:57.303994  4639 caffe.cpp:312] Batch 28, accuracy/top1 = 0.9
+I0701 15:15:57.304005  4639 caffe.cpp:312] Batch 28, accuracy/top5 = 1
+I0701 15:15:57.304009  4639 caffe.cpp:312] Batch 28, loss = 0.24
+I0701 15:15:57.312165  4639 caffe.cpp:312] Batch 29, accuracy/top1 = 0.92
+I0701 15:15:57.312178  4639 caffe.cpp:312] Batch 29, accuracy/top5 = 1
+I0701 15:15:57.312181  4639 caffe.cpp:312] Batch 29, loss = 0.38
+I0701 15:15:57.320399  4639 caffe.cpp:312] Batch 30, accuracy/top1 = 0.88
+I0701 15:15:57.320408  4639 caffe.cpp:312] Batch 30, accuracy/top5 = 1
+I0701 15:15:57.320411  4639 caffe.cpp:312] Batch 30, loss = 0.38
+I0701 15:15:57.328526  4639 caffe.cpp:312] Batch 31, accuracy/top1 = 0.9
+I0701 15:15:57.328534  4639 caffe.cpp:312] Batch 31, accuracy/top5 = 1
+I0701 15:15:57.328537  4639 caffe.cpp:312] Batch 31, loss = 0.36
+I0701 15:15:57.336699  4639 caffe.cpp:312] Batch 32, accuracy/top1 = 0.92
+I0701 15:15:57.336707  4639 caffe.cpp:312] Batch 32, accuracy/top5 = 1
+I0701 15:15:57.336709  4639 caffe.cpp:312] Batch 32, loss = 0.26
+I0701 15:15:57.345031  4639 caffe.cpp:312] Batch 33, accuracy/top1 = 0.96
+I0701 15:15:57.345053  4639 caffe.cpp:312] Batch 33, accuracy/top5 = 0.98
+I0701 15:15:57.345057  4639 caffe.cpp:312] Batch 33, loss = 0.2
+I0701 15:15:57.353428  4639 caffe.cpp:312] Batch 34, accuracy/top1 = 0.88
+I0701 15:15:57.353461  4639 caffe.cpp:312] Batch 34, accuracy/top5 = 1
+I0701 15:15:57.353466  4639 caffe.cpp:312] Batch 34, loss = 0.32
+I0701 15:15:57.361835  4639 caffe.cpp:312] Batch 35, accuracy/top1 = 0.9
+I0701 15:15:57.361855  4639 caffe.cpp:312] Batch 35, accuracy/top5 = 1
+I0701 15:15:57.361858  4639 caffe.cpp:312] Batch 35, loss = 0.2
+I0701 15:15:57.370133  4639 caffe.cpp:312] Batch 36, accuracy/top1 = 0.92
+I0701 15:15:57.370162  4639 caffe.cpp:312] Batch 36, accuracy/top5 = 1
+I0701 15:15:57.370164  4639 caffe.cpp:312] Batch 36, loss = 0.26
+I0701 15:15:57.378403  4639 caffe.cpp:312] Batch 37, accuracy/top1 = 0.88
+I0701 15:15:57.378415  4639 caffe.cpp:312] Batch 37, accuracy/top5 = 1
+I0701 15:15:57.378417  4639 caffe.cpp:312] Batch 37, loss = 0.42
+I0701 15:15:57.386538  4639 caffe.cpp:312] Batch 38, accuracy/top1 = 0.86
+I0701 15:15:57.386546  4639 caffe.cpp:312] Batch 38, accuracy/top5 = 0.96
+I0701 15:15:57.386548  4639 caffe.cpp:312] Batch 38, loss = 0.72
+I0701 15:15:57.394719  4639 caffe.cpp:312] Batch 39, accuracy/top1 = 0.94
+I0701 15:15:57.394727  4639 caffe.cpp:312] Batch 39, accuracy/top5 = 0.98
+I0701 15:15:57.394729  4639 caffe.cpp:312] Batch 39, loss = 0.32
+I0701 15:15:57.402935  4639 caffe.cpp:312] Batch 40, accuracy/top1 = 0.86
+I0701 15:15:57.402946  4639 caffe.cpp:312] Batch 40, accuracy/top5 = 1
+I0701 15:15:57.402950  4639 caffe.cpp:312] Batch 40, loss = 0.24
+I0701 15:15:57.411164  4639 caffe.cpp:312] Batch 41, accuracy/top1 = 0.94
+I0701 15:15:57.411172  4639 caffe.cpp:312] Batch 41, accuracy/top5 = 1
+I0701 15:15:57.411175  4639 caffe.cpp:312] Batch 41, loss = 0.18
+I0701 15:15:57.419263  4639 caffe.cpp:312] Batch 42, accuracy/top1 = 0.92
+I0701 15:15:57.419270  4639 caffe.cpp:312] Batch 42, accuracy/top5 = 1
+I0701 15:15:57.419273  4639 caffe.cpp:312] Batch 42, loss = 0.26
+I0701 15:15:57.427420  4639 caffe.cpp:312] Batch 43, accuracy/top1 = 0.88
+I0701 15:15:57.427428  4639 caffe.cpp:312] Batch 43, accuracy/top5 = 1
+I0701 15:15:57.427431  4639 caffe.cpp:312] Batch 43, loss = 0.1
+I0701 15:15:57.435550  4639 caffe.cpp:312] Batch 44, accuracy/top1 = 0.9
+I0701 15:15:57.435565  4639 caffe.cpp:312] Batch 44, accuracy/top5 = 0.98
+I0701 15:15:57.435569  4639 caffe.cpp:312] Batch 44, loss = 0.34
+I0701 15:15:57.443717  4639 caffe.cpp:312] Batch 45, accuracy/top1 = 0.84
+I0701 15:15:57.443725  4639 caffe.cpp:312] Batch 45, accuracy/top5 = 1
+I0701 15:15:57.443727  4639 caffe.cpp:312] Batch 45, loss = 0.5
+I0701 15:15:57.451876  4639 caffe.cpp:312] Batch 46, accuracy/top1 = 0.98
+I0701 15:15:57.451884  4639 caffe.cpp:312] Batch 46, accuracy/top5 = 1
+I0701 15:15:57.451887  4639 caffe.cpp:312] Batch 46, loss = 0.06
+I0701 15:15:57.460024  4639 caffe.cpp:312] Batch 47, accuracy/top1 = 0.82
+I0701 15:15:57.460032  4639 caffe.cpp:312] Batch 47, accuracy/top5 = 0.98
+I0701 15:15:57.460036  4639 caffe.cpp:312] Batch 47, loss = 0.54
+I0701 15:15:57.468237  4639 caffe.cpp:312] Batch 48, accuracy/top1 = 0.96
+I0701 15:15:57.468250  4639 caffe.cpp:312] Batch 48, accuracy/top5 = 0.98
+I0701 15:15:57.468252  4639 caffe.cpp:312] Batch 48, loss = 0.54
+I0701 15:15:57.476452  4639 caffe.cpp:312] Batch 49, accuracy/top1 = 0.92
+I0701 15:15:57.476460  4639 caffe.cpp:312] Batch 49, accuracy/top5 = 1
+I0701 15:15:57.476464  4639 caffe.cpp:312] Batch 49, loss = 0.32
+I0701 15:15:57.484627  4639 caffe.cpp:312] Batch 50, accuracy/top1 = 0.82
+I0701 15:15:57.484650  4639 caffe.cpp:312] Batch 50, accuracy/top5 = 1
+I0701 15:15:57.484654  4639 caffe.cpp:312] Batch 50, loss = 0.52
+I0701 15:15:57.492975  4639 caffe.cpp:312] Batch 51, accuracy/top1 = 0.9
+I0701 15:15:57.493005  4639 caffe.cpp:312] Batch 51, accuracy/top5 = 0.98
+I0701 15:15:57.493008  4639 caffe.cpp:312] Batch 51, loss = 0.4
+I0701 15:15:57.501250  4639 caffe.cpp:312] Batch 52, accuracy/top1 = 0.94
+I0701 15:15:57.501271  4639 caffe.cpp:312] Batch 52, accuracy/top5 = 1
+I0701 15:15:57.501274  4639 caffe.cpp:312] Batch 52, loss = 0.14
+I0701 15:15:57.509496  4639 caffe.cpp:312] Batch 53, accuracy/top1 = 0.96
+I0701 15:15:57.509505  4639 caffe.cpp:312] Batch 53, accuracy/top5 = 1
+I0701 15:15:57.509510  4639 caffe.cpp:312] Batch 53, loss = 0.04
+I0701 15:15:57.517731  4639 caffe.cpp:312] Batch 54, accuracy/top1 = 0.94
+I0701 15:15:57.517740  4639 caffe.cpp:312] Batch 54, accuracy/top5 = 1
+I0701 15:15:57.517743  4639 caffe.cpp:312] Batch 54, loss = 0.24
+I0701 15:15:57.525897  4639 caffe.cpp:312] Batch 55, accuracy/top1 = 0.94
+I0701 15:15:57.525910  4639 caffe.cpp:312] Batch 55, accuracy/top5 = 1
+I0701 15:15:57.525914  4639 caffe.cpp:312] Batch 55, loss = 0.4
+I0701 15:15:57.534027  4639 caffe.cpp:312] Batch 56, accuracy/top1 = 0.86
+I0701 15:15:57.534036  4639 caffe.cpp:312] Batch 56, accuracy/top5 = 0.98
+I0701 15:15:57.534040  4639 caffe.cpp:312] Batch 56, loss = 0.72
+I0701 15:15:57.542225  4639 caffe.cpp:312] Batch 57, accuracy/top1 = 0.94
+I0701 15:15:57.542234  4639 caffe.cpp:312] Batch 57, accuracy/top5 = 1
+I0701 15:15:57.542237  4639 caffe.cpp:312] Batch 57, loss = 0.1
+I0701 15:15:57.550382  4639 caffe.cpp:312] Batch 58, accuracy/top1 = 0.94
+I0701 15:15:57.550393  4639 caffe.cpp:312] Batch 58, accuracy/top5 = 1
+I0701 15:15:57.550396  4639 caffe.cpp:312] Batch 58, loss = 0.32
+I0701 15:15:57.558593  4639 caffe.cpp:312] Batch 59, accuracy/top1 = 0.94
+I0701 15:15:57.558609  4639 caffe.cpp:312] Batch 59, accuracy/top5 = 1
+I0701 15:15:57.558612  4639 caffe.cpp:312] Batch 59, loss = 0.1
+I0701 15:15:57.566821  4639 caffe.cpp:312] Batch 60, accuracy/top1 = 0.9
+I0701 15:15:57.566830  4639 caffe.cpp:312] Batch 60, accuracy/top5 = 1
+I0701 15:15:57.566834  4639 caffe.cpp:312] Batch 60, loss = 0.36
+I0701 15:15:57.575042  4639 caffe.cpp:312] Batch 61, accuracy/top1 = 0.94
+I0701 15:15:57.575052  4639 caffe.cpp:312] Batch 61, accuracy/top5 = 0.98
+I0701 15:15:57.575055  4639 caffe.cpp:312] Batch 61, loss = 0.3
+I0701 15:15:57.583279  4639 caffe.cpp:312] Batch 62, accuracy/top1 = 0.98
+I0701 15:15:57.583290  4639 caffe.cpp:312] Batch 62, accuracy/top5 = 1
+I0701 15:15:57.583293  4639 caffe.cpp:312] Batch 62, loss = 0.06
+I0701 15:15:57.591413  4639 caffe.cpp:312] Batch 63, accuracy/top1 = 0.84
+I0701 15:15:57.591430  4639 caffe.cpp:312] Batch 63, accuracy/top5 = 0.98
+I0701 15:15:57.591449  4639 caffe.cpp:312] Batch 63, loss = 0.48
+I0701 15:15:57.599553  4639 caffe.cpp:312] Batch 64, accuracy/top1 = 0.86
+I0701 15:15:57.599565  4639 caffe.cpp:312] Batch 64, accuracy/top5 = 1
+I0701 15:15:57.599568  4639 caffe.cpp:312] Batch 64, loss = 0.26
+I0701 15:15:57.607769  4639 caffe.cpp:312] Batch 65, accuracy/top1 = 0.96
+I0701 15:15:57.607784  4639 caffe.cpp:312] Batch 65, accuracy/top5 = 1
+I0701 15:15:57.607786  4639 caffe.cpp:312] Batch 65, loss = 0.1
+I0701 15:15:57.615998  4639 caffe.cpp:312] Batch 66, accuracy/top1 = 0.92
+I0701 15:15:57.616016  4639 caffe.cpp:312] Batch 66, accuracy/top5 = 1
+I0701 15:15:57.616020  4639 caffe.cpp:312] Batch 66, loss = 0.24
+I0701 15:15:57.624258  4639 caffe.cpp:312] Batch 67, accuracy/top1 = 0.94
+I0701 15:15:57.624272  4639 caffe.cpp:312] Batch 67, accuracy/top5 = 1
+I0701 15:15:57.624276  4639 caffe.cpp:312] Batch 67, loss = 0.1
+I0701 15:15:57.632508  4639 caffe.cpp:312] Batch 68, accuracy/top1 = 0.92
+I0701 15:15:57.632525  4639 caffe.cpp:312] Batch 68, accuracy/top5 = 1
+I0701 15:15:57.632529  4639 caffe.cpp:312] Batch 68, loss = 0.38
+I0701 15:15:57.640744  4639 caffe.cpp:312] Batch 69, accuracy/top1 = 0.9
+I0701 15:15:57.640756  4639 caffe.cpp:312] Batch 69, accuracy/top5 = 1
+I0701 15:15:57.640759  4639 caffe.cpp:312] Batch 69, loss = 0.28
+I0701 15:15:57.648926  4639 caffe.cpp:312] Batch 70, accuracy/top1 = 0.96
+I0701 15:15:57.648949  4639 caffe.cpp:312] Batch 70, accuracy/top5 = 0.98
+I0701 15:15:57.648952  4639 caffe.cpp:312] Batch 70, loss = 0.28
+I0701 15:15:57.657218  4639 caffe.cpp:312] Batch 71, accuracy/top1 = 0.86
+I0701 15:15:57.657232  4639 caffe.cpp:312] Batch 71, accuracy/top5 = 1
+I0701 15:15:57.657236  4639 caffe.cpp:312] Batch 71, loss = 0.46
+I0701 15:15:57.665464  4639 caffe.cpp:312] Batch 72, accuracy/top1 = 0.84
+I0701 15:15:57.665478  4639 caffe.cpp:312] Batch 72, accuracy/top5 = 0.98
+I0701 15:15:57.665482  4639 caffe.cpp:312] Batch 72, loss = 0.5
+I0701 15:15:57.673691  4639 caffe.cpp:312] Batch 73, accuracy/top1 = 0.92
+I0701 15:15:57.673702  4639 caffe.cpp:312] Batch 73, accuracy/top5 = 1
+I0701 15:15:57.673707  4639 caffe.cpp:312] Batch 73, loss = 0.3
+I0701 15:15:57.681826  4639 caffe.cpp:312] Batch 74, accuracy/top1 = 0.88
+I0701 15:15:57.681845  4639 caffe.cpp:312] Batch 74, accuracy/top5 = 1
+I0701 15:15:57.681849  4639 caffe.cpp:312] Batch 74, loss = 0.28
+I0701 15:15:57.690088  4639 caffe.cpp:312] Batch 75, accuracy/top1 = 0.82
+I0701 15:15:57.690101  4639 caffe.cpp:312] Batch 75, accuracy/top5 = 1
+I0701 15:15:57.690104  4639 caffe.cpp:312] Batch 75, loss = 0.62
+I0701 15:15:57.698278  4639 caffe.cpp:312] Batch 76, accuracy/top1 = 0.94
+I0701 15:15:57.698292  4639 caffe.cpp:312] Batch 76, accuracy/top5 = 1
+I0701 15:15:57.698294  4639 caffe.cpp:312] Batch 76, loss = 0.18
+I0701 15:15:57.706463  4639 caffe.cpp:312] Batch 77, accuracy/top1 = 0.92
+I0701 15:15:57.706471  4639 caffe.cpp:312] Batch 77, accuracy/top5 = 1
+I0701 15:15:57.706475  4639 caffe.cpp:312] Batch 77, loss = 0.26
+I0701 15:15:57.714664  4639 caffe.cpp:312] Batch 78, accuracy/top1 = 0.96
+I0701 15:15:57.714680  4639 caffe.cpp:312] Batch 78, accuracy/top5 = 1
+I0701 15:15:57.714684  4639 caffe.cpp:312] Batch 78, loss = 0.02
+I0701 15:15:57.722896  4639 caffe.cpp:312] Batch 79, accuracy/top1 = 0.94
+I0701 15:15:57.722904  4639 caffe.cpp:312] Batch 79, accuracy/top5 = 1
+I0701 15:15:57.722908  4639 caffe.cpp:312] Batch 79, loss = 0.3
+I0701 15:15:57.731082  4639 caffe.cpp:312] Batch 80, accuracy/top1 = 0.96
+I0701 15:15:57.731091  4639 caffe.cpp:312] Batch 80, accuracy/top5 = 1
+I0701 15:15:57.731094  4639 caffe.cpp:312] Batch 80, loss = 0.1
+I0701 15:15:57.739305  4639 caffe.cpp:312] Batch 81, accuracy/top1 = 0.9
+I0701 15:15:57.739315  4639 caffe.cpp:312] Batch 81, accuracy/top5 = 1
+I0701 15:15:57.739318  4639 caffe.cpp:312] Batch 81, loss = 0.12
+I0701 15:15:57.747498  4639 caffe.cpp:312] Batch 82, accuracy/top1 = 0.84
+I0701 15:15:57.747506  4639 caffe.cpp:312] Batch 82, accuracy/top5 = 0.98
+I0701 15:15:57.747510  4639 caffe.cpp:312] Batch 82, loss = 0.68
+I0701 15:15:57.755682  4639 caffe.cpp:312] Batch 83, accuracy/top1 = 0.94
+I0701 15:15:57.755690  4639 caffe.cpp:312] Batch 83, accuracy/top5 = 1
+I0701 15:15:57.755694  4639 caffe.cpp:312] Batch 83, loss = 0.18
+I0701 15:15:57.763849  4639 caffe.cpp:312] Batch 84, accuracy/top1 = 0.94
+I0701 15:15:57.763857  4639 caffe.cpp:312] Batch 84, accuracy/top5 = 1
+I0701 15:15:57.763861  4639 caffe.cpp:312] Batch 84, loss = 0.12
+I0701 15:15:57.772049  4639 caffe.cpp:312] Batch 85, accuracy/top1 = 0.94
+I0701 15:15:57.772061  4639 caffe.cpp:312] Batch 85, accuracy/top5 = 1
+I0701 15:15:57.772065  4639 caffe.cpp:312] Batch 85, loss = 0.12
+I0701 15:15:57.780283  4639 caffe.cpp:312] Batch 86, accuracy/top1 = 0.9
+I0701 15:15:57.780292  4639 caffe.cpp:312] Batch 86, accuracy/top5 = 1
+I0701 15:15:57.780297  4639 caffe.cpp:312] Batch 86, loss = 0.32
+I0701 15:15:57.788450  4639 caffe.cpp:312] Batch 87, accuracy/top1 = 0.96
+I0701 15:15:57.788457  4639 caffe.cpp:312] Batch 87, accuracy/top5 = 1
+I0701 15:15:57.788461  4639 caffe.cpp:312] Batch 87, loss = 0.12
+I0701 15:15:57.796506  4639 caffe.cpp:312] Batch 88, accuracy/top1 = 0.9
+I0701 15:15:57.796514  4639 caffe.cpp:312] Batch 88, accuracy/top5 = 1
+I0701 15:15:57.796519  4639 caffe.cpp:312] Batch 88, loss = 0.24
+I0701 15:15:57.804711  4639 caffe.cpp:312] Batch 89, accuracy/top1 = 0.88
+I0701 15:15:57.804724  4639 caffe.cpp:312] Batch 89, accuracy/top5 = 1
+I0701 15:15:57.804728  4639 caffe.cpp:312] Batch 89, loss = 0.24
+I0701 15:15:57.812901  4639 caffe.cpp:312] Batch 90, accuracy/top1 = 0.88
+I0701 15:15:57.812908  4639 caffe.cpp:312] Batch 90, accuracy/top5 = 1
+I0701 15:15:57.812912  4639 caffe.cpp:312] Batch 90, loss = 0.4
+I0701 15:15:57.821070  4639 caffe.cpp:312] Batch 91, accuracy/top1 = 0.86
+I0701 15:15:57.821079  4639 caffe.cpp:312] Batch 91, accuracy/top5 = 1
+I0701 15:15:57.821082  4639 caffe.cpp:312] Batch 91, loss = 0.26
+I0701 15:15:57.829277  4639 caffe.cpp:312] Batch 92, accuracy/top1 = 0.94
+I0701 15:15:57.829284  4639 caffe.cpp:312] Batch 92, accuracy/top5 = 1
+I0701 15:15:57.829288  4639 caffe.cpp:312] Batch 92, loss = 0.14
+I0701 15:15:57.837452  4639 caffe.cpp:312] Batch 93, accuracy/top1 = 0.92
+I0701 15:15:57.837465  4639 caffe.cpp:312] Batch 93, accuracy/top5 = 1
+I0701 15:15:57.837468  4639 caffe.cpp:312] Batch 93, loss = 0.28
+I0701 15:15:57.845629  4639 caffe.cpp:312] Batch 94, accuracy/top1 = 0.88
+I0701 15:15:57.845638  4639 caffe.cpp:312] Batch 94, accuracy/top5 = 1
+I0701 15:15:57.845641  4639 caffe.cpp:312] Batch 94, loss = 0.34
+I0701 15:15:57.853865  4639 caffe.cpp:312] Batch 95, accuracy/top1 = 0.92
+I0701 15:15:57.853873  4639 caffe.cpp:312] Batch 95, accuracy/top5 = 0.98
+I0701 15:15:57.853878  4639 caffe.cpp:312] Batch 95, loss = 0.4
+I0701 15:15:57.862025  4639 caffe.cpp:312] Batch 96, accuracy/top1 = 0.98
+I0701 15:15:57.862036  4639 caffe.cpp:312] Batch 96, accuracy/top5 = 1
+I0701 15:15:57.862040  4639 caffe.cpp:312] Batch 96, loss = 0.04
+I0701 15:15:57.870175  4639 caffe.cpp:312] Batch 97, accuracy/top1 = 0.94
+I0701 15:15:57.870184  4639 caffe.cpp:312] Batch 97, accuracy/top5 = 1
+I0701 15:15:57.870188  4639 caffe.cpp:312] Batch 97, loss = 0.06
+I0701 15:15:57.878314  4639 caffe.cpp:312] Batch 98, accuracy/top1 = 0.92
+I0701 15:15:57.878322  4639 caffe.cpp:312] Batch 98, accuracy/top5 = 1
+I0701 15:15:57.878326  4639 caffe.cpp:312] Batch 98, loss = 0.14
+I0701 15:15:57.886433  4639 caffe.cpp:312] Batch 99, accuracy/top1 = 0.92
+I0701 15:15:57.886441  4639 caffe.cpp:312] Batch 99, accuracy/top5 = 0.98
+I0701 15:15:57.886445  4639 caffe.cpp:312] Batch 99, loss = 0.32
+I0701 15:15:57.894625  4639 caffe.cpp:312] Batch 100, accuracy/top1 = 0.94
+I0701 15:15:57.894636  4639 caffe.cpp:312] Batch 100, accuracy/top5 = 1
+I0701 15:15:57.894640  4639 caffe.cpp:312] Batch 100, loss = 0.14
+I0701 15:15:57.902839  4639 caffe.cpp:312] Batch 101, accuracy/top1 = 0.94
+I0701 15:15:57.902848  4639 caffe.cpp:312] Batch 101, accuracy/top5 = 1
+I0701 15:15:57.902851  4639 caffe.cpp:312] Batch 101, loss = 0.16
+I0701 15:15:57.911015  4639 caffe.cpp:312] Batch 102, accuracy/top1 = 0.94
+I0701 15:15:57.911022  4639 caffe.cpp:312] Batch 102, accuracy/top5 = 1
+I0701 15:15:57.911036  4639 caffe.cpp:312] Batch 102, loss = 0.08
+I0701 15:15:57.919183  4639 caffe.cpp:312] Batch 103, accuracy/top1 = 0.8
+I0701 15:15:57.919191  4639 caffe.cpp:312] Batch 103, accuracy/top5 = 1
+I0701 15:15:57.919195  4639 caffe.cpp:312] Batch 103, loss = 0.34
+I0701 15:15:57.927347  4639 caffe.cpp:312] Batch 104, accuracy/top1 = 0.88
+I0701 15:15:57.927361  4639 caffe.cpp:312] Batch 104, accuracy/top5 = 1
+I0701 15:15:57.927363  4639 caffe.cpp:312] Batch 104, loss = 0.4
+I0701 15:15:57.935535  4639 caffe.cpp:312] Batch 105, accuracy/top1 = 0.96
+I0701 15:15:57.935544  4639 caffe.cpp:312] Batch 105, accuracy/top5 = 1
+I0701 15:15:57.935549  4639 caffe.cpp:312] Batch 105, loss = 0.04
+I0701 15:15:57.943791  4639 caffe.cpp:312] Batch 106, accuracy/top1 = 0.96
+I0701 15:15:57.943800  4639 caffe.cpp:312] Batch 106, accuracy/top5 = 1
+I0701 15:15:57.943804  4639 caffe.cpp:312] Batch 106, loss = 0.1
+I0701 15:15:57.952018  4639 caffe.cpp:312] Batch 107, accuracy/top1 = 0.92
+I0701 15:15:57.952028  4639 caffe.cpp:312] Batch 107, accuracy/top5 = 1
+I0701 15:15:57.952031  4639 caffe.cpp:312] Batch 107, loss = 0.34
+I0701 15:15:57.960223  4639 caffe.cpp:312] Batch 108, accuracy/top1 = 0.9
+I0701 15:15:57.960237  4639 caffe.cpp:312] Batch 108, accuracy/top5 = 1
+I0701 15:15:57.960239  4639 caffe.cpp:312] Batch 108, loss = 0.36
+I0701 15:15:57.968406  4639 caffe.cpp:312] Batch 109, accuracy/top1 = 0.94
+I0701 15:15:57.968415  4639 caffe.cpp:312] Batch 109, accuracy/top5 = 1
+I0701 15:15:57.968418  4639 caffe.cpp:312] Batch 109, loss = 0.1
+I0701 15:15:57.976431  4639 caffe.cpp:312] Batch 110, accuracy/top1 = 0.9
+I0701 15:15:57.976439  4639 caffe.cpp:312] Batch 110, accuracy/top5 = 1
+I0701 15:15:57.976444  4639 caffe.cpp:312] Batch 110, loss = 0.54
+I0701 15:15:57.984668  4639 caffe.cpp:312] Batch 111, accuracy/top1 = 0.98
+I0701 15:15:57.984678  4639 caffe.cpp:312] Batch 111, accuracy/top5 = 1
+I0701 15:15:57.984681  4639 caffe.cpp:312] Batch 111, loss = 0.02
+I0701 15:15:57.992859  4639 caffe.cpp:312] Batch 112, accuracy/top1 = 0.86
+I0701 15:15:57.992867  4639 caffe.cpp:312] Batch 112, accuracy/top5 = 1
+I0701 15:15:57.992871  4639 caffe.cpp:312] Batch 112, loss = 0.38
+I0701 15:15:58.000977  4639 caffe.cpp:312] Batch 113, accuracy/top1 = 0.86
+I0701 15:15:58.000985  4639 caffe.cpp:312] Batch 113, accuracy/top5 = 1
+I0701 15:15:58.000989  4639 caffe.cpp:312] Batch 113, loss = 0.22
+I0701 15:15:58.009191  4639 caffe.cpp:312] Batch 114, accuracy/top1 = 0.9
+I0701 15:15:58.009199  4639 caffe.cpp:312] Batch 114, accuracy/top5 = 1
+I0701 15:15:58.009203  4639 caffe.cpp:312] Batch 114, loss = 0.26
+I0701 15:15:58.017356  4639 caffe.cpp:312] Batch 115, accuracy/top1 = 0.92
+I0701 15:15:58.017367  4639 caffe.cpp:312] Batch 115, accuracy/top5 = 1
+I0701 15:15:58.017371  4639 caffe.cpp:312] Batch 115, loss = 0.16
+I0701 15:15:58.025553  4639 caffe.cpp:312] Batch 116, accuracy/top1 = 0.88
+I0701 15:15:58.025562  4639 caffe.cpp:312] Batch 116, accuracy/top5 = 1
+I0701 15:15:58.025565  4639 caffe.cpp:312] Batch 116, loss = 0.12
+I0701 15:15:58.033788  4639 caffe.cpp:312] Batch 117, accuracy/top1 = 0.88
+I0701 15:15:58.033797  4639 caffe.cpp:312] Batch 117, accuracy/top5 = 1
+I0701 15:15:58.033802  4639 caffe.cpp:312] Batch 117, loss = 0.36
+I0701 15:15:58.041980  4639 caffe.cpp:312] Batch 118, accuracy/top1 = 0.9
+I0701 15:15:58.041988  4639 caffe.cpp:312] Batch 118, accuracy/top5 = 1
+I0701 15:15:58.041992  4639 caffe.cpp:312] Batch 118, loss = 0.22
+I0701 15:15:58.050096  4639 caffe.cpp:312] Batch 119, accuracy/top1 = 0.88
+I0701 15:15:58.050104  4639 caffe.cpp:312] Batch 119, accuracy/top5 = 1
+I0701 15:15:58.050108  4639 caffe.cpp:312] Batch 119, loss = 0.28
+I0701 15:15:58.058275  4639 caffe.cpp:312] Batch 120, accuracy/top1 = 0.84
+I0701 15:15:58.058284  4639 caffe.cpp:312] Batch 120, accuracy/top5 = 0.98
+I0701 15:15:58.058287  4639 caffe.cpp:312] Batch 120, loss = 0.26
+I0701 15:15:58.066396  4639 caffe.cpp:312] Batch 121, accuracy/top1 = 0.92
+I0701 15:15:58.066404  4639 caffe.cpp:312] Batch 121, accuracy/top5 = 1
+I0701 15:15:58.066417  4639 caffe.cpp:312] Batch 121, loss = 0.44
+I0701 15:15:58.074587  4639 caffe.cpp:312] Batch 122, accuracy/top1 = 0.9
+I0701 15:15:58.074595  4639 caffe.cpp:312] Batch 122, accuracy/top5 = 1
+I0701 15:15:58.074599  4639 caffe.cpp:312] Batch 122, loss = 0.08
+I0701 15:15:58.082774  4639 caffe.cpp:312] Batch 123, accuracy/top1 = 0.84
+I0701 15:15:58.082782  4639 caffe.cpp:312] Batch 123, accuracy/top5 = 1
+I0701 15:15:58.082787  4639 caffe.cpp:312] Batch 123, loss = 0.44
+I0701 15:15:58.090963  4639 caffe.cpp:312] Batch 124, accuracy/top1 = 0.9
+I0701 15:15:58.090971  4639 caffe.cpp:312] Batch 124, accuracy/top5 = 1
+I0701 15:15:58.090975  4639 caffe.cpp:312] Batch 124, loss = 0.26
+I0701 15:15:58.099195  4639 caffe.cpp:312] Batch 125, accuracy/top1 = 0.96
+I0701 15:15:58.099211  4639 caffe.cpp:312] Batch 125, accuracy/top5 = 1
+I0701 15:15:58.099215  4639 caffe.cpp:312] Batch 125, loss = 0.06
+I0701 15:15:58.107462  4639 caffe.cpp:312] Batch 126, accuracy/top1 = 0.98
+I0701 15:15:58.107473  4639 caffe.cpp:312] Batch 126, accuracy/top5 = 1
+I0701 15:15:58.107477  4639 caffe.cpp:312] Batch 126, loss = 0
+I0701 15:15:58.115656  4639 caffe.cpp:312] Batch 127, accuracy/top1 = 1
+I0701 15:15:58.115666  4639 caffe.cpp:312] Batch 127, accuracy/top5 = 1
+I0701 15:15:58.115670  4639 caffe.cpp:312] Batch 127, loss = 0
+I0701 15:15:58.123838  4639 caffe.cpp:312] Batch 128, accuracy/top1 = 0.84
+I0701 15:15:58.123847  4639 caffe.cpp:312] Batch 128, accuracy/top5 = 1
+I0701 15:15:58.123852  4639 caffe.cpp:312] Batch 128, loss = 0.48
+I0701 15:15:58.131961  4639 caffe.cpp:312] Batch 129, accuracy/top1 = 0.92
+I0701 15:15:58.131969  4639 caffe.cpp:312] Batch 129, accuracy/top5 = 1
+I0701 15:15:58.131973  4639 caffe.cpp:312] Batch 129, loss = 0.1
+I0701 15:15:58.140194  4639 caffe.cpp:312] Batch 130, accuracy/top1 = 0.86
+I0701 15:15:58.140208  4639 caffe.cpp:312] Batch 130, accuracy/top5 = 1
+I0701 15:15:58.140211  4639 caffe.cpp:312] Batch 130, loss = 0.22
+I0701 15:15:58.148347  4639 caffe.cpp:312] Batch 131, accuracy/top1 = 0.9
+I0701 15:15:58.148356  4639 caffe.cpp:312] Batch 131, accuracy/top5 = 1
+I0701 15:15:58.148360  4639 caffe.cpp:312] Batch 131, loss = 0.2
+I0701 15:15:58.156563  4639 caffe.cpp:312] Batch 132, accuracy/top1 = 0.92
+I0701 15:15:58.156570  4639 caffe.cpp:312] Batch 132, accuracy/top5 = 1
+I0701 15:15:58.156574  4639 caffe.cpp:312] Batch 132, loss = 0.18
+I0701 15:15:58.164696  4639 caffe.cpp:312] Batch 133, accuracy/top1 = 0.92
+I0701 15:15:58.164705  4639 caffe.cpp:312] Batch 133, accuracy/top5 = 1
+I0701 15:15:58.164710  4639 caffe.cpp:312] Batch 133, loss = 0.3
+I0701 15:15:58.172914  4639 caffe.cpp:312] Batch 134, accuracy/top1 = 0.92
+I0701 15:15:58.172927  4639 caffe.cpp:312] Batch 134, accuracy/top5 = 1
+I0701 15:15:58.172931  4639 caffe.cpp:312] Batch 134, loss = 0.22
+I0701 15:15:58.181005  4639 caffe.cpp:312] Batch 135, accuracy/top1 = 0.86
+I0701 15:15:58.181012  4639 caffe.cpp:312] Batch 135, accuracy/top5 = 0.98
+I0701 15:15:58.181016  4639 caffe.cpp:312] Batch 135, loss = 0.44
+I0701 15:15:58.189214  4639 caffe.cpp:312] Batch 136, accuracy/top1 = 0.98
+I0701 15:15:58.189223  4639 caffe.cpp:312] Batch 136, accuracy/top5 = 1
+I0701 15:15:58.189226  4639 caffe.cpp:312] Batch 136, loss = 0.06
+I0701 15:15:58.197259  4639 caffe.cpp:312] Batch 137, accuracy/top1 = 0.86
+I0701 15:15:58.197268  4639 caffe.cpp:312] Batch 137, accuracy/top5 = 1
+I0701 15:15:58.197271  4639 caffe.cpp:312] Batch 137, loss = 0.42
+I0701 15:15:58.205485  4639 caffe.cpp:312] Batch 138, accuracy/top1 = 0.94
+I0701 15:15:58.205497  4639 caffe.cpp:312] Batch 138, accuracy/top5 = 1
+I0701 15:15:58.205502  4639 caffe.cpp:312] Batch 138, loss = 0.14
+I0701 15:15:58.213680  4639 caffe.cpp:312] Batch 139, accuracy/top1 = 0.74
+I0701 15:15:58.213687  4639 caffe.cpp:312] Batch 139, accuracy/top5 = 0.98
+I0701 15:15:58.213691  4639 caffe.cpp:312] Batch 139, loss = 0.56
+I0701 15:15:58.221871  4639 caffe.cpp:312] Batch 140, accuracy/top1 = 0.88
+I0701 15:15:58.221879  4639 caffe.cpp:312] Batch 140, accuracy/top5 = 1
+I0701 15:15:58.221884  4639 caffe.cpp:312] Batch 140, loss = 0.34
+I0701 15:15:58.230008  4639 caffe.cpp:312] Batch 141, accuracy/top1 = 0.92
+I0701 15:15:58.230018  4639 caffe.cpp:312] Batch 141, accuracy/top5 = 1
+I0701 15:15:58.230021  4639 caffe.cpp:312] Batch 141, loss = 0.42
+I0701 15:15:58.238171  4639 caffe.cpp:312] Batch 142, accuracy/top1 = 0.9
+I0701 15:15:58.238180  4639 caffe.cpp:312] Batch 142, accuracy/top5 = 1
+I0701 15:15:58.238184  4639 caffe.cpp:312] Batch 142, loss = 0.2
+I0701 15:15:58.246348  4639 caffe.cpp:312] Batch 143, accuracy/top1 = 0.92
+I0701 15:15:58.246356  4639 caffe.cpp:312] Batch 143, accuracy/top5 = 1
+I0701 15:15:58.246361  4639 caffe.cpp:312] Batch 143, loss = 0.18
+I0701 15:15:58.254493  4639 caffe.cpp:312] Batch 144, accuracy/top1 = 0.92
+I0701 15:15:58.254501  4639 caffe.cpp:312] Batch 144, accuracy/top5 = 1
+I0701 15:15:58.254505  4639 caffe.cpp:312] Batch 144, loss = 0.22
+I0701 15:15:58.262696  4639 caffe.cpp:312] Batch 145, accuracy/top1 = 0.94
+I0701 15:15:58.262708  4639 caffe.cpp:312] Batch 145, accuracy/top5 = 1
+I0701 15:15:58.262712  4639 caffe.cpp:312] Batch 145, loss = 0.06
+I0701 15:15:58.270925  4639 caffe.cpp:312] Batch 146, accuracy/top1 = 0.9
+I0701 15:15:58.270932  4639 caffe.cpp:312] Batch 146, accuracy/top5 = 1
+I0701 15:15:58.270936  4639 caffe.cpp:312] Batch 146, loss = 0.24
+I0701 15:15:58.279132  4639 caffe.cpp:312] Batch 147, accuracy/top1 = 0.88
+I0701 15:15:58.279140  4639 caffe.cpp:312] Batch 147, accuracy/top5 = 0.98
+I0701 15:15:58.279145  4639 caffe.cpp:312] Batch 147, loss = 0.4
+I0701 15:15:58.287299  4639 caffe.cpp:312] Batch 148, accuracy/top1 = 0.88
+I0701 15:15:58.287307  4639 caffe.cpp:312] Batch 148, accuracy/top5 = 1
+I0701 15:15:58.287312  4639 caffe.cpp:312] Batch 148, loss = 0.26
+I0701 15:15:58.295512  4639 caffe.cpp:312] Batch 149, accuracy/top1 = 0.88
+I0701 15:15:58.295521  4639 caffe.cpp:312] Batch 149, accuracy/top5 = 1
+I0701 15:15:58.295523  4639 caffe.cpp:312] Batch 149, loss = 0.2
+I0701 15:15:58.303580  4639 caffe.cpp:312] Batch 150, accuracy/top1 = 0.94
+I0701 15:15:58.303591  4639 caffe.cpp:312] Batch 150, accuracy/top5 = 0.98
+I0701 15:15:58.303594  4639 caffe.cpp:312] Batch 150, loss = 0.16
+I0701 15:15:58.311722  4639 caffe.cpp:312] Batch 151, accuracy/top1 = 0.92
+I0701 15:15:58.311729  4639 caffe.cpp:312] Batch 151, accuracy/top5 = 0.98
+I0701 15:15:58.311733  4639 caffe.cpp:312] Batch 151, loss = 0.4
+I0701 15:15:58.319931  4639 caffe.cpp:312] Batch 152, accuracy/top1 = 0.92
+I0701 15:15:58.319937  4639 caffe.cpp:312] Batch 152, accuracy/top5 = 0.98
+I0701 15:15:58.319941  4639 caffe.cpp:312] Batch 152, loss = 0.22
+I0701 15:15:58.328111  4639 caffe.cpp:312] Batch 153, accuracy/top1 = 0.92
+I0701 15:15:58.328124  4639 caffe.cpp:312] Batch 153, accuracy/top5 = 0.98
+I0701 15:15:58.328127  4639 caffe.cpp:312] Batch 153, loss = 0.36
+I0701 15:15:58.336329  4639 caffe.cpp:312] Batch 154, accuracy/top1 = 0.96
+I0701 15:15:58.336338  4639 caffe.cpp:312] Batch 154, accuracy/top5 = 1
+I0701 15:15:58.336341  4639 caffe.cpp:312] Batch 154, loss = 0.14
+I0701 15:15:58.344678  4639 caffe.cpp:312] Batch 155, accuracy/top1 = 0.88
+I0701 15:15:58.344702  4639 caffe.cpp:312] Batch 155, accuracy/top5 = 1
+I0701 15:15:58.344707  4639 caffe.cpp:312] Batch 155, loss = 0.42
+I0701 15:15:58.353174  4639 caffe.cpp:312] Batch 156, accuracy/top1 = 0.88
+I0701 15:15:58.353204  4639 caffe.cpp:312] Batch 156, accuracy/top5 = 1
+I0701 15:15:58.353206  4639 caffe.cpp:312] Batch 156, loss = 0.4
+I0701 15:15:58.361654  4639 caffe.cpp:312] Batch 157, accuracy/top1 = 0.92
+I0701 15:15:58.361680  4639 caffe.cpp:312] Batch 157, accuracy/top5 = 0.98
+I0701 15:15:58.361683  4639 caffe.cpp:312] Batch 157, loss = 0.24
+I0701 15:15:58.369925  4639 caffe.cpp:312] Batch 158, accuracy/top1 = 0.88
+I0701 15:15:58.369938  4639 caffe.cpp:312] Batch 158, accuracy/top5 = 1
+I0701 15:15:58.369942  4639 caffe.cpp:312] Batch 158, loss = 0.32
+I0701 15:15:58.378175  4639 caffe.cpp:312] Batch 159, accuracy/top1 = 0.86
+I0701 15:15:58.378183  4639 caffe.cpp:312] Batch 159, accuracy/top5 = 1
+I0701 15:15:58.378187  4639 caffe.cpp:312] Batch 159, loss = 0.28
+I0701 15:15:58.386369  4639 caffe.cpp:312] Batch 160, accuracy/top1 = 0.98
+I0701 15:15:58.386395  4639 caffe.cpp:312] Batch 160, accuracy/top5 = 1
+I0701 15:15:58.386400  4639 caffe.cpp:312] Batch 160, loss = 0.1
+I0701 15:15:58.394649  4639 caffe.cpp:312] Batch 161, accuracy/top1 = 0.92
+I0701 15:15:58.394656  4639 caffe.cpp:312] Batch 161, accuracy/top5 = 1
+I0701 15:15:58.394660  4639 caffe.cpp:312] Batch 161, loss = 0.18
+I0701 15:15:58.402856  4639 caffe.cpp:312] Batch 162, accuracy/top1 = 0.94
+I0701 15:15:58.402864  4639 caffe.cpp:312] Batch 162, accuracy/top5 = 1
+I0701 15:15:58.402868  4639 caffe.cpp:312] Batch 162, loss = 0.12
+I0701 15:15:58.411118  4639 caffe.cpp:312] Batch 163, accuracy/top1 = 0.88
+I0701 15:15:58.411126  4639 caffe.cpp:312] Batch 163, accuracy/top5 = 1
+I0701 15:15:58.411130  4639 caffe.cpp:312] Batch 163, loss = 0.28
+I0701 15:15:58.419314  4639 caffe.cpp:312] Batch 164, accuracy/top1 = 0.9
+I0701 15:15:58.419327  4639 caffe.cpp:312] Batch 164, accuracy/top5 = 1
+I0701 15:15:58.419330  4639 caffe.cpp:312] Batch 164, loss = 0.18
+I0701 15:15:58.427547  4639 caffe.cpp:312] Batch 165, accuracy/top1 = 0.9
+I0701 15:15:58.427556  4639 caffe.cpp:312] Batch 165, accuracy/top5 = 1
+I0701 15:15:58.427559  4639 caffe.cpp:312] Batch 165, loss = 0.22
+I0701 15:15:58.435672  4639 caffe.cpp:312] Batch 166, accuracy/top1 = 0.94
+I0701 15:15:58.435680  4639 caffe.cpp:312] Batch 166, accuracy/top5 = 1
+I0701 15:15:58.435684  4639 caffe.cpp:312] Batch 166, loss = 0.1
+I0701 15:15:58.443922  4639 caffe.cpp:312] Batch 167, accuracy/top1 = 0.96
+I0701 15:15:58.443930  4639 caffe.cpp:312] Batch 167, accuracy/top5 = 1
+I0701 15:15:58.443934  4639 caffe.cpp:312] Batch 167, loss = 0.12
+I0701 15:15:58.452090  4639 caffe.cpp:312] Batch 168, accuracy/top1 = 0.92
+I0701 15:15:58.452103  4639 caffe.cpp:312] Batch 168, accuracy/top5 = 1
+I0701 15:15:58.452107  4639 caffe.cpp:312] Batch 168, loss = 0.3
+I0701 15:15:58.460314  4639 caffe.cpp:312] Batch 169, accuracy/top1 = 0.8
+I0701 15:15:58.460324  4639 caffe.cpp:312] Batch 169, accuracy/top5 = 1
+I0701 15:15:58.460326  4639 caffe.cpp:312] Batch 169, loss = 0.44
+I0701 15:15:58.468456  4639 caffe.cpp:312] Batch 170, accuracy/top1 = 0.88
+I0701 15:15:58.468463  4639 caffe.cpp:312] Batch 170, accuracy/top5 = 0.98
+I0701 15:15:58.468467  4639 caffe.cpp:312] Batch 170, loss = 0.28
+I0701 15:15:58.476640  4639 caffe.cpp:312] Batch 171, accuracy/top1 = 0.88
+I0701 15:15:58.476651  4639 caffe.cpp:312] Batch 171, accuracy/top5 = 1
+I0701 15:15:58.476655  4639 caffe.cpp:312] Batch 171, loss = 0.54
+I0701 15:15:58.484848  4639 caffe.cpp:312] Batch 172, accuracy/top1 = 0.9
+I0701 15:15:58.484856  4639 caffe.cpp:312] Batch 172, accuracy/top5 = 1
+I0701 15:15:58.484860  4639 caffe.cpp:312] Batch 172, loss = 0.28
+I0701 15:15:58.493041  4639 caffe.cpp:312] Batch 173, accuracy/top1 = 0.96
+I0701 15:15:58.493048  4639 caffe.cpp:312] Batch 173, accuracy/top5 = 1
+I0701 15:15:58.493052  4639 caffe.cpp:312] Batch 173, loss = 0.06
+I0701 15:15:58.501181  4639 caffe.cpp:312] Batch 174, accuracy/top1 = 0.88
+I0701 15:15:58.501189  4639 caffe.cpp:312] Batch 174, accuracy/top5 = 1
+I0701 15:15:58.501194  4639 caffe.cpp:312] Batch 174, loss = 0.68
+I0701 15:15:58.509440  4639 caffe.cpp:312] Batch 175, accuracy/top1 = 0.92
+I0701 15:15:58.509452  4639 caffe.cpp:312] Batch 175, accuracy/top5 = 1
+I0701 15:15:58.509455  4639 caffe.cpp:312] Batch 175, loss = 0.2
+I0701 15:15:58.517628  4639 caffe.cpp:312] Batch 176, accuracy/top1 = 0.84
+I0701 15:15:58.517638  4639 caffe.cpp:312] Batch 176, accuracy/top5 = 0.96
+I0701 15:15:58.517642  4639 caffe.cpp:312] Batch 176, loss = 0.5
+I0701 15:15:58.525908  4639 caffe.cpp:312] Batch 177, accuracy/top1 = 0.96
+I0701 15:15:58.525920  4639 caffe.cpp:312] Batch 177, accuracy/top5 = 1
+I0701 15:15:58.525924  4639 caffe.cpp:312] Batch 177, loss = 0.06
+I0701 15:15:58.534083  4639 caffe.cpp:312] Batch 178, accuracy/top1 = 0.88
+I0701 15:15:58.534092  4639 caffe.cpp:312] Batch 178, accuracy/top5 = 1
+I0701 15:15:58.534096  4639 caffe.cpp:312] Batch 178, loss = 0.56
+I0701 15:15:58.542284  4639 caffe.cpp:312] Batch 179, accuracy/top1 = 0.88
+I0701 15:15:58.542309  4639 caffe.cpp:312] Batch 179, accuracy/top5 = 1
+I0701 15:15:58.542313  4639 caffe.cpp:312] Batch 179, loss = 0.58
+I0701 15:15:58.550518  4639 caffe.cpp:312] Batch 180, accuracy/top1 = 0.92
+I0701 15:15:58.550525  4639 caffe.cpp:312] Batch 180, accuracy/top5 = 1
+I0701 15:15:58.550529  4639 caffe.cpp:312] Batch 180, loss = 0.24
+I0701 15:15:58.558662  4639 caffe.cpp:312] Batch 181, accuracy/top1 = 0.94
+I0701 15:15:58.558670  4639 caffe.cpp:312] Batch 181, accuracy/top5 = 1
+I0701 15:15:58.558675  4639 caffe.cpp:312] Batch 181, loss = 0.08
+I0701 15:15:58.566864  4639 caffe.cpp:312] Batch 182, accuracy/top1 = 0.92
+I0701 15:15:58.566871  4639 caffe.cpp:312] Batch 182, accuracy/top5 = 1
+I0701 15:15:58.566875  4639 caffe.cpp:312] Batch 182, loss = 0.16
+I0701 15:15:58.575098  4639 caffe.cpp:312] Batch 183, accuracy/top1 = 0.96
+I0701 15:15:58.575114  4639 caffe.cpp:312] Batch 183, accuracy/top5 = 1
+I0701 15:15:58.575116  4639 caffe.cpp:312] Batch 183, loss = 0.1
+I0701 15:15:58.583202  4639 caffe.cpp:312] Batch 184, accuracy/top1 = 0.9
+I0701 15:15:58.583211  4639 caffe.cpp:312] Batch 184, accuracy/top5 = 1
+I0701 15:15:58.583214  4639 caffe.cpp:312] Batch 184, loss = 0.52
+I0701 15:15:58.591393  4639 caffe.cpp:312] Batch 185, accuracy/top1 = 0.88
+I0701 15:15:58.591401  4639 caffe.cpp:312] Batch 185, accuracy/top5 = 1
+I0701 15:15:58.591405  4639 caffe.cpp:312] Batch 185, loss = 0.44
+I0701 15:15:58.599550  4639 caffe.cpp:312] Batch 186, accuracy/top1 = 0.92
+I0701 15:15:58.599560  4639 caffe.cpp:312] Batch 186, accuracy/top5 = 1
+I0701 15:15:58.599563  4639 caffe.cpp:312] Batch 186, loss = 0.2
+I0701 15:15:58.607689  4639 caffe.cpp:312] Batch 187, accuracy/top1 = 0.84
+I0701 15:15:58.607697  4639 caffe.cpp:312] Batch 187, accuracy/top5 = 0.98
+I0701 15:15:58.607702  4639 caffe.cpp:312] Batch 187, loss = 0.48
+I0701 15:15:58.615893  4639 caffe.cpp:312] Batch 188, accuracy/top1 = 0.96
+I0701 15:15:58.615901  4639 caffe.cpp:312] Batch 188, accuracy/top5 = 1
+I0701 15:15:58.615906  4639 caffe.cpp:312] Batch 188, loss = 0.02
+I0701 15:15:58.624125  4639 caffe.cpp:312] Batch 189, accuracy/top1 = 0.9
+I0701 15:15:58.624132  4639 caffe.cpp:312] Batch 189, accuracy/top5 = 1
+I0701 15:15:58.624136  4639 caffe.cpp:312] Batch 189, loss = 0.16
+I0701 15:15:58.632275  4639 caffe.cpp:312] Batch 190, accuracy/top1 = 0.92
+I0701 15:15:58.632287  4639 caffe.cpp:312] Batch 190, accuracy/top5 = 1
+I0701 15:15:58.632292  4639 caffe.cpp:312] Batch 190, loss = 0.34
+I0701 15:15:58.640480  4639 caffe.cpp:312] Batch 191, accuracy/top1 = 0.88
+I0701 15:15:58.640489  4639 caffe.cpp:312] Batch 191, accuracy/top5 = 1
+I0701 15:15:58.640493  4639 caffe.cpp:312] Batch 191, loss = 0.28
+I0701 15:15:58.648635  4639 caffe.cpp:312] Batch 192, accuracy/top1 = 0.9
+I0701 15:15:58.648643  4639 caffe.cpp:312] Batch 192, accuracy/top5 = 1
+I0701 15:15:58.648648  4639 caffe.cpp:312] Batch 192, loss = 0.18
+I0701 15:15:58.656811  4639 caffe.cpp:312] Batch 193, accuracy/top1 = 0.94
+I0701 15:15:58.656819  4639 caffe.cpp:312] Batch 193, accuracy/top5 = 1
+I0701 15:15:58.656823  4639 caffe.cpp:312] Batch 193, loss = 0.08
+I0701 15:15:58.664870  4639 caffe.cpp:312] Batch 194, accuracy/top1 = 0.88
+I0701 15:15:58.664883  4639 caffe.cpp:312] Batch 194, accuracy/top5 = 0.98
+I0701 15:15:58.664887  4639 caffe.cpp:312] Batch 194, loss = 0.62
+I0701 15:15:58.673106  4639 caffe.cpp:312] Batch 195, accuracy/top1 = 0.84
+I0701 15:15:58.673115  4639 caffe.cpp:312] Batch 195, accuracy/top5 = 1
+I0701 15:15:58.673118  4639 caffe.cpp:312] Batch 195, loss = 0.34
+I0701 15:15:58.681243  4639 caffe.cpp:312] Batch 196, accuracy/top1 = 0.8
+I0701 15:15:58.681252  4639 caffe.cpp:312] Batch 196, accuracy/top5 = 1
+I0701 15:15:58.681255  4639 caffe.cpp:312] Batch 196, loss = 0.96
+I0701 15:15:58.689486  4639 caffe.cpp:312] Batch 197, accuracy/top1 = 0.86
+I0701 15:15:58.689494  4639 caffe.cpp:312] Batch 197, accuracy/top5 = 0.98
+I0701 15:15:58.689497  4639 caffe.cpp:312] Batch 197, loss = 0.38
+I0701 15:15:58.697707  4639 caffe.cpp:312] Batch 198, accuracy/top1 = 0.94
+I0701 15:15:58.697720  4639 caffe.cpp:312] Batch 198, accuracy/top5 = 1
+I0701 15:15:58.697736  4639 caffe.cpp:312] Batch 198, loss = 0.16
+I0701 15:15:58.705878  4639 caffe.cpp:312] Batch 199, accuracy/top1 = 0.9
+I0701 15:15:58.705886  4639 caffe.cpp:312] Batch 199, accuracy/top5 = 1
+I0701 15:15:58.705890  4639 caffe.cpp:312] Batch 199, loss = 0.36
+I0701 15:15:58.705894  4639 caffe.cpp:317] Loss: 0.2751
+I0701 15:15:58.705904  4639 caffe.cpp:329] accuracy/top1 = 0.9072
+I0701 15:15:58.705909  4639 caffe.cpp:329] accuracy/top5 = 0.9961
+I0701 15:15:58.705915  4639 caffe.cpp:329] loss = 0.2751 (* 1 = 0.2751 loss)
