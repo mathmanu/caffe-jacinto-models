@@ -1,10 +1,7 @@
 # Sparse, Quantized CNN training for segmentation
 
 ### Pre-requisites
-It is assumed here, that all the pre-requisites required for running Caffe-jacinto are met.
-
-Open a bash terminal and set CAFFE_HOME to the location where Caffe-jacinto is placed. For example:
-CAFFE_HOME=~/work/caffe-jacinto
+It is assumed here, that all the pre-requisites required for running Caffe-jacinto are met. Open a bash terminal and change directory into the scripts folder, as explainded earlier.
 
 ### Dataset preparation
 The details about how to obtain the [Cityscapes Dataset](https://www.cityscapes-dataset.com/) can be seen from their website. Download and unzip gtFine and leftImg8bit as sub-directories into a suitable folder.
@@ -21,17 +18,13 @@ Before training, create list files needed to train on cityscapes dataset.
 
 
 ### Execution
-* Open the file train_cityscapes_segmentation.sh  and look at the gpu variable. If you have more than one NVIDIA CUDA supported GPUs, modify this field to reflect it so that the training will complete faster.
+* Open the file train_cityscapes_segmentation.sh  and look at the gpus variable. This should reflect the number of gpus that you have. For example, if you have two NVIDIA CUDA supported gpus, the gpus variable should be set to "0,1". If you have more GPUs, modify this field to reflect it so that the training will complete faster.
 
 * Execute the training by running the training script: ./train_cityscapes_segmentation.sh. 
 
-* The training will perform all the stages required to generate a sparse, quantized CNN model. 
-
 * The training takes around 22 hours, when using one NVIDIA GTX 1080 GPU.
 
-* After the training, The following quantized prototxt and model files will be placed in $CAFFE_HOME/examples/tidsp/final:
-jacintonet11+seg10_train_L1_nobn_quant_final_iter_4000.prototxt
-jacintonet11+seg10_train_L1_nobn_quant_final_iter_4000.caffemodel
+* This script will perform all the stages required to generate a sparse CNN model. The quantized model will be placed in a folder inside scripts/training.
 
 ### Results
 
@@ -52,41 +45,6 @@ The validation accuracy is printed in the training log. Following is what we got
 
 ### Inference using the trained model
 * This section explains how the trained model can be used for inference on a PC using Caffe-jacinto.
-
-* Copy the file jacintonet11+seg10_train_L1_nobn_quant_final_iter_4000.prototxt into jacintonet11+seg10_train_L1_nobn_quant_final_iter_4000_deploy.prototxt (we will call this as the "deploy  prototxt").  
-
-* We will also call jacintonet11+seg10_train_L1_nobn_quant_final_iter_4000.caffemodel as the "deploy caffemodel".
-
-* Remove everything before the "data_bias" layer and add the following, in the deploy  prototxt:  
-name: "ConvNet-11(8)"  
-input: "data"  
-input_shape {  
-  dim: 1  
-  dim: 3  
-  dim: 512  
-  dim: 1024  
-}  
-
-* Remove everything after the layer "out_deconv_final_up8" and add the following, in the deploy  prototxt:  
-layer {  
-  name: "prob"  
-  type: "Softmax"  
-  bottom: "out_deconv_final_up8"  
-  top: "prob"  
-}  
-layer {  
-  name: "argMaxOut"  
-  type: "ArgMax"  
-  bottom: "out_deconv_final_up8"  
-  top: "argMaxOut"  
-  argmax_param {  
-    axis: 1  
-  }  
-}  
-
-* Open the file infer_cityscapes_segmentation.sh and set the correct paths to model (should point to deploy  prototxt), weights (should point to the deploy caffemodel).
-
-* In the same file, correct the paths of input (an mp4 video file or a folder containing images) and output (an mp4 name or a folder name)
-
+* Open the file infer_cityscapes_segmentation.sh using a text editor and change the path of deploy model and weights (caffemodel) to the one that is generated in the recent training.
 * Run the file infer_cityscapes_segmentation.sh
 This will create the output images or video in the location corresponding to the output parameter mentioned in the script.

@@ -6,11 +6,7 @@ Here a low complexity model called JacintoNet11 is used as an example to demonst
 
 ### Dataset preparation
 
-* First, open a bash prompt and set CAFFE_HOME to the location where Caffe-jacinto is placed. For example:
-CAFFE_HOME=~/work/caffe-jacinto
-
-* Change directory.
- * cd $CAFFE_HOME/examples/tidsp
+* Open a bash terminal and change directory into the scripts folder, as explainded earlier.
 
 * The following website gives details of how to obtain the ImageNet dataset and organize the data: 
 https://github.com/amd/OpenCL-caffe/wiki/Instructions-to-create-ImageNet-2012-data
@@ -20,13 +16,13 @@ https://github.com/amd/OpenCL-caffe/wiki/Instructions-to-create-ImageNet-2012-da
 * After creating the lmdb database, make sure that ilsvrc12_train_lmdb and ilsvrc12_val_lmdb folders in $CAFFE_HOME/examples/tidsp/data point to it. (If they are not there, you can either move them there or create soft links)
 
 ### Training 
-* Open the file train_imagenet_classification.sh  and look at the gpu variable. If you have more than one NVIDIA CUDA supported GPUs modify this field to reflect it so that the training will complete faster.
+* Open the file train_imagenet_classification.sh  and look at the gpus variable. This should reflect the number of gpus that you have. For example, if you have two NVIDIA CUDA supported gpus, the gpus variable should be set to "0,1". If you have more GPUs, modify this field to reflect it so that the training will complete faster.
 
 * Execute the script ./tools/train_imagenet_classification.sh to do the ImageNet training. This will take several hours or days, depending on your GPU configuration. We use polynomial learning rate with 320,000 iterations and an effective batch size of 256, as in [1].
 
 * The training takes around 32 hours when using one NVIDIA GTX 1080 GPU.
 
-* At the end of the training, the file "jacintonet11_bn_iter_320000.caffemodel" will be created in the training folder. This is the final ImageNet trained model which can be used for classification or for further fine-tuning. 
+* This script will perform all the stages required to generate a sparse CNN model. The final model will be placed in a folder inside scripts/training.
 
 ### Results 
 

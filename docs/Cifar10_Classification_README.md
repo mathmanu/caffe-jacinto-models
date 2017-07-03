@@ -2,12 +2,9 @@
 
 In this section, cifar10 dataset is used as an example to explain the training procedure. This is  a toy example to do the flow flushing of the entire training procedure. No inference script is provided to test the resulting model.
 
-First, open a bash prompt and set CAFFE_HOME to the location where Caffe-jacinto is placed. For example:
-CAFFE_HOME=~/work/caffe-jacinto
+Open a bash terminal and change directory into the scripts folder, as explainded earlier.
 
 ### Dataset preparation
-Change directory to your caffe-jacinto folder.
-* cd $CAFFE_HOME/examples/tidsp
 
 Fetch the cifar10 dataset by executing:
 * ./tools/get_cifar10.sh
@@ -18,8 +15,11 @@ Create LMDB folders for the cifar10 dataset by executing:
 ### Execution
 
 Execute the script:
-* train_cifar10_classification.sh
+* Open the file train_cifar10_classification.sh  and look at the gpus variable. This should reflect the number of gpus that you have. For example, if you have two NVIDIA CUDA supported gpus, the gpus variable should be set to "0,1". If you have more GPUs, modify this field to reflect it so that the training will complete faster.
 
-This script will perform all the stages required to generate a sparse, quantized CNN model. The quantized model will be placed in $CAFFE_HOME/examples/tidsp/final.
+* Finally execute the script.  
+train_cifar10_classification.sh
+
+This script will perform all the stages required to generate a sparse CNN model. The final model will be placed in a folder inside scripts/training.
 
 

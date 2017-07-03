@@ -5,17 +5,6 @@ echo Logging output to "$LOG"
 #-------------------------------------------------------
 
 #-------------------------------------------------------
-#rm training/*.caffemodel training/*.prototxt training/*.solverstate training/*.txt
-#rm final/*.caffemodel final/*.prototxt final/*.solverstate final/*.txt
-#-------------------------------------------------------
-
-#-------------------------------------------------------
-LOG="training/train-log-`date +'%Y-%m-%d_%H-%M-%S'`.txt"
-exec &> >(tee -a "$LOG")
-echo Logging output to "$LOG"
-#-------------------------------------------------------
-
-#-------------------------------------------------------
 caffe=../../build/tools/caffe.bin
 #-------------------------------------------------------
 
@@ -26,12 +15,12 @@ gpu="1,0" #'0'
 
 
 val_crop=0 #"1024 512"
-val_resize=0 #"1024 512"
+val_resize="1024 512"
 val_input="./data/val-image-list.txt"
 val_label="./data/val-label-list.txt"
 val_classes=5 #34
 val_weights=0
-num_images=10 #100000
+num_images=500 #100000
 
 #for 19 or 20 classes training of cityscapes, first convert to original labelIds and then apply the pallete
 #label_dict_20_to_34="{0:7, 1:8, 2:11, 3:12, 4:13, 5:17, 6:19, 7:20, 8:21, 9:22, 10:23, 11:24, 12:25, 13:26, 14:27, 15:28, 16:31, 17:32, 18:33, 19:0}"
@@ -45,20 +34,20 @@ num_images=10 #100000
 
 #------------------------------------------------
 #initial model
-val_model="trained/image_segmentation/cityscapes20_jsegnet21v2/initial/deploy.prototxt"
-val_weights="trained/image_segmentation/cityscapes20_jsegnet21v2/initial/cityscapes20_jsegnet21v2_iter_32000.caffemodel"
+val_model="../trained/image_segmentation/cityscapes5_jsegnet21v2/initial/deploy.prototxt"
+val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/initial/cityscapes5_jsegnet21v2_iter_32000.caffemodel"
 python ./tools/utils/infer_segmentation.py --crop $val_crop --resize $val_resize --model $val_model --weights $val_weights --input $val_input --label $val_label --num_classes=$val_classes --num_images=$num_images --resize_back 
 #--label_dict="$label_dict_20_to_34" --class_dict="$class_dict"
-pause 'initial eval.'
+echo 'initial eval.'
 
 
 #------------------------------------------------
 #sparse model
-val_model="trained/image_segmentation/cityscapes20_jsegnet21v2/sparse/deploy.prototxt"
-val_weights="trained/image_segmentation/cityscapes20_jsegnet21v2/sparse/cityscapes20_jsegnet21v2_iter_32000.caffemodel"
+val_model="../trained/image_segmentation/cityscapes5_jsegnet21v2/sparse/deploy.prototxt"
+val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/sparse/cityscapes5_jsegnet21v2_iter_32000.caffemodel"
 python ./tools/utils/infer_segmentation.py --crop $val_crop --resize $val_resize --model $val_model --weights $val_weights --input $val_input --label $val_label --num_classes=$val_classes --num_images=$num_images --resize_back 
 #--label_dict="$label_dict_20_to_34" --class_dict="$class_dict"
-pause 'sparse eval.'
+echo 'sparse eval.'
 
 
 
