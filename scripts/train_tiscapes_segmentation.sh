@@ -1,64 +1,88 @@
 #!/bin/bash
-function pause(){
-  #read -p "$*"
-  echo "$*"
-}
 
 #-------------------------------------------------------
-#rm training/*.caffemodel training/*.prototxt training/*.solverstate training/*.txt
-#rm final/*.caffemodel final/*.prototxt final/*.solverstate final/*.txt
+DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
 #-------------------------------------------------------
-LOG="training/train-log-`date +'%Y-%m-%d_%H-%M-%S'`.txt"
+model_name=jsegnet21v2
+dataset=cityscapes5
+folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
+
+#------------------------------------------------
+LOG=$folder_name/train-log_"$DATE_TIME".txt
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
-#-------------------------------------------------------
+
+#------------------------------------------------
+caffe="../../caffe-jacinto/build/tools/caffe.bin"
+
+#------------------------------------------------
+gpus="0,1,2"
+max_iter=32000
+stepvalue=24000
+base_lr=1e-4
+use_image_list=0
+solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue]}"
+
+#------------------------------------------------
+#Download the pretrained weights
+weights_dst="training/imagenet_jacintonet11v2_iter_320000.caffemodel"
+if [ -f $weights_dst ]; then
+  echo "Using pretrained model $weights_dst"
+else
+  weights_src="https://github.com/tidsp/caffe-jacinto-models/blob/caffe-0.15/trained/image_classification/imagenet_jacintonet11v2/initial/imagenet_jacintonet11v2_iter_320000.caffemodel?raw=true"
+  wget $weights_src -O $weights_dst
+fi
 
 #-------------------------------------------------------
-caffe=../../build/tools/caffe.bin
+#Initial training
+stage="initial"
+weights=$weights_dst
+config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'pretrain_model':'$weights','use_image_list':$use_image_list,'num_output':8,\
+'image_width':1024,'image_height':512}" 
+
+python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$solver_param
+config_name_prev=$config_name
+
 #-------------------------------------------------------
+#incremental sparsification and finetuning
+stage="sparse"
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-#GLOG_minloglevel=3 
-#--v=5
+base_lr=1e-5  #use a lower lr for fine tuning
+sparse_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
+'regularization_type':'L1','weight_decay':1e-5,\
+'sparse_mode':1,'display_sparsity':1000,\
+'sparsity_target':0.8,'sparsity_start_iter':4000,'sparsity_start_factor':0.0,\
+'sparsity_step_iter':1000,'sparsity_step_factor':0.05}"
 
-nw_path="/data/mmcodec_video2_tier3/users/manu/experiments/object"
-gpu="1,0" #'0'
+config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'pretrain_model':'$weights','use_image_list':$use_image_list,'num_output':8,\
+'image_width':1024,'image_height':512}" 
 
-#L2 training.
-weights="$nw_path/segmentation/2017.04/2017.04.15.jsegnet21.maxpool.(sparse_bugfix).rc13/cityscapes/training/jacintonet11+seg10_train_L2_bn_iter_32000.caffemodel"
-##weights="training/jacintonet11_bn_iter_320000.caffemodel"
-$caffe train --solver="models/sparse/cityscapes_segmentation/jacintonet11+seg10_maxpool/jacintonet11+seg10(8)_bn_train_L2.prototxt" --gpu=$gpu --weights=$weights
-pause 'Finished L2 training.'
+python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$sparse_solver_param
+config_name_prev=$config_name
 
-##L1 training.
-weights="training/jacintonet11+seg10_train_L2_bn_iter_32000.caffemodel"
-$caffe train --solver="models/sparse/cityscapes_segmentation/jacintonet11+seg10_maxpool/jacintonet11+seg10(8)_bn_train_L1.prototxt" --gpu=$gpu --weights=$weights
-pause 'Finished L1 training.'
+#-------------------------------------------------------
+#test
+stage="test"
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-#Threshold step - force a fixed fraction of sparsity - OPTIONAL
-weights="training/jacintonet11+seg10_train_L1_bn_iter_32000.caffemodel"
-$caffe threshold --threshold_fraction_low 0.40 --threshold_fraction_mid 0.80 --threshold_fraction_high 0.80 --threshold_value_max 0.2 --threshold_value_maxratio 0.2 --threshold_step_factor 1e-6 --model="models/sparse/cityscapes_segmentation/jacintonet11+seg10_maxpool/jacintonet11+seg10(8)_bn_deploy.prototxt" --gpu=$gpu --weights=$weights --output="training/jacintonet11+seg10_train_L1_bn_sparse_iter_32000.caffemodel"
-pause 'Finished thresholding. Press [Enter] to continue...'
+test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
+'regularization_type':'L1','weight_decay':1e-5,\
+'sparse_mode':1,'display_sparsity':1000}"
 
-#Sparse finetuning
-weights="training/jacintonet11+seg10_train_L1_bn_sparse_iter_32000.caffemodel"
-$caffe train --solver="models/sparse/cityscapes_segmentation/jacintonet11+seg10_maxpool/jacintonet11+seg10(8)_bn_train_L1_finetune.prototxt"  --gpu=$gpu --weights=$weights
-pause 'Finished sparse finetuning. Press [Enter] to continue...'
+config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'pretrain_model':'$weights','use_image_list':$use_image_list,'num_output':8,\
+'image_width':1024,'image_height':512,\
+'num_test_image':500,'test_batch_size':10,\
+'caffe':'$caffe test'}"
 
-#Optimize step (merge batch norm coefficients to convolution weights - batch norm coefficients will be set to identity after this in the caffemodel)
-weights="training/jacintonet11+seg10_train_L1_bn_finetune_iter_32000.caffemodel"
-$caffe optimize --model="models/sparse/cityscapes_segmentation/jacintonet11+seg10_maxpool/jacintonet11+seg10(8)_bn_deploy.prototxt"  --gpu=$gpu --weights=$weights --output="training/jacintonet11+seg10_train_L1_bn_quant_optimized_iter_32000.caffemodel"
-pause 'Finished optimization. Press [Enter] to continue...'
-
-#Final NoBN Quantization step
-weights="training/jacintonet11+seg10_train_L1_bn_quant_optimized_iter_32000.caffemodel"
-$caffe train --solver="models/sparse/cityscapes_segmentation/jacintonet11+seg10_maxpool/jacintonet11+seg10(8)_nobn_train_L1_quant_final.prototxt"  --gpu=$gpu --weights=$weights
-pause 'Finished final NoBN step. Press [Enter] to continue...'
-
-#Save the final model
-cp training/*.txt final/
-cp training/jacintonet11+seg10_train_L1_nobn_quant_final_iter_4000.* final/
-pause 'Done.'
-
+python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$test_solver_param
+config_name_prev=$config_name
 
