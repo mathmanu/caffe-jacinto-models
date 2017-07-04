@@ -11,14 +11,14 @@ Here a low complexity model called JacintoNet11 is used as an example to demonst
 * The following website gives details of how to obtain the ImageNet dataset and organize the data: 
 https://github.com/amd/OpenCL-caffe/wiki/Instructions-to-create-ImageNet-2012-data
 
-* The above webpage also explains how to create lmdb database. It can also be created by executing  ./tools/create_imagenet_classification_lmdb.sh. Before executing, open this file and modify the DATA field to point to the location where ImageNet train and val folders are placed.
+* The above webpage also explains how to create lmdb database. It can also be created by executing  ./tools/utils/create_imagenet_classification_lmdb.sh. Before executing, open this file and modify the DATA field to point to the location where ImageNet train and val folders are placed.
 
-* After creating the lmdb database, make sure that ilsvrc12_train_lmdb and ilsvrc12_val_lmdb folders in $CAFFE_HOME/examples/tidsp/data point to it. (If they are not there, you can either move them there or create soft links)
+* After creating the lmdb database, make sure that ilsvrc12_train_lmdb and ilsvrc12_val_lmdb folders are present in ./data folder. (If they are not there, you can either move them or create soft links there)
 
 ### Training 
 * Open the file train_imagenet_classification.sh  and look at the gpus variable. This should reflect the number of gpus that you have. For example, if you have two NVIDIA CUDA supported gpus, the gpus variable should be set to "0,1". If you have more GPUs, modify this field to reflect it so that the training will complete faster.
 
-* Execute the script ./tools/train_imagenet_classification.sh to do the ImageNet training. This will take several hours or days, depending on your GPU configuration. We use polynomial learning rate with 320,000 iterations and an effective batch size of 256, as in [1].
+* Execute the script ./tools/utils/train_imagenet_classification.sh to do the ImageNet training. This will take several hours or days, depending on your GPU configuration. We use polynomial learning rate with 320,000 iterations and an effective batch size of 256, as in [1].
 
 * The training takes around 32 hours when using one NVIDIA GTX 1080 GPU.
 

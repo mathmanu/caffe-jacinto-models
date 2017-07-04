@@ -2,15 +2,16 @@
 
 In this section, cifar10 dataset is used as an example to explain the training procedure. This is  a toy example to do the flow flushing of the entire training procedure. No inference script is provided to test the resulting model.
 
-Open a bash terminal and change directory into the scripts folder, as explainded earlier.
+Change directory to the scripts folder. All the remaining scripts are to be executed from this folder.
+* cd scripts
 
 ### Dataset preparation
 
 Fetch the cifar10 dataset by executing:
-* ./tools/get_cifar10.sh
+* ./tools/utils/get_cifar10.sh
 
 Create LMDB folders for the cifar10 dataset by executing:
-* ./tools/create_cifar10.sh
+* ./tools/utils/create_cifar10.sh
 
 ### Execution
 

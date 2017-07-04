@@ -6,12 +6,13 @@ It is assumed here, that all the pre-requisites required for running Caffe-jacin
 ### Dataset preparation
 The details about how to obtain the [Cityscapes Dataset](https://www.cityscapes-dataset.com/) can be seen from their website. Download and unzip gtFine and leftImg8bit as sub-directories into a suitable folder.
 
-Change directory to the tidsp folder. All the remaining scripts are to be executed from this folder.
-* cd $CAFFE_HOME/examples/tidsp
+Change directory to the scripts folder. All the remaining scripts are to be executed from this folder.
+* cd scripts
 
 Before training, create list files needed to train on cityscapes dataset.
-* Open the file ./tools/create_cityscapes_lists.sh (eg. vi ./tools/create_cityscapes_lists.sh) and change the DATASETPATH to the location where you have downloaded the dataset. Under this folder, the gtFine and leftImg8bit folders of Cityscapes should be present.
-* Then execute ./tools/create_cityscapes_lists.sh. This script creates the image and label lists used for training. It also does label transformation. 
+* Open the file ./tools/utils/create_cityscapes_lists.sh (eg. vi ./tools/utils/create_cityscapes_lists.sh) and change the DATASETPATH to the location where you have downloaded the dataset. Under this folder, the gtFine and leftImg8bit folders of Cityscapes should be present.  
+* Then execute ./tools/utils/create_cityscapes_lists.sh. This script creates the image and label lists used for training. It also does label transformation. 
+* Then execute scripts ./tools/utils/create_cityscapes_segmentation_lmdb.sh. This script creates the image and label LMDB files that can be used to speedup training.  
 * We have chosen a smaller set of 5-classes for training. 32 classes of cityscapes are converted into 5-classes - so the trained model will learn to segment 5-classes (background, road, person, road signs, vehicle). 
 * Note: The number of classes and class mappings can be easily changed in this script. The network model prototxt may also need to be changed if the number of classes chosen is more than the output channels in the model.
 * Note: this 5-class training is different from the typical [19-class training done for cityscapes](https://github.com/mcordts/cityscapesScripts) and reported on the benchmark website. 
