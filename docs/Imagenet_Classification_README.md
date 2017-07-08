@@ -14,7 +14,8 @@ https://github.com/amd/OpenCL-caffe/wiki/Instructions-to-create-ImageNet-2012-da
 * The above webpage also explains how to create lmdb database. It can also be created by executing  ./tools/utils/create_imagenet_classification_lmdb.sh. Before executing, open this file and modify the DATA field to point to the location where ImageNet train and val folders are placed.
 
 * Note: The imagenet download paths in the above page seems to be wrong. The new paths for *ILSVRC2012_img_train.tar* and *ILSVRC2012_img_val.tar* can be seen in:
-https://github.com/tensorflow/models/blob/master/inception/inception/data/download_imagenet.sh
+https://github.com/tensorflow/models/blob/master/inception/inception/data/download_imagenet.sh  
+More details are also available at: http://www.image-net.org/challenges/LSVRC/2012/nonpub-downloads
 
 * After creating the lmdb database, make sure that ilsvrc12_train_lmdb and ilsvrc12_val_lmdb folders are present in ./data folder. (If they are not there, you can either move them or create soft links there)
 
