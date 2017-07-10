@@ -18,11 +18,11 @@ echo Logging output to "$LOG"
 caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #------------------------------------------------
-gpus="0,1,2"
+gpus="0,1"
 max_iter=32000
 stepvalue=24000
 base_lr=1e-4
-use_image_list=0
+use_image_list=1
 solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue]}"
 
 #------------------------------------------------

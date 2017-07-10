@@ -211,13 +211,13 @@ def main():
         threads = 4
         if phase=='train' and config_param.use_image_list:                 
           data_kwargs = {'name': 'data', 'ntop':2, 
-             'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label, 
+             'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label, 'shuffle':1,
              'batch_size': config_param.train_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25, 'threads':threads } }      
           net['data'], net['label'] = L.ImageLabelListData(transform_param=config_param.train_transform_param, **data_kwargs)
           out_layer = 'data' 
         elif phase=='train':                 
           data_kwargs = {'name': 'data', 'ntop':2, 
-             'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label,
+             'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label, 'shuffle':1,
              'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB'), 'threads':threads } }      
           net['data'], net['label'] = L.ImageLabelData(transform_param=config_param.train_transform_param, **data_kwargs)
           out_layer = 'data'           
