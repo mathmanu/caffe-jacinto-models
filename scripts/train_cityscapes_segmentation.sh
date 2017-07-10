@@ -18,11 +18,13 @@ echo Logging output to "$LOG"
 caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #------------------------------------------------
-gpus="0,1"
+gpus="0,1,2"
 max_iter=32000
 stepvalue=24000
 base_lr=1e-4
-use_image_list=1
+use_image_list=0 #known issue - use_image_list=0 && shuffle=1 => hang.
+shuffle=0        #Note shuffle is used only in training
+
 solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue]}"
 
 #------------------------------------------------
@@ -41,10 +43,27 @@ stage="initial"
 weights=$weights_dst
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights','use_image_list':$use_image_list,'num_output':8,\
+'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512}" 
 
 python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$solver_param
+config_name_prev=$config_name
+
+#-------------------------------------------------------
+#l1 regularized training before sparsification
+stage="l1reg"
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
+
+base_lr=1e-5  #use a lower lr for fine tuning
+l1reg_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
+'regularization_type':'L1','weight_decay':1e-5}"
+
+config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
+'image_width':1024,'image_height':512}" 
+
+python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$l1reg_solver_param
 config_name_prev=$config_name
 
 #-------------------------------------------------------
@@ -61,7 +80,7 @@ sparse_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights','use_image_list':$use_image_list,'num_output':8,\
+'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512}" 
 
 python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$sparse_solver_param
@@ -78,7 +97,7 @@ test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_po
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights','use_image_list':$use_image_list,'num_output':8,\
+'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512,\
 'num_test_image':500,'test_batch_size':10,\
 'caffe':'$caffe test'}"
