@@ -1,5 +1,5 @@
 #-------------------------------------------------------
-LOG="training/train-log-`date +'%Y-%m-%d_%H-%M-%S'`.txt"
+LOG="training/eval-log-`date +'%Y-%m-%d_%H-%M-%S'`.txt"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 #-------------------------------------------------------
@@ -40,6 +40,13 @@ python ./tools/utils/infer_segmentation.py --crop $val_crop --resize $val_resize
 #--label_dict="$label_dict_20_to_34" --class_dict="$class_dict"
 echo 'initial eval.'
 
+#------------------------------------------------
+#l1reg model
+val_model="../trained/image_segmentation/cityscapes5_jsegnet21v2/l1reg/deploy.prototxt"
+val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/l1reg/cityscapes5_jsegnet21v2_iter_32000.caffemodel"
+python ./tools/utils/infer_segmentation.py --crop $val_crop --resize $val_resize --model $val_model --weights $val_weights --input $val_input --label $val_label --num_classes=$val_classes --num_images=$num_images --resize_back 
+#--label_dict="$label_dict_20_to_34" --class_dict="$class_dict"
+echo 'l1reg eval.'
 
 #------------------------------------------------
 #sparse model

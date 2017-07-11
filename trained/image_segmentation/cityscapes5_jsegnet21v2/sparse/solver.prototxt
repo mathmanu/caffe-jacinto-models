@@ -1,5 +1,5 @@
-train_net: "training/cityscapes5_jsegnet21v2_2017-07-02_23-02-42/sparse/train.prototxt"
-test_net: "training/cityscapes5_jsegnet21v2_2017-07-02_23-02-42/sparse/test.prototxt"
+train_net: "training/cityscapes5_jsegnet21v2_2017-07-11_18-09-28/sparse/train.prototxt"
+test_net: "training/cityscapes5_jsegnet21v2_2017-07-11_18-09-28/sparse/test.prototxt"
 test_iter: 125
 test_interval: 2000
 base_lr: 1e-05
@@ -11,7 +11,7 @@ power: 1
 momentum: 0.9
 weight_decay: 1e-05
 snapshot: 10000
-snapshot_prefix: "training/cityscapes5_jsegnet21v2_2017-07-02_23-02-42/sparse/cityscapes5_jsegnet21v2"
+snapshot_prefix: "training/cityscapes5_jsegnet21v2_2017-07-11_18-09-28/sparse/cityscapes5_jsegnet21v2"
 solver_mode: GPU
 device_id: 0
 random_seed: 33
@@ -25,8 +25,8 @@ type: "Adam"
 display_sparsity: 1000
 sparse_mode: SPARSE_UPDATE
 sparsity_target: 0.8
-sparsity_step_factor: 0.05
+sparsity_step_factor: 0.01
 sparsity_step_iter: 1000
-sparsity_start_iter: 4000
-sparsity_start_factor: 0.0
+sparsity_start_iter: 0
+sparsity_start_factor: 0.8
 
