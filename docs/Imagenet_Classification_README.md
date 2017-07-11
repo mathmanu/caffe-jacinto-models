@@ -35,12 +35,23 @@ Complexity is reported in GigaMACS for one image crop. Size of the crop is 224x2
 
 As can be seen below, JacintoNet11 provides better accuracy compared to BVLC-AlexNet at lower complexity. It also has lower complexity compared to ResNet10.
 
-|Configuration      |Top-1 accuracy   | Top-5 accuracy |Complexity for 1000 classes|
+|Configuration      |Top-1 accuracy(%)| Top-5 accuracy(%) |Complexity for 1000 classes (GigaMACS)|
 |-------------------|-----------------|----------------|---------------------------|
-|<b>JacintoNet11    |<b>60.91         |<b>83.05        |<b>0.410                   |
+|<b>JacintoNet11    |<b>60.9          |<b>83.05        |<b>0.410                   |
 |ResNet10 [1]       |63.9             |85.2            |0.910                      |
 |BVLC AlexNet [2]   |57.1             |80.2            |0.687                      |
 
+<br>
+Sparsification experiments using JacintoNet11 configuration on ImageNet yelds the following results:
 
+|Configuration                                       |Top-1 accuracy(%)| Delta accuracy(%) |
+|----------------------------------------------------|-----------------|----------------|
+|JacintoNet11 non-sparse                             |60.9             |                |
+|JacintoNet11 sparse (80%) - layer-wise threshold,   <br>l1 regularized training     |57.3         | -3.6           |
+|JacintoNet11 sparse (80%) - channel-wise threshold, <br>l1 regularized training     |59.7         | -1.2           |
+|JacintoNet11 sparse (80%) - channel-wise threshold, <br>additional l1 regularized training round  |59.9  | -1.0    |
+
+<br>
+References:
 [1] "ImageNet pre-trained models with batch normalization", https://arxiv.org/pdf/1612.01452.pdf, https://github.com/cvjena/cnn-models <br>
 [2] "BVLC/caffe/models/bvlc_alexnet" https://github.com/BVLC/caffe/tree/master/models/bvlc_alexnet

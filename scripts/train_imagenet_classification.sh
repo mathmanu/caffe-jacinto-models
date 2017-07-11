@@ -34,24 +34,6 @@ config_name_prev=$config_name
 
 
 #-------------------------------------------------------
-#l1 regularized training
-stage="l1reg"
-weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
-
-max_iter=160000 #320000
-type=SGD
-base_lr=0.01  #use a lower lr for fine tuning
-l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
-'regularization_type':'L1','weight_decay':1e-5}"
-
-config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights'}" 
-python ./models/image_classification.py --config_param="$config_param" --solver_param=$l1reg_solver_param
-config_name_prev=$config_name
-
-
-#-------------------------------------------------------
 #incremental sparsification and finetuning
 stage="sparse"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
