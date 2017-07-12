@@ -48,7 +48,7 @@ Sparsification experiments using JacintoNet11 configuration on ImageNet yelds th
 |----------------------------------------------------|-----------------|----------------|
 |JacintoNet11 non-sparse                             |60.9             |                |
 |JacintoNet11 sparse (80%) - layer-wise threshold,   <br>l1 regularized training     |57.3         | -3.6           |
-|JacintoNet11 sparse (80%) - channel-wise threshold, <br>l1 regularized training     |59.7         | -1.2           |
+|<b>JacintoNet11 sparse (80%) - channel-wise threshold, <br>l1 regularized training     |<b>59.7         |<b> -1.2           |
 |JacintoNet11 sparse (80%) - channel-wise threshold, <br>additional l1 regularized training round  |59.9  | -1.0    |
 
 <br>
