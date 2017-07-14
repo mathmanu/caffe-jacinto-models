@@ -6,7 +6,7 @@ Here a low complexity model called JacintoNet11 is used as an example to demonst
 
 ### Dataset preparation
 
-* Open a bash terminal and change directory into the scripts folder, as explainded earlier.
+* Open a bash terminal and change directory into the *scripts* folder, as explainded earlier.
 
 * The following website gives details of how to obtain the ImageNet dataset and organize the data: 
 https://github.com/amd/OpenCL-caffe/wiki/Instructions-to-create-ImageNet-2012-data
@@ -22,7 +22,7 @@ More details are also available at: http://www.image-net.org/challenges/LSVRC/20
 ### Training 
 * Open the file train_imagenet_classification.sh  and look at the gpus variable. This should reflect the number of gpus that you have. For example, if you have two NVIDIA CUDA supported gpus, the gpus variable should be set to "0,1". If you have more GPUs, modify this field to reflect it so that the training will complete faster.
 
-* Execute the script ./tools/utils/train_imagenet_classification.sh to do the ImageNet training. This will take several hours or days, depending on your GPU configuration. We use polynomial learning rate with 320,000 iterations and an effective batch size of 256, as in [1].
+* Execute the script ./train_imagenet_classification.sh to do the ImageNet training. This will take several hours or days, depending on your GPU configuration. We use polynomial learning rate with 320,000 iterations and an effective batch size of 256, as in [1].
 
 * The training takes around 32 hours when using one NVIDIA GTX 1080 GPU.
 
