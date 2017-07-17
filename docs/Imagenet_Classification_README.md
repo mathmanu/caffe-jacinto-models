@@ -6,19 +6,22 @@ Here a low complexity model called JacintoNet11 is used as an example to demonst
 
 ### Dataset preparation
 
-* The following website gives details of how to obtain the ImageNet dataset and organize the data: 
+* The following website gives details of how to obtain the ImageNet dataset and organize the data. 
 https://github.com/amd/OpenCL-caffe/wiki/Instructions-to-create-ImageNet-2012-data
-Execute step 2 and step 3 in the above link to create the ImageNet files.
 
-* Open a bash terminal and change directory into the *scripts* folder, as explainded earlier.
-
-* Execute the following script for creating the lmdb files for  ImageNet training.
-./tools/utils/create_imagenet_classification_lmdb.sh. 
-Before executing, open this file and modify the DATA field to point to the location where ImageNet train and val folders are placed.
+* Open a bash terminal. Execute step 2 and step 3 in the above link to create the ImageNet image files.
 
 * Note: The imagenet download paths in the above page seems to be wrong. The new paths for *ILSVRC2012_img_train.tar* and *ILSVRC2012_img_val.tar* can be seen in:
 https://github.com/tensorflow/models/blob/master/inception/inception/data/download_imagenet.sh  
 More details are also available at: http://www.image-net.org/challenges/LSVRC/2012/nonpub-downloads
+
+*  Change directory into caffe-jacinto/data. Execute step 4 in the above link, but the name of the script is get_ilsvrc_aux.sh (instead of get_ilsvrc.sh as mentioned in the link)
+
+* Open a bash terminal and change directory into the *caffe-jacinto-models/scripts* folder.
+
+* Execute the following script for creating the lmdb files for  ImageNet training.
+./tools/utils/create_imagenet_classification_lmdb.sh. 
+Before executing, open this file and modify the DATA field to point to the location where ImageNet train and val folders are placed.
 
 * After creating the lmdb database, make sure that ilsvrc12_train_lmdb and ilsvrc12_val_lmdb folders are present in ./data folder. (If they are not there, you can either move them or create soft links there)
 
