@@ -4,7 +4,7 @@
 
 DST=./data
 DATA=/data/hdd/datasets/object-detect/other/ilsvrc/2012
-TOOLS=../../build/tools
+TOOLS=../../caffe-jacinto/build/tools
 
 TRAIN_DATA_ROOT=$DATA/train/
 VAL_DATA_ROOT=$DATA/val/
