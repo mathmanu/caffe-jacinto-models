@@ -6,11 +6,11 @@ Here a low complexity model called JacintoNet11 is used as an example to demonst
 
 ### Dataset preparation
 
-* Open a bash terminal and change directory into the *scripts* folder, as explainded earlier.
-
 * The following website gives details of how to obtain the ImageNet dataset and organize the data: 
 https://github.com/amd/OpenCL-caffe/wiki/Instructions-to-create-ImageNet-2012-data
 Execute step 2 and step 3 in the above link to create the ImageNet files.
+
+* Open a bash terminal and change directory into the *scripts* folder, as explainded earlier.
 
 * Execute the following script for creating the lmdb files for  ImageNet training.
 ./tools/utils/create_imagenet_classification_lmdb.sh. 
