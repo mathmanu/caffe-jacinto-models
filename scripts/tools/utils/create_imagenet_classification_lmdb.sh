@@ -3,7 +3,7 @@
 # N.B. set the path to the imagenet train + val data dirs
 
 DST=./data
-DATA=/data/hdd/datasets/object-detect/other/ilsvrc/2012
+DATA=../../caffe-jacinto/data/ilsvrc12
 TOOLS=../../caffe-jacinto/build/tools
 
 TRAIN_DATA_ROOT=$DATA/train/
