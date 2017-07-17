@@ -10,8 +10,11 @@ Here a low complexity model called JacintoNet11 is used as an example to demonst
 
 * The following website gives details of how to obtain the ImageNet dataset and organize the data: 
 https://github.com/amd/OpenCL-caffe/wiki/Instructions-to-create-ImageNet-2012-data
+Execute step 2 and step 3 in the above link to create the ImageNet files.
 
-* The above webpage also explains how to create lmdb database. It can also be created by executing  ./tools/utils/create_imagenet_classification_lmdb.sh. Before executing, open this file and modify the DATA field to point to the location where ImageNet train and val folders are placed.
+* Execute the following script for creating the lmdb files for  ImageNet training.
+./tools/utils/create_imagenet_classification_lmdb.sh. 
+Before executing, open this file and modify the DATA field to point to the location where ImageNet train and val folders are placed.
 
 * Note: The imagenet download paths in the above page seems to be wrong. The new paths for *ILSVRC2012_img_train.tar* and *ILSVRC2012_img_val.tar* can be seen in:
 https://github.com/tensorflow/models/blob/master/inception/inception/data/download_imagenet.sh  
