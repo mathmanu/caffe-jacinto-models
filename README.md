@@ -12,7 +12,9 @@ Please see the documentation of [tidsp/caffe-jacinto](https://github.com/tidsp/c
 1.  Clone caffe-jacinto. caffe-jacinto and caffe-jacinto-models should be at the same directory level. For example, if the path to this repository is /user/tomato/work/caffe-jacinto-models, then the path to caffe-jacinto should be /user/tomato/work/caffe-jacinto
 2.  Checkout the correct branch
     *git checkout caffe-0.15*
-3.  Build caffe-jacinto. Make sure to build the libraries, tools and pycaffe. Make sure that teh pycaffe folder (for example:  /user/tomato/work/caffe-jacinto/python) is in your environment variable PYTHONPATH
+3.  Build caffe-jacinto. Make sure to build the libraries, tools and pycaffe. Make sure that the pycaffe folder (for example:  /user/tomato/work/caffe-jacinto/python) is in your environment variable PYTHONPATH defined in .bashrc. Also make sure that PYTHONPATH starts with a : so that the import of local folders work.
+Example:<br>
+export PYTHONPATH=:/user/tomato/work/caffe-jacinto/python:$PYTHONPATH
 
 ### Installation
 * After cloning this repository, switch to the branch caffe-0.15, if it is not checked out already.
@@ -23,7 +25,7 @@ Please see the documentation of [tidsp/caffe-jacinto](https://github.com/tidsp/c
 Note that Caffe-jacinto-models does not directly support any embedded/low-power device. But the models trained by it can be used for fast inference on such a device due to the sparsity and quantization.
 
 ### Examples
-The scripts for the following examples are provided int he folder caffe-jacinto-models/scripts. Change dierctory into the scripts folder first, before attempting to start training. For example:
+The scripts for the following examples are provided in the folder caffe-jacinto-models/scripts. Change dierctory into the scripts folder first, before attempting to start training. For example:
 cd /user/tomato/work/caffe-jacinto-models/scripts
 
 ###### Semantic segmentation:
