@@ -12,7 +12,7 @@ echo Logging output to "$LOG"
 #-------------------------------------------------------
 
 #-------------------------------------------------------
-export PYTHONPATH=../../../../python:$PYTHONPATH
+#export PYTHONPATH=../../../../python:$PYTHONPATH
 export MODIFY_LABEL=1
 export DATASETPATH=/data/ssd/datasets/object-detect/ti/tiscapes/data
 #-------------------------------------------------------

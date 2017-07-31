@@ -29,7 +29,9 @@ Before training, create list files needed to train on cityscapes dataset.
 
 ### Results
 
-The validation accuracy is printed in the training log. Following is what we got for the 5-class (background, road, person, road signs, vehicle) training.
+The validation accuracy is printed in the training log. However, this shows the validation accuracy evaluated for cropped regions of the validation data and it typically shows lower accuracy than the actuall full image accuracy. To obtain the accuracy of the full image at original resolution, please refer to the section on "Quality evalutation" below.
+
+Following is what we got for the 5-class (background, road, person, road signs, vehicle) training.
 
 
 |Configuration                                    |Pixel Accuracy  |Mean IOU  |
@@ -47,5 +49,33 @@ The validation accuracy is printed in the training log. Following is what we got
 ### Inference using the trained model
 * This section explains how the trained model can be used for inference on a PC using Caffe-jacinto.
 * Open the file infer_cityscapes_segmentation.sh using a text editor and change the path of deploy model and weights (caffemodel) to the one that is generated in the recent training.
-* Run the file infer_cityscapes_segmentation.sh
-This will create the output images or video in the location corresponding to the output parameter mentioned in the script.
+* Run the file infer_cityscapes_segmentation.sh. 
+* This will create the output images or video in the location corresponding to the output parameter mentioned in the script. 
+* Note that the inference script is set to resize to 1024x512 resolution before inference - this is for fast inference. To do the inference on the full resolution, change the resize parameter used inside the script to:
+resize="2048 1024"
+and in deploy.prototxt used in the script, change to:
+input_shape {
+  dim: 1
+  dim: 3
+  dim: 1024
+  dim: 2048
+}
+
+### Quality evaluation of the trained model
+* The pixel accuracy and mean IOU can be measured by running eval_cityscapes_segmentation.sh
+* In default setting for evaluation, the input images are resized to 1024x512 for fast evaluation. However, this is not good for best quality.
+* To obtain best quality, please do the evaluation on full resolution. For this, change the resize parameter used inside the script to:
+resize="2048 1024"
+and in all the deploy.prototxt files used in the script, change to:
+input_shape {
+  dim: 1
+  dim: 3
+  dim: 1024
+  dim: 2048
+}
+
+### Notes
+* Doing the training with 
+use_image_list=1
+shuffle=1
+in train_cityscapes_training.sh will provide better results than what can be obtained with default settings. But that will take more time to complete the training.
