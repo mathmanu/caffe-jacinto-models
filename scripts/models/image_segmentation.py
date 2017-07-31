@@ -208,7 +208,8 @@ def main():
         #get the proto string for the data layer in train phase seperately and return it
           
         train_proto_str = []
-        threads = 4
+        #more threads doesn't seem to help speed up - but you can try increasing this, at the cost of system becoming more slugginsh to respond if you are doing something else parallely.
+        threads = 1 #4
         if phase=='train' and config_param.use_image_list:                 
           data_kwargs = {'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label, 'shuffle':config_param.shuffle,
