@@ -1,5 +1,5 @@
 #-------------------------------------------------------
-LOG="training/train-log-`date +'%Y-%m-%d_%H-%M-%S'`.txt"
+LOG="training/infer-log-`date +'%Y-%m-%d_%H-%M-%S'`.txt"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 #-------------------------------------------------------
