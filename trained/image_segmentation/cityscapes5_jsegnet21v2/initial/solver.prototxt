@@ -1,5 +1,5 @@
-train_net: "training/cityscapes5_jsegnet21v2_2017-07-02_23-02-42/initial/train.prototxt"
-test_net: "training/cityscapes5_jsegnet21v2_2017-07-02_23-02-42/initial/test.prototxt"
+train_net: "training/cityscapes5_jsegnet21v2_2017-07-31_18-11-04/initial/train.prototxt"
+test_net: "training/cityscapes5_jsegnet21v2_2017-07-31_18-11-04/initial/test.prototxt"
 test_iter: 125
 test_interval: 2000
 base_lr: 0.0001
@@ -11,7 +11,7 @@ power: 1
 momentum: 0.9
 weight_decay: 0.0001
 snapshot: 10000
-snapshot_prefix: "training/cityscapes5_jsegnet21v2_2017-07-02_23-02-42/initial/cityscapes5_jsegnet21v2"
+snapshot_prefix: "training/cityscapes5_jsegnet21v2_2017-07-31_18-11-04/initial/cityscapes5_jsegnet21v2"
 solver_mode: GPU
 device_id: 0
 random_seed: 33
