@@ -45,7 +45,7 @@ def main():
     config_param.caffe = '../../caffe-jacinto/build/tools/caffe.bin train'
     
     # Set true if you want to start training right after generating all files.
-    config_param.run_soon = True
+    config_param.run_soon = False
     # Set true if you want to load from most recently saved snapshot.
     # Otherwise, we will load from the pretrain_model defined below.
     config_param.resume_training = True
@@ -117,7 +117,7 @@ def main():
     # snapshot prefix.
     config_param.snapshot_prefix = "{}/{}_{}".format(config_param.snapshot_dir, config_param.dataset, config_param.model_name)
     # job script path.
-    job_file_base_name = 'test' if(config_param.caffe.split(' ')[1] == 'test') else 'train'
+    job_file_base_name = 'run' #'test' if(config_param.caffe.split(' ')[1] == 'test') else 'train'
     config_param.job_file_base = "{}/{}".format(config_param.job_dir, job_file_base_name)
     config_param.log_file = "{}.log".format(config_param.job_file_base)    
     config_param.job_file = "{}.sh".format(config_param.job_file_base)

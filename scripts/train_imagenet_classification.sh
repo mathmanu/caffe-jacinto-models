@@ -74,3 +74,8 @@ python ./models/image_classification.py --config_param="$config_param" --solver_
 config_name_prev=$config_name
 
 
+#-------------------------------------------------------
+#run
+for f in `command ls "$folder_name"`; do "$folder_name"/$f/run.sh; done
+
+
