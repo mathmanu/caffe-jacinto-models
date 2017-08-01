@@ -105,3 +105,9 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$test_solver_param
 config_name_prev=$config_name
 
+
+#-------------------------------------------------------
+#run
+for f in `command ls "$folder_name"`; do "$folder_name"/$f/run.sh; done
+
+
