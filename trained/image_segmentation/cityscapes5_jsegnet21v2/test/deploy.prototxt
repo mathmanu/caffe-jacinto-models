@@ -947,9 +947,9 @@ layer {
   }
 }
 layer {
-  name: "prob"
-  type: "Softmax"
+  name: "argMaxOut"
+  type: "ArgMax"
   bottom: "out_deconv_final_up8"
-  top: "prob"
+  top: "argMaxOut"
 }
 
