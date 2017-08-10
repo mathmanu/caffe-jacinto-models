@@ -264,7 +264,8 @@ def main():
             net["accuracy/top5"] = L.Accuracy(net[out_layer], net['label'], accuracy_param=accuracy_param_top5, 
                 include=dict(phase=caffe_pb2.Phase.Value('TEST')))
         elif phase=='deploy':
-            net['argMaxOut'] = L.ArgMax(net[out_layer]) 
+            argmax_param={'axis':1}
+            net['argMaxOut'] = L.ArgMax(net[out_layer], argmax_param=argmax_param) 
                  
         return net
     #----------------------
