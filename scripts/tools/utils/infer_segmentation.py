@@ -319,11 +319,15 @@ def infer_image_list(args, net):
           cv2.imwrite(output_name, output_blob) 
           output_name_list.append(output_name)           
         count += 1
-                  
+        if ((count % (total/20)) == 0):
+          accuracy, mean_iou, iou = compute_accuracy(args, confusion_matrix)   
+          print('pixel_accuracy={}, mean_iou={}, iou={}'.format(accuracy, mean_iou, iou))
+         
+      print('-------------------------------------------------------------')               
       accuracy, mean_iou, iou = compute_accuracy(args, confusion_matrix)   
-
-      print('pixel_accuracy={}, mean_iou={}, iou={}'.format(accuracy, mean_iou, iou))
-      
+      print('Final: pixel_accuracy={}, mean_iou={}, iou={}'.format(accuracy, mean_iou, iou))
+      print('-------------------------------------------------------------')    
+            
     if args.output:        
       with open(os.path.join(args.output,"output_name_list.txt"), "w") as output_name_list_file:
         print(output_name_list)
