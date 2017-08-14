@@ -4,6 +4,8 @@ from google.protobuf import text_format
 import ast
 from models.model_libs import *
 import models.jacintonet_v2
+import models.mobilenet
+import models.mobileresnet
 
 import math
 import os
@@ -86,6 +88,17 @@ def main():
     config_param.test_batch_size = 50
     config_param.test_batch_size_in_proto = config_param.test_batch_size      
     
+    config_param.train_transform_param = {
+            'mirror': True,
+            'mean_value': [0, 0, 0],
+            'crop_size': config_param.crop_size
+            }
+    config_param.test_transform_param = {
+            'mirror': False,
+            'mean_value': [0, 0, 0],
+            'crop_size': config_param.crop_size
+            }
+                
     #Update from params given from outside
     #if args.config_param != None:
     #  config_param.update(args.config_param)   
@@ -165,17 +178,6 @@ def main():
       for k in args.solver_param.keys():
         solver_param.__setitem__(k,args.solver_param[k])	  
         #solver_param.__setattr__(k,args.solver_param[k])
-		
-    config_param.train_transform_param = {
-            'mirror': True,
-            'mean_value': [0, 0, 0],
-            'crop_size': config_param.crop_size
-            }
-    config_param.test_transform_param = {
-            'mirror': False,
-            'mean_value': [0, 0, 0],
-            'crop_size': config_param.crop_size
-            }
 						
     ### Hopefully you don't need to change the following ###
     # Check file.
@@ -226,6 +228,12 @@ def main():
             out_layer = models.jacintonet_v2.jacintonet11(net, from_layer=out_layer,\
             num_output=config_param.num_output,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
             freeze_layers=config_param.freeze_layers)
+        elif 'mobilenet' in config_param.model_name:
+            wide_factor = float(config_param.model_name.split('-')[1])
+            out_layer = models.mobilenet.mobilenet(net, from_layer=out_layer, wide_factor=wide_factor)
+        elif 'mobileresnet' in config_param.model_name:
+            wide_factor = float(config_param.model_name.split('-')[1])     
+            out_layer = models.mobileresnet.mobileresnet(net, from_layer=out_layer, wide_factor=wide_factor)
         else:
             ValueError("Invalid model name")
 
