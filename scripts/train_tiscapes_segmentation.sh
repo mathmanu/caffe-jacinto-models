@@ -132,7 +132,7 @@ python ./models/image_segmentation.py --config_param="$config_param" --solver_pa
 
 #-------------------------------------------------------
 #run
-list_dirs=`command ls -d1 "$folder_name"/*/ | command cut -f2 -d/`
+list_dirs=`command ls -d1 "$folder_name"/*/ | command cut -f3 -d/`
 for f in $list_dirs; do "$folder_name"/$f/run.sh; done
 
 
