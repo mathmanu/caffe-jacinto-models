@@ -103,11 +103,37 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'caffe':'$caffe test'}"
 
 python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$test_solver_param
-config_name_prev=$config_name
+#config_name_prev=$config_name
+
+
+#-------------------------------------------------------
+#test_quantize
+stage="test_quantize"
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
+
+test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
+'regularization_type':'L1','weight_decay':1e-5,\
+'sparse_mode':1,'display_sparsity':1000}"
+
+config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
+'image_width':1024,'image_height':512,\
+'num_test_image':500,'test_batch_size':10,\
+'caffe':'$caffe test'}"
+
+echo "quantize: true" > $config_name/test_new.prototxt
+cat $config_name/test.prototxt >> $config_name/test_new.prototxt
+mv --force $config_name/test_new.prototxt $config_name/test.prototxt
+
+python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$test_solver_param
+#config_name_prev=$config_name
 
 
 #-------------------------------------------------------
 #run
-for f in `command ls "$folder_name"`; do "$folder_name"/$f/run.sh; done
+list_dirs=`command ls -d1 "$folder_name"/*/ | command cut -f2 -d/`
+for f in $list_dirs; do "$folder_name"/$f/run.sh; done
+
 
 

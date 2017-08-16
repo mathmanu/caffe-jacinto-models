@@ -86,7 +86,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'caffe':'$caffe test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
-config_name_prev=$config_name
+#config_name_prev=$config_name
 
 
 #-------------------------------------------------------
@@ -114,11 +114,13 @@ echo "quantize: true" > $config_name/test_new.prototxt
 cat $config_name/test.prototxt >> $config_name/test_new.prototxt
 mv --force $config_name/test_new.prototxt $config_name/test.prototxt
 
-config_name_prev=$config_name
+#config_name_prev=$config_name
 
 
 #-------------------------------------------------------
 #run
-for f in `command ls "$folder_name"`; do "$folder_name"/$f/run.sh; done
+list_dirs=`command ls -d1 "$folder_name"/*/ | command cut -f2 -d/`
+for f in $list_dirs; do "$folder_name"/$f/run.sh; done
+
 
 
