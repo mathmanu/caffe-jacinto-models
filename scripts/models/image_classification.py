@@ -88,15 +88,17 @@ def main():
     config_param.test_batch_size = 50
     config_param.test_batch_size_in_proto = config_param.test_batch_size      
     
+    crop_size_to_use = args.config_param['crop_size'] if 'crop_size' in args.config_param else config_param.crop_size
+    
     config_param.train_transform_param = {
             'mirror': True,
             'mean_value': [0, 0, 0],
-            'crop_size': config_param.crop_size
+            'crop_size': crop_size_to_use
             }
     config_param.test_transform_param = {
             'mirror': False,
             'mean_value': [0, 0, 0],
-            'crop_size': config_param.crop_size
+            'crop_size': crop_size_to_use
             }
                 
     #Update from params given from outside
