@@ -14,8 +14,6 @@ LOG=$folder_name/train-log_"$DATE_TIME".txt
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
-#------------------------------------------------
-caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #------------------------------------------------
 gpus="0,1,2"
@@ -100,11 +98,10 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512,\
 'num_test_image':500,'test_batch_size':10,\
-'caffe':'$caffe test'}"
+'caffe_cmd':'test'}" 
 
 python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
-
 
 #-------------------------------------------------------
 #test_quantize
@@ -120,13 +117,18 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512,\
 'num_test_image':500,'test_batch_size':10,\
-'caffe':'$caffe test'}"
+'caffe_cmd':'test'}" 
+
+python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$test_solver_param
+
+echo "quantize: true" > $config_name/deploy_new.prototxt
+cat $config_name/deploy.prototxt >> $config_name/deploy_new.prototxt
+mv --force $config_name/deploy_new.prototxt $config_name/deploy.prototxt
 
 echo "quantize: true" > $config_name/test_new.prototxt
 cat $config_name/test.prototxt >> $config_name/test_new.prototxt
 mv --force $config_name/test_new.prototxt $config_name/test.prototxt
 
-python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
 
 

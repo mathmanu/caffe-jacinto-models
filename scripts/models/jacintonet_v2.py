@@ -115,7 +115,8 @@ def jacintonet11(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
    return out_layer
    
    
-def jsegnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None): 
+def jsegnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
+   upsample=True): 
    #Top and Bottom blobs must be different for NVCaffe BN caffe-0.15
    #Inplace BN is slightly slower in NVCaffe caffe-0.16
    in_place = True 
@@ -259,20 +260,326 @@ def jsegnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_outpu
    out_layer = 'ctx_final/relu'
    net[out_layer] = L.ReLU(net[from_layer], in_place=True) 
                
-   #frozen upsampling layer         
-   from_layer = out_layer
-   out_layer = 'out_deconv_final_up2'   
-   deconv_kwargs = {  'param': { 'lr_mult': 0, 'decay_mult': 0 },
-       'convolution_param': { 'num_output': num_output, 'bias_term': False, 'pad': 1, 'kernel_size': 4, 'group': num_output, 'stride': 2, 
-       'weight_filler': { 'type': 'bilinear' } } }       
-   net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)   
-           
-   from_layer = out_layer
-   out_layer = 'out_deconv_final_up4'       
-   net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs) 
-   
-   from_layer = out_layer
-   out_layer = 'out_deconv_final_up8'       
-   net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)     
+   #frozen upsampling layer   
+   if upsample:      
+       from_layer = out_layer
+       out_layer = 'out_deconv_final_up2'   
+       deconv_kwargs = {  'param': { 'lr_mult': 0, 'decay_mult': 0 },
+           'convolution_param': { 'num_output': num_output, 'bias_term': False, 'pad': 1, 'kernel_size': 4, 'group': num_output, 'stride': 2, 
+           'weight_filler': { 'type': 'bilinear' } } }       
+       net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)   
+               
+       from_layer = out_layer
+       out_layer = 'out_deconv_final_up4'       
+       net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs) 
+       
+       from_layer = out_layer
+       out_layer = 'out_deconv_final_up8'       
+       net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)     
                             
    return out_layer    
+
+
+def jdetnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
+   upsample=False, num_intermediate=512, output_stride=16): 
+   #Top and Bottom blobs must be different for NVCaffe BN caffe-0.15
+   #Inplace BN is slightly slower in NVCaffe caffe-0.16
+   eltwise_final = False
+   in_place = True 
+   if stride_list == None:
+     stride_list = [2,2,2,2,2] #[2,2,2,2,1]
+   if dilation_list == None:
+     dilation_list = [1,1,1,1,1] #[1,1,1,1,2]
+
+   #--
+   stage=0
+   stride=stride_list[stage]
+   dilation=dilation_list[stage]
+      	    
+   out_layer = 'conv1a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=32, kernel_size=[5,5], pad=2*dilation, stride=stride, group=1, dilation=dilation, in_place=in_place)  
+	    
+   from_layer = out_layer
+   out_layer = 'conv1b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=32, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place)       
+   
+   #--	    	 	 
+   stage=1
+   stride=stride_list[stage]
+   dilation=dilation_list[stage] 
+      	 	 
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':stride, 'stride':stride}      
+   from_layer = out_layer
+   out_layer = 'pool1'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)    
+   
+   from_layer = out_layer
+   out_layer = 'res2a_branch2a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=64, kernel_size=[3,3], pad=dilation, stride=1, group=1, dilation=dilation, in_place=in_place)   
+   
+   from_layer = out_layer
+   out_layer = 'res2a_branch2b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=64, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place)     
+   	 
+   #--   
+   stage=2
+   stride=stride_list[stage]
+   dilation=dilation_list[stage] 
+      	 
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':stride, 'stride':stride}      
+   from_layer = out_layer
+   out_layer = 'pool2'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)    
+
+   from_layer = out_layer
+   out_layer = 'res3a_branch2a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=128, kernel_size=[3,3], pad=dilation, stride=1, group=1, dilation=dilation, in_place=in_place)   
+   
+   from_layer = out_layer
+   out_layer = 'res3a_branch2b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=128, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place)    
+   
+   #--   
+   stage=3
+   stride=stride_list[stage]
+   dilation=dilation_list[stage] 
+      
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':stride, 'stride':stride}      
+   from_layer = out_layer
+   out_layer = 'pool3'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
+ 
+   from_layer = out_layer
+   out_layer = 'res4a_branch2a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=256, kernel_size=[3,3], pad=dilation, stride=1, group=1, dilation=dilation, in_place=in_place)   
+   
+   from_layer = out_layer 
+   out_layer = 'res4a_branch2b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=256, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place)        
+   
+   #--   
+   #by default, removes this pooling and dilates the subsequent layers
+   stage=4
+   stride=stride_list[stage]
+   dilation=dilation_list[stage]    
+   
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':stride, 'stride':stride}      
+   from_layer = out_layer
+   out_layer = 'pool4'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)     
+      
+   from_layer = out_layer
+   out_layer = 'res5a_branch2a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=512, kernel_size=[3,3], pad=dilation, stride=1, group=1, dilation=dilation, in_place=in_place)   
+   
+   from_layer = out_layer
+   out_layer = 'res5a_branch2b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=512, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place) 
+   
+   #---------------------------     
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2}      
+   from_layer = out_layer
+   out_layer = 'pool5'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param) 
+
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2}      
+   from_layer = out_layer
+   out_layer = 'pool6'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
+   
+   #---------------------------  
+   if output_stride <= 8:
+       from_layer = 'res3a_branch2b' if in_place else 'res3a_branch2b/bn'
+       out_layer3 = 'out3a'
+       out_layer3 = ConvBNLayer(net, from_layer, out_layer3, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[3,3], pad=1, stride=1, group=4, dilation=1, in_place=in_place) 
+
+   if output_stride <= 16:
+       from_layer = 'res4a_branch2b/relu'
+       out_layer = 'ctx_final1'
+       out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_output, kernel_size=[3,3], pad=1, stride=1, group=4, dilation=1, in_place=in_place)        
+ 
+   from_layer = 'res5a_branch2b/relu'
+   out_layer = 'ctx_final2'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_output, kernel_size=[3,3], pad=1, stride=1, group=4, dilation=1, in_place=in_place)        
+
+   from_layer = 'pool5'
+   out_layer = 'ctx_final4'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_output, kernel_size=[3,3], pad=1, stride=1, group=1, dilation=1, in_place=in_place)        
+
+   from_layer = 'pool6'
+   out_layer = 'ctx_final8'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_output, kernel_size=[3,3], pad=1, stride=1, group=1, dilation=1, in_place=in_place)        
+   
+   return out_layer
+   
+def jdetpspnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
+   upsample=False, num_intermediate=256, output_stride=16): 
+   #Top and Bottom blobs must be different for NVCaffe BN caffe-0.15
+   #Inplace BN is slightly slower in NVCaffe caffe-0.16
+   eltwise_final = False
+   in_place = True 
+   if stride_list == None:
+     stride_list = [2,2,2,2,2] #[2,2,2,2,1]
+   if dilation_list == None:
+     dilation_list = [1,1,1,1,1] #[1,1,1,1,2]
+
+   #--
+   stage=0
+   stride=stride_list[stage]
+   dilation=dilation_list[stage]
+      	    
+   out_layer = 'conv1a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=32, kernel_size=[5,5], pad=2*dilation, stride=stride, group=1, dilation=dilation, in_place=in_place)  
+	    
+   from_layer = out_layer
+   out_layer = 'conv1b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=32, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place)       
+   
+   #--	    	 	 
+   stage=1
+   stride=stride_list[stage]
+   dilation=dilation_list[stage] 
+      	 	 
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':stride, 'stride':stride}      
+   from_layer = out_layer
+   out_layer = 'pool1'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)    
+   
+   from_layer = out_layer
+   out_layer = 'res2a_branch2a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=64, kernel_size=[3,3], pad=dilation, stride=1, group=1, dilation=dilation, in_place=in_place)   
+   
+   from_layer = out_layer
+   out_layer = 'res2a_branch2b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=64, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place)     
+   	 
+   #--   
+   stage=2
+   stride=stride_list[stage]
+   dilation=dilation_list[stage] 
+      	 
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':stride, 'stride':stride}      
+   from_layer = out_layer
+   out_layer = 'pool2'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)    
+
+   from_layer = out_layer
+   out_layer = 'res3a_branch2a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=128, kernel_size=[3,3], pad=dilation, stride=1, group=1, dilation=dilation, in_place=in_place)   
+   
+   from_layer = out_layer
+   out_layer = 'res3a_branch2b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=128, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place)    
+   
+   #--   
+   stage=3
+   stride=stride_list[stage]
+   dilation=dilation_list[stage] 
+      
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':stride, 'stride':stride}      
+   from_layer = out_layer
+   out_layer = 'pool3'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
+ 
+   from_layer = out_layer
+   out_layer = 'res4a_branch2a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=256, kernel_size=[3,3], pad=dilation, stride=1, group=1, dilation=dilation, in_place=in_place)   
+   
+   from_layer = out_layer 
+   out_layer = 'res4a_branch2b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=256, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place)        
+   
+   #--   
+   #by default, removes this pooling and dilates the subsequent layers
+   stage=4
+   stride=stride_list[stage]
+   dilation=dilation_list[stage]    
+   
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':stride, 'stride':stride}      
+   from_layer = out_layer
+   out_layer = 'pool4'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)     
+      
+   from_layer = out_layer
+   out_layer = 'res5a_branch2a'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=512, kernel_size=[3,3], pad=dilation, stride=1, group=1, dilation=dilation, in_place=in_place)   
+   
+   from_layer = out_layer
+   out_layer = 'res5a_branch2b'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=512, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation, in_place=in_place) 
+   
+   #---------------------------     
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2}      
+   from_layer = out_layer
+   out_layer = 'pool5'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param) 
+
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2}      
+   from_layer = out_layer
+   out_layer = 'pool6'
+   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)
+   
+   #---------------------------  
+   from_layer = 'res4a_branch2b/relu'
+   out_layer = 'ctx_final1'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[3,3], pad=1, stride=1, group=4, dilation=1, in_place=in_place)        
+
+   from_layer = 'res5a_branch2b/relu'
+   out_layer = 'ctx_final2'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[3,3], pad=1, stride=1, group=4, dilation=1, in_place=in_place)        
+
+   from_layer = 'pool5'
+   out_layer = 'ctx_final3'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[3,3], pad=1, stride=1, group=1, dilation=1, in_place=in_place)        
+
+   from_layer = 'pool6'
+   out_layer = 'ctx_final4'
+   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[3,3], pad=1, stride=1, group=1, dilation=1, in_place=in_place)        
+   num_output_curr = num_intermediate
+   
+   #---------------------------  
+   #deconvolution layers
+   from_layer = 'ctx_final4/relu'
+   out_layer = 'ctx_final4/up2'
+   deconv_kwargs = {  'param': { 'lr_mult': 0, 'decay_mult': 0 },
+       'convolution_param': { 'num_output': num_intermediate, 'bias_term': False, 'pad': 1, 'kernel_size': 4, 'group': num_intermediate, 'stride': 2, 
+       'weight_filler': { 'type': 'bilinear' } } }       
+   net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)   
+   from_layer = out_layer
+   out_layer = 'ctx_final3/concat'
+   net[out_layer] = L.Concat(net[from_layer], net['ctx_final3/relu'])
+   num_output_curr = num_output_curr + num_intermediate
+   
+   from_layer = out_layer
+   out_layer = 'ctx_final3/up2'
+   deconv_kwargs = {  'param': { 'lr_mult': 0, 'decay_mult': 0 },
+       'convolution_param': { 'num_output': num_output_curr, 'bias_term': False, 'pad': 1, 'kernel_size': 4, 'group': num_output_curr, 'stride': 2, 
+       'weight_filler': { 'type': 'bilinear' } } }       
+   net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)   
+   from_layer = out_layer
+   out_layer = 'ctx_final2/concat'
+   net[out_layer] = L.Concat(net[from_layer], net['ctx_final2/relu'])
+   num_output_curr = num_output_curr + num_intermediate
+   
+   from_layer = out_layer
+   out_layer = 'ctx_final2/up2'
+   deconv_kwargs = {  'param': { 'lr_mult': 0, 'decay_mult': 0 },
+       'convolution_param': { 'num_output': num_output_curr, 'bias_term': False, 'pad': 1, 'kernel_size': 4, 'group': num_output_curr, 'stride': 2, 
+       'weight_filler': { 'type': 'bilinear' } } }       
+   net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)   
+   from_layer = out_layer
+   out_layer = 'ctx_final1/concat'
+   net[out_layer] = L.Concat(net[from_layer], net['ctx_final1/relu'])
+   num_output_curr = num_output_curr + num_intermediate
+   
+   #create two splits, for the convenience of the subsequent SSD layers.
+   #otherwise the subsequent mbox layer names get confused.
+   from_layer = 'ctx_final1/concat'
+   out_layer = 'ctx_output1'
+   net[out_layer] = L.Split(net[from_layer])
+
+   from_layer = 'ctx_final1/concat'
+   out_layer = 'ctx_output2'
+   net[out_layer] = L.Split(net[from_layer])
+   
+   return out_layer

@@ -30,9 +30,10 @@ def UnpackVariable(var, num):
 def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
     kernel_size, pad, stride, use_scale=False, moving_average_fraction=0.99, eps=0.0001, conv_prefix='', conv_postfix='',
     bn_prefix='', bn_postfix='/bn', scale_prefix='', scale_postfix='/scale',
-    bias_prefix='', bias_postfix='/bias', group=1, dilation=1, in_place=True, use_bias=False):
-  if use_bn:
-    # parameters for convolution layer with batchnorm.
+    bias_prefix='', bias_postfix='/bias', group=1, dilation=1, in_place=True, use_bias=False, lr_mult=1, engine=None):
+            
+  # parameters for convolution layer with batchnorm.
+  if use_bn:  
     kwargs = {
         'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)],
         'weight_filler': dict(type='msra'),
@@ -40,27 +41,6 @@ def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
         'bias_filler': dict(type='constant', value=0),        
         'group': group, 'dilation': dilation
         }
-    # parameters for batchnorm layer.
-    bn_kwargs = {
-        #not needed (and wrong order) for caffe-0.16
-        #'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=1, decay_mult=1), dict(lr_mult=0, decay_mult=0), dict(lr_mult=0, decay_mult=0)],     
-        #'scale_filler': dict(type='constant', value=1.0),
-        #'bias_filler': dict(type='constant', value=0.0),
-        'moving_average_fraction': moving_average_fraction, 'eps': eps, 'scale_bias': True                  
-        }
-    # parameters for scale bias layer after batchnorm.
-    if use_scale:
-      sb_kwargs = {
-          'bias_term': True,
-          'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=1, decay_mult=0)],
-          'filler': dict(type='constant', value=1.0),
-          'bias_filler': dict(type='constant', value=0.0),
-          }
-    else:
-      bias_kwargs = {
-          'param': [dict(lr_mult=1, decay_mult=0)],
-          'filler': dict(type='constant', value=0.0),
-          }
   else:
     kwargs = {
         'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=2, decay_mult=0)],
@@ -68,7 +48,43 @@ def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
         'bias_term': True,         
         'bias_filler': dict(type='constant', value=0),
         'group': group, 'dilation': dilation
+        }  
+  if engine is not None:
+    kwargs['engine'] = engine
+      
+  if use_scale:
+    # parameters for scale bias layer after batchnorm.
+    sb_kwargs = {
+        'bias_term': True
+        #,'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=1, decay_mult=0)],
+        #'filler': dict(type='constant', value=1.0),
+        #'bias_filler': dict(type='constant', value=0.0),
+        }   
+                             
+  if use_bn and use_scale:
+    # parameters for batchnorm layer.
+    bn_kwargs = {
+        #not needed (and wrong order) for caffe-0.16
+        #'param': [dict(lr_mult=0, decay_mult=0), dict(lr_mult=0, decay_mult=0), dict(lr_mult=0, decay_mult=0)],     
+        #'scale_filler': dict(type='constant', value=1.0),
+        #'bias_filler': dict(type='constant', value=0.0),
+        'moving_average_fraction': moving_average_fraction, 'eps': eps
+        #,'scale_bias': True                  
         }
+  elif use_bn:
+    bn_kwargs = {
+        #not needed (and wrong order) for caffe-0.16
+        #'param': [dict(lr_mult=1, decay_mult=1), dict(lr_mult=1, decay_mult=1), dict(lr_mult=0, decay_mult=0), dict(lr_mult=0, decay_mult=0)],     
+        #'scale_filler': dict(type='constant', value=1.0),
+        #'bias_filler': dict(type='constant', value=0.0),
+        'moving_average_fraction': moving_average_fraction, 'eps': eps,'scale_bias': True                  
+        }
+                   
+  if use_bias:
+      bias_kwargs = {
+          'param': [dict(lr_mult=1, decay_mult=0)],
+          'filler': dict(type='constant', value=0.0),
+          }
 
   out_layer = None
   conv_name = '{}{}{}'.format(conv_prefix, out_name, conv_postfix)
@@ -100,8 +116,31 @@ def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
     relu_name = '{}/relu'.format(conv_name)
     net[relu_name] = L.ReLU(net[out_layer], in_place=True)
     #out_layer = relu_name   
-  return out_layer
+    
+  return out_layer    
+    
 
+#caffe-ssd has the following constraints
+#use_scale must be True
+#engine must the CAFFE if group > 1
+def ConvBNLayerSSD(net, from_layer, out_name, use_bn, use_relu, num_output,
+    kernel_size, pad, stride, use_scale=False, moving_average_fraction=0.99, eps=0.0001, conv_prefix='', conv_postfix='',
+    bn_prefix='', bn_postfix='/bn', scale_prefix='', scale_postfix='/scale',
+    bias_prefix='', bias_postfix='/bias', group=1, dilation=1, in_place=True, use_bias=False, lr_mult=1):
+  caffe_ssd_conv_group_bug = False
+  if (group>1) and caffe_ssd_conv_group_bug:
+    return ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
+    kernel_size, pad, stride, use_scale, moving_average_fraction, eps, conv_prefix, conv_postfix,
+    bn_prefix, bn_postfix, scale_prefix, scale_postfix,
+    bias_prefix, bias_postfix, group, dilation, in_place, use_bias, lr_mult, engine=P.Convolution.CAFFE)
+  else:
+    return ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
+    kernel_size, pad, stride, use_scale, moving_average_fraction, eps, conv_prefix, conv_postfix,
+    bn_prefix, bn_postfix, scale_prefix, scale_postfix,
+    bias_prefix, bias_postfix, group, dilation, in_place, use_bias, lr_mult)         
+   
+    
+         
 def ResBody(net, from_layer, block_name, out2a, out2b, out2c, stride, use_branch1):
   # ResBody(net, 'pool1', '2a', 64, 64, 256, 1, True)
 
