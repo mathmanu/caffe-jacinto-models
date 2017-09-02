@@ -14,8 +14,7 @@ LOG=$folder_name/train-log_"$DATE_TIME".txt
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
-#------------------------------------------------
-caffe="../../caffe-jacinto/build/tools/caffe.bin"
+
 
 #-------------------------------------------------------
 gpus="0,1,2"
@@ -68,7 +67,7 @@ config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights',\
 'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
-'caffe':'$caffe test'}" 
+'caffe_cmd':'test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -87,7 +86,7 @@ config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights',\
 'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
-'caffe':'$caffe test'}" 
+'caffe_cmd':'test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
 

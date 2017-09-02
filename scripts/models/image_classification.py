@@ -43,9 +43,13 @@ def main():
     ### Modify the following parameters accordingly ###
     # The directory which contains the caffe code.
     # We assume you are running the script at the CAFFE_ROOT.
-    config_param.caffe_root = os.getcwd()
-    config_param.caffe = '../../caffe-jacinto/build/tools/caffe.bin train'
-    
+    config_param.caffe_root = os.environ['CAFFE_ROOT'] if 'CAFFE_ROOT' in os.environ else None
+    if config_param.caffe_root == None:
+      config_param.caffe_root = os.environ['CAFFE_HOME'] if 'CAFFE_HOME' in os.environ else None
+    if config_param.caffe_root != None:
+      config_param.caffe_root = config_param.caffe_root + '/build/tools/caffe.bin'
+    config_param.caffe_cmd = 'train'
+
     # Set true if you want to start training right after generating all files.
     config_param.run_soon = False
     # Set true if you want to load from most recently saved snapshot.
@@ -132,7 +136,7 @@ def main():
     # snapshot prefix.
     config_param.snapshot_prefix = "{}/{}_{}".format(config_param.snapshot_dir, config_param.dataset, config_param.model_name)
     # job script path.
-    job_file_base_name = 'run' #'test' if(config_param.caffe.split(' ')[1] == 'test') else 'train'
+    job_file_base_name = 'run' 
     config_param.job_file_base = "{}/{}".format(config_param.job_dir, job_file_base_name)
     config_param.log_file = "{}.log".format(config_param.job_file_base)    
     config_param.job_file = "{}.sh".format(config_param.job_file_base)
@@ -335,8 +339,8 @@ def main():
     # Create job file.
     with open(config_param.job_file, 'w') as f:
       f.write('cd {}\n'.format(config_param.caffe_root))
-      f.write('{} \\\n'.format(config_param.caffe))    
-      if(config_param.caffe.split(' ')[1] == 'test'):
+      f.write('{} {} \\\n'.format(config_param.caffe_root, config_param.caffe_cmd))    
+      if(config_param.caffe_cmd == 'test'):
         f.write('--model="{}" \\\n'.format(config_param.test_net_file))
         f.write('--iterations="{}" \\\n'.format(solver_param['test_iter'][0]))       
       else:
