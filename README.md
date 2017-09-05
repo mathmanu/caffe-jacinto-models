@@ -12,7 +12,9 @@ Please see the documentation of [tidsp/caffe-jacinto](https://github.com/tidsp/c
 1.  Clone caffe-jacinto. caffe-jacinto and caffe-jacinto-models should be at the same directory level. For example, if the path to this repository is /user/tomato/work/caffe-jacinto-models, then the path to caffe-jacinto should be /user/tomato/work/caffe-jacinto
 2.  Checkout the correct branch
     *git checkout caffe-0.15*
-3.  Build caffe-jacinto. Make sure to build the libraries, tools and pycaffe. Make sure that the pycaffe folder (for example:  /user/tomato/work/caffe-jacinto/python) is in your environment variable PYTHONPATH defined in .bashrc. Also make sure that PYTHONPATH starts with a : so that the import of local folders work.
+3.  Build caffe-jacinto. Make sure to build the libraries, tools and pycaffe. 
+4. Make sure that the environment variable CAFFE_ROOT (defined in your ~/.bashrc) points to the caffe-jacinto (or any other caffe) path that you want to use.
+5. Make sure that the pycaffe folder (for example:  /user/tomato/work/caffe-jacinto/python) is in your environment variable PYTHONPATH defined in .bashrc. Also make sure that PYTHONPATH starts with a : so that the import of local folders work.
 Example:<br>
 export PYTHONPATH=:/user/tomato/work/caffe-jacinto/python:$PYTHONPATH
 
