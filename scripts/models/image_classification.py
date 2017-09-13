@@ -57,7 +57,8 @@ def main():
     config_param.resume_training = True
     # If true, Remove old model files.
     config_param.remove_old_models = False
-
+    config_param.display_sparsity = False
+    
     config_param.crop_size = 224
     config_param.image_width = 224
     config_param.image_height = 224
@@ -343,6 +344,8 @@ def main():
       if(config_param.caffe_cmd == 'test'):
         f.write('--model="{}" \\\n'.format(config_param.test_net_file))
         f.write('--iterations="{}" \\\n'.format(solver_param['test_iter'][0]))       
+        if config_param.display_sparsity:
+          f.write('--display_sparsity=1 \\\n')
       else:
         f.write('--solver="{}" \\\n'.format(config_param.solver_file))      
       if train_src_param != None:

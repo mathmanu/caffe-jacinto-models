@@ -14,17 +14,6 @@ LOG=$folder_name/train-log_"$DATE_TIME".txt
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
-
-#------------------------------------------------
-gpus="0,1,2"
-max_iter=32000
-stepvalue=24000
-base_lr=1e-4
-use_image_list=0 #known issue - use_image_list=0 && shuffle=1 => hang.
-shuffle=0        #Note shuffle is used only in training
-
-solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue]}"
-
 #------------------------------------------------
 #Download the pretrained weights
 weights_dst="training/imagenet_jacintonet11v2_iter_320000.caffemodel"
@@ -35,11 +24,25 @@ else
   wget $weights_src -O $weights_dst
 fi
 
+#------------------------------------------------
+#using more than two gpus doesn't seem to be helping when using use_image_list=1, due to read bottleneck.
+gpus="0,1,2"
+
+
 #-------------------------------------------------------
 #Initial training
 stage="initial"
 weights=$weights_dst
+
+max_iter=64000
+stepvalue1=32000
+stepvalue2=48000
+base_lr=1e-4
+use_image_list=0
+shuffle=1
+
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
+solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512}" 
@@ -52,8 +55,12 @@ config_name_prev=$config_name
 stage="l1reg"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-base_lr=1e-5  #use a lower lr for fine tuning
-l1reg_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
+max_iter=32000
+stepvalue1=24000
+stepvalue2=32000
+base_lr=1e-5
+
+l1reg_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
@@ -69,11 +76,14 @@ config_name_prev=$config_name
 stage="sparse"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-base_lr=1e-5  #use a lower lr for fine tuning
-sparse_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
+max_iter=32000
+stepvalue1=24000
+stepvalue2=32000
+
+sparse_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000,\
-'sparsity_target':0.8,'sparsity_start_iter':0,'sparsity_start_factor':0.8,\
+'sparsity_target':0.8,'sparsity_start_iter':3000,'sparsity_start_factor':0.80,\
 'sparsity_step_iter':1000,'sparsity_step_factor':0.01}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
@@ -89,7 +99,7 @@ config_name_prev=$config_name
 stage="test"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
+test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000}"
 
@@ -98,7 +108,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512,\
 'num_test_image':500,'test_batch_size':10,\
-'caffe_cmd':'test'}" 
+'caffe_cmd':'test','display_sparsity':1}" 
 
 python ./models/image_segmentation.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -108,7 +118,7 @@ python ./models/image_segmentation.py --config_param="$config_param" --solver_pa
 stage="test_quantize"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue],\
+test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000}"
 
