@@ -5,6 +5,9 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
 #-------------------------------------------------------
+gpus="0,1,2"
+
+#-------------------------------------------------------
 model_name=jacintonet11v2
 dataset=imagenet
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
@@ -17,7 +20,6 @@ echo Logging output to "$LOG"
 
 
 #-------------------------------------------------------
-gpus="0,1,2"
 max_iter=320000
 base_lr=0.1
 type=SGD
@@ -67,7 +69,7 @@ config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights',\
 'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
-'caffe_cmd':'test'}" 
+'caffe_cmd':'test','display_sparsity':1}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name

@@ -55,7 +55,8 @@ def main():
     config_param.resume_training = True
     # If true, Remove old model files.
     config_param.remove_old_models = False
-
+    config_param.display_sparsity = False
+    
     config_param.crop_size = 640
     config_param.image_width = 640
     config_param.image_height = 640
@@ -90,6 +91,9 @@ def main():
     config_param.num_test_image = 500
     config_param.test_batch_size = 4
     config_param.test_batch_size_in_proto = config_param.test_batch_size      
+    
+    #more threads doesn't seem to help speed up - but you can try increasing this, at the cost of system becoming more slugginsh to respond if you are doing something else parallely.
+    config_param.threads = 1 #4
     
     #Update from params given from outside
     #if args.config_param != None:
@@ -212,30 +216,28 @@ def main():
         #get the proto string for the data layer in train phase seperately and return it
           
         train_proto_str = []
-        #more threads doesn't seem to help speed up - but you can try increasing this, at the cost of system becoming more slugginsh to respond if you are doing something else parallely.
-        threads = 1 #4
         if phase=='train' and config_param.use_image_list:                 
           data_kwargs = {'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label, 'shuffle':config_param.shuffle,
-             'batch_size': config_param.train_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25, 'threads':threads } }      
+             'batch_size': config_param.train_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25, 'threads':config_param.threads } }      
           net['data'], net['label'] = L.ImageLabelListData(transform_param=config_param.train_transform_param, **data_kwargs)
           out_layer = 'data' 
         elif phase=='train':                 
           data_kwargs = {'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.train_data, 'label_list_path': config_param.train_label, 'shuffle':config_param.shuffle,
-             'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB'), 'threads':threads } }      
+             'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB'), 'threads':config_param.threads } }      
           net['data'], net['label'] = L.ImageLabelData(transform_param=config_param.train_transform_param, **data_kwargs)
           out_layer = 'data'           
         elif phase=='test' and config_param.use_image_list:
           data_kwargs = { 'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.test_data, 'label_list_path': config_param.test_label, 
-              'batch_size': config_param.test_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25, 'threads':threads } }         
+              'batch_size': config_param.test_batch_size_in_proto, 'scale_prob': 0.5, 'scale_min': 0.75, 'scale_max': 1.25, 'threads':config_param.threads } }         
           net['data'], net['label'] = L.ImageLabelListData(transform_param=config_param.test_transform_param,**data_kwargs)
           out_layer = 'data'
         elif phase=='test':
           data_kwargs = { 'name': 'data', 'ntop':2, 
              'image_label_data_param': { 'image_list_path': config_param.test_data, 'label_list_path': config_param.test_label,
-              'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB'), 'threads':threads } }         
+              'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.ImageLabelDataParameter.DB.Value('LMDB'), 'threads':config_param.threads } }         
           net['data'], net['label'] = L.ImageLabelData(transform_param=config_param.test_transform_param,**data_kwargs)
           out_layer = 'data'          
         elif phase=='deploy':
@@ -358,6 +360,8 @@ def main():
       if(config_param.caffe_cmd == 'test'):
         f.write('--model="{}" \\\n'.format(config_param.test_net_file))
         f.write('--iterations="{}" \\\n'.format(solver_param['test_iter'][0]))       
+        if config_param.display_sparsity:
+          f.write('--display_sparsity=1 \\\n')
       else:
         f.write('--solver="{}" \\\n'.format(config_param.solver_file))      
       if train_src_param != None:
