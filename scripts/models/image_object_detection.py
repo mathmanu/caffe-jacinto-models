@@ -16,7 +16,7 @@ from collections import OrderedDict
 
 def CreateAnnotatedDataLayer(source, batch_size=32, backend=P.Data.LMDB,
         output_label=True, train=True, label_map_file='', anno_type=None,
-        transform_param={}, batch_sampler=[{}]):
+        transform_param={}, batch_sampler=[{}], threads=1):
     if train:
         kwargs = {
                 'include': dict(phase=caffe_pb2.Phase.Value('TRAIN')),
@@ -37,7 +37,7 @@ def CreateAnnotatedDataLayer(source, batch_size=32, backend=P.Data.LMDB,
     if anno_type is not None:
         annotated_data_param.update({'anno_type': anno_type})
     return L.AnnotatedData(name="data", annotated_data_param=annotated_data_param,
-        data_param=dict(batch_size=batch_size, backend=backend, source=source),
+        data_param=dict(batch_size=batch_size, backend=backend, source=source, threads=threads),
         ntop=ntop, **kwargs)
         
 def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
@@ -227,7 +227,8 @@ def main():
     config_param.resume_training = True
     # If true, Remove old model files.
     config_param.remove_old_models = False
-
+    config_param.display_sparsity = False
+    
     # Specify the batch sampler.
     config_param.resize_width = 512
     config_param.resize_height = 512
@@ -236,7 +237,8 @@ def main():
 
     #feature stride can be 8, 16, 32. 16 provides the best radeoff
     config_param.feature_stride = 16
-    
+    config_param.num_feature = 512 #number of feature channels
+    config_param.threads = 4
     # The database file for training data. Created by data/VOC0712/create_data.sh
     config_param.train_data = "/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_trainval_lmdb"
     # The database file for testing data. Created by data/VOC0712/create_data.sh
@@ -254,7 +256,6 @@ def main():
     config_param.use_scale = False
     
     config_param.lr_mult = 1
-    config_param.num_intermediate = 512 #number of intermediate layers
 
     # Which layers to freeze (no backward) during training.
     config_param.freeze_layers = []
@@ -267,9 +268,8 @@ def main():
     # Evaluate on whole test set.
     config_param.num_test_image = 4952
     config_param.test_batch_size = 8
-	
-    config_param.log_space_steps = False #True
-	
+    
+    
     resize = "{}x{}".format(config_param.resize_width, config_param.resize_height)
     config_param.batch_sampler = [
             {
@@ -414,6 +414,13 @@ def main():
     # Stores LabelMapItem.
     config_param.label_map_file = "/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/labelmap_voc.prototxt"
 
+    # minimum dimension of input image
+    config_param.log_space_steps = False #True
+    config_param.min_dim = 512
+    config_param.min_ratio = 10 #5 #20     # in percent %
+    config_param.max_ratio = 90            # in percent %
+    config_param.num_classes = 21
+    
     #Update from params given from outside
     #if args.config_param != None:
     #  config_param.update(args.config_param)   
@@ -423,6 +430,7 @@ def main():
         config_param.__setitem__(k,args.config_param[k])	
         
     # Modify the job name if you want.
+    #print("config_name is {}".format(config_param.config_name))
     config_param.base_name = config_param.config_name
     config_param.job_name = config_param.base_name
 
@@ -451,7 +459,6 @@ def main():
     config_param.job_file = "{}.sh".format(config_param.job_file_base)
 	
     # MultiBoxLoss parameters.
-    config_param.num_classes = 21
     config_param.share_location = True
     config_param.background_label_id=0
     config_param.train_on_diff_gt = True
@@ -482,20 +489,25 @@ def main():
         'normalization': config_param.normalization_mode,
         }
 
+    if config_param.feature_stride != 16:
+        ValueError("config_param.feature_stride {} is incorrect".format(config_param.feature_stride))
+    
     if config_param.model_name == 'jdetnet21v2':
-      if config_param.feature_stride == 32:
-        config_param.steps = [32, 64, 128]
-        config_param.mbox_source_layers = ['ctx_final2/relu', 'ctx_final4/relu', 'ctx_final8/relu']
-      elif config_param.feature_stride == 16:
+        #more complex than jdetdownnet21v2 as the res5 layer is dilated by removing stride before it
         config_param.steps = [16, 32, 64, 128]
-        config_param.mbox_source_layers = ['ctx_final1/relu', 'ctx_final2/relu', 'ctx_final4/relu', 'ctx_final8/relu']
-      elif config_param.feature_stride == 8:
-        config_param.steps = [8, 16, 32, 64, 128]
-        config_param.mbox_source_layers = ['out3a/relu', 'ctx_final1/relu', 'ctx_final2/relu', 'ctx_final4/relu', 'ctx_final8/relu']
+        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 'ctx_output4/relu']
+    elif config_param.model_name == 'jdetdownnet21v2':
+        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 'ctx_output4/relu']
+        config_param.steps = [16, 32, 64, 128]
+    elif config_param.model_name == 'jdetdilnet21v2':
+        config_param.steps = [16, 16, 16, 16]
+        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 'ctx_output4/relu']
     elif config_param.model_name == 'jdetpspnet21v2':
-        config_param.steps = [16, 16]
-        config_param.mbox_source_layers = ['ctx_output1', 'ctx_output2']
-        ValueError("config_param.feature_stride is incorrect")
+        config_param.steps = [16, 16, 16, 16]
+        config_param.mbox_source_layers = ['ctx_output1', 'ctx_output2', 'ctx_output3', 'ctx_output4']
+    elif config_param.model_name == 'jsegnet21v2':
+        config_param.steps = [8, 8, 8, 8]
+        config_param.mbox_source_layers = ['ctx_final/relu', 'ctx_final/relu', 'ctx_final/relu', 'ctx_final/relu']
     elif config_param.model_name == 'vgg16':
         # conv4_3 ==> 38 x 38
         # fc7 ==> 19 x 19
@@ -509,11 +521,7 @@ def main():
         ValueError("Invalid model name")
 		
     # parameters for generating priors.
-    # minimum dimension of input image
-    config_param.min_dim = 512
     config_param.num_steps = len(config_param.mbox_source_layers)  
-    config_param.min_ratio = 10 #5 #20     # in percent %
-    config_param.max_ratio = 90            # in percent %
     config_param.step = int(math.floor((config_param.max_ratio - config_param.min_ratio) / config_param.num_steps))
     config_param.min_sizes = []
     config_param.max_sizes = []
@@ -638,7 +646,8 @@ def main():
     net = caffe.NetSpec()
     net.data, net.label = CreateAnnotatedDataLayer(config_param.train_data, batch_size=config_param.batch_size,
             train=True, output_label=True, label_map_file=config_param.label_map_file,
-            transform_param=config_param.train_transform_param, batch_sampler=config_param.batch_sampler)
+            transform_param=config_param.train_transform_param, batch_sampler=config_param.batch_sampler, 
+            threads=config_param.threads)
 
     out_layer = 'data'
     bias_kwargs = { #fixed value with lr_mult=0
@@ -648,16 +657,32 @@ def main():
     net['data/bias'] = L.Bias(net[out_layer], in_place=False, **bias_kwargs)
     out_layer = 'data/bias'           
 
-    if config_param.model_name == 'jdetnet21v2':
-        out_layer = models.jacintonet_v2.jdetnet21(net, from_layer=out_layer,\
-          num_output=config_param.num_intermediate,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-          freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
-    elif config_param.model_name == 'jdetpspnet21v2':
-        out_layer = models.jacintonet_v2.jdetpspnet21(net, from_layer=out_layer,\
-          num_output=config_param.num_intermediate,freeze_layers=config_param.freeze_layers)
-    else:
-        ValueError("Invalid model name")
-
+    def core_network(net, from_layer):
+        if config_param.model_name == 'jdetnet21v2':
+            out_layer = models.jacintonet_v2.jdetnet21(net, from_layer=from_layer,\
+              num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
+        elif config_param.model_name == 'jdetdownnet21v2':
+            out_layer = models.jacintonet_v2.jdetdownnet21(net, from_layer=from_layer,\
+              num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
+        elif config_param.model_name == 'jdetdilnet21v2':
+            out_layer = models.jacintonet_v2.jdetdilnet21(net, from_layer=from_layer,\
+              num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
+        elif config_param.model_name == 'jdetpspnet21v2':
+            out_layer = models.jacintonet_v2.jdetpspnet21(net, from_layer=from_layer,\
+              num_output=config_param.num_feature,freeze_layers=config_param.freeze_layers)
+        elif config_param.model_name == 'jsegnet21v2':		
+            out_layer = models.jacintonet_v2.jsegnet21(net, from_layer=from_layer,\
+            num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+            freeze_layers=config_param.freeze_layers, upsample=False)
+        else:
+            ValueError("Invalid model name")
+        return net, out_layer
+    
+    net, out_layer = core_network(net, out_layer)
+   
     mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=config_param.mbox_source_layers,
             use_batchnorm=config_param.use_batchnorm, use_scale=config_param.use_scale, min_sizes=config_param.min_sizes, max_sizes=config_param.max_sizes,
             aspect_ratios=config_param.aspect_ratios, steps=config_param.steps, normalizations=config_param.normalizations,
@@ -681,7 +706,7 @@ def main():
     net = caffe.NetSpec()
     net.data, net.label = CreateAnnotatedDataLayer(config_param.test_data, batch_size=config_param.test_batch_size,
             train=False, output_label=True, label_map_file=config_param.label_map_file,
-            transform_param=config_param.test_transform_param)
+            transform_param=config_param.test_transform_param, threads=config_param.threads)
 
     out_layer = 'data'
     bias_kwargs = { #fixed value with lr_mult=0
@@ -690,16 +715,8 @@ def main():
         }       
     net['data/bias'] = L.Bias(net[out_layer], in_place=False, **bias_kwargs)
     out_layer = 'data/bias'    
-       
-    if config_param.model_name == 'jdetnet21v2':
-        out_layer = models.jacintonet_v2.jdetnet21(net, from_layer=out_layer,\
-          num_output=config_param.num_intermediate,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-          freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
-    elif config_param.model_name == 'jdetpspnet21v2':
-        out_layer = models.jacintonet_v2.jdetpspnet21(net, from_layer=out_layer,\
-          num_output=config_param.num_intermediate,freeze_layers=config_param.freeze_layers)
-    else:
-        ValueError("Invalid model name")
+    
+    net, out_layer = core_network(net, out_layer)
 
     mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=config_param.mbox_source_layers,
             use_batchnorm=config_param.use_batchnorm, use_scale=config_param.use_scale, min_sizes=config_param.min_sizes, max_sizes=config_param.max_sizes,
@@ -799,7 +816,8 @@ def main():
       if(config_param.caffe_cmd == 'test' or config_param.caffe_cmd == 'test_detection'):
         f.write('--model="{}" \\\n'.format(config_param.test_net_file))
         f.write('--iterations="{}" \\\n'.format(solver_param['test_iter'][0]))       
-        f.write('--display_sparsity=1\\\n')
+        if config_param.display_sparsity:
+          f.write('--display_sparsity=1 \\\n')
       else:
         f.write('--solver="{}" \\\n'.format(config_param.solver_file))      
       if train_src_param != None:

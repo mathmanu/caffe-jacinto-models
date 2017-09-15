@@ -4,31 +4,18 @@
 DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
+#------------------------------------------------
+gpus="0,1,2"
+
 #-------------------------------------------------------
-model_name=jdetpspnet21v2 #jdetnet21v2
-dataset=voc0712-od-ssd512x512
+model_name=jdetnet21v2 #jdetnet21v2 #jdetdownnet21v2 #jdetdilnet21v2 #jdetpspnet21v2 #jsegnet21v2
+dataset=cityscapes-ssd512x512 #voc0712od-ssd512x512
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
 #------------------------------------------------
 LOG=$folder_name/train-log_"$DATE_TIME".txt
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
-
-
-
-#------------------------------------------------
-gpus="0,1,2"
-type="Adam"      #"SGD"   #SGD     #"Adam"
-max_iter=64000   #120000  #64000   #32000
-stepvalue1=32000 #60000   #32000   #16000
-stepvalue2=48000 #90000   #48000   #24000
-base_lr=1e-3     #1e-2    #1e-2    #1e-3 
-
-use_image_list=0 #known issue - use_image_list=0 && shuffle=1 => hang.
-shuffle=0        #Note shuffle is used only in training
-batch_size=32    #16
-
-solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
 
 #------------------------------------------------
 #Download the pretrained weights
@@ -40,14 +27,57 @@ else
   wget $weights_src -O $weights_dst
 fi
 
+#------------------------------------------------
+type="SGD"        #"SGD"   #Adam    #"Adam"
+max_iter=120000   #120000  #64000   #32000
+stepvalue1=60000  #60000   #32000   #16000
+stepvalue2=90000  #90000   #48000   #24000
+base_lr=1e-2      #1e-2    #1e-4    #1e-3
+
+
+use_image_list=0 #known issue - use_image_list=0 && shuffle=1 => hang.
+shuffle=0        #Note shuffle is used only in training
+batch_size=32    #16
+
+#-------------------------------------------------------
+if [ $dataset = "voc0712od-ssd512x512" ]
+then
+  train_data="/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_trainval_lmdb"
+  test_data="/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_test_lmdb"
+  name_size_file="/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/test_name_size.txt"
+  label_map_file="/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/labelmap_voc.prototxt"
+  num_test_image=4952
+  num_classes=21
+  min_ratio=10
+  max_ratio=90
+  log_space_steps=0
+elif [ $dataset = "cityscapes-ssd512x512" ]
+then
+  train_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_512/lmdb/CITY_512_train_lmdb"
+  test_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_512/lmdb/CITY_512_test_lmdb"
+  name_size_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_512/data/test_name_size.txt"
+  label_map_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_512/data/labelmap.prototxt"
+  num_test_image=498
+  num_classes=9
+  min_ratio=5
+  max_ratio=95
+  log_space_steps=1
+else
+  echo "Invalid dataset name"
+  exit
+fi
+
 #-------------------------------------------------------
 #Initial training
 stage="initial"
 weights=$weights_dst
-#weights="training/cityscapes5_jsegnet21v2_iter_32000.caffemodel"
+#weights="/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-models/scripts/training/cityscapes-ssd512x512_jdetnet21v2_2017-09-20_22-43-44/initial/cityscapes-ssd512x512_jdetnet21v2_iter_80000.caffemodel"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
+solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':512,'resize_height':512,'batch_size':$batch_size}" 
 
@@ -60,12 +90,18 @@ config_name_prev=$config_name
 stage="l1reg"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-base_lr=1e-5  #use a lower lr for fine tuning
+max_iter=60000
+stepvalue1=30000
+stepvalue2=45000
+base_lr=1e-2
+
 l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':512,'resize_height':512,'batch_size':$batch_size}" 
 
@@ -76,8 +112,6 @@ config_name_prev=$config_name
 #incremental sparsification and finetuning
 stage="sparse"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
-
-base_lr=1e-5  #use a lower lr for fine tuning
 sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000,\
@@ -86,6 +120,8 @@ sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':512,'resize_height':512,'batch_size':$batch_size}" 
 
@@ -103,10 +139,12 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_p
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':512,'resize_height':512,'batch_size':$batch_size,\
 'num_test_image':500,'test_batch_size':10,\
-'caffe_cmd':'test_detection'}" 
+'caffe_cmd':'test_detection','display_sparsity':1}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -122,6 +160,8 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_p
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':512,'resize_height':512,'batch_size':$batch_size,\
 'num_test_image':500,'test_batch_size':10,\
