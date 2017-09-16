@@ -34,15 +34,17 @@ gpus="0,1,2"
 stage="initial"
 weights=$weights_dst
 
-max_iter=64000
-stepvalue1=32000
-stepvalue2=48000
-base_lr=1e-4
+type="SGD"       #"SGD"   #Adam    #"Adam"
+max_iter=120000  #120000  #64000   #32000
+stepvalue1=60000 #60000   #32000   #16000
+stepvalue2=90000 #90000   #48000   #24000
+base_lr=1e-2     #1e-2    #1e-4    #1e-3
+
 use_image_list=0
 shuffle=1
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
+solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512}" 
@@ -55,12 +57,12 @@ config_name_prev=$config_name
 stage="l1reg"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-max_iter=32000
-stepvalue1=24000
-stepvalue2=32000
-base_lr=1e-5
+max_iter=60000
+stepvalue1=30000
+stepvalue2=45000
+base_lr=1e-2
 
-l1reg_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
+l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
@@ -76,11 +78,7 @@ config_name_prev=$config_name
 stage="sparse"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-max_iter=32000
-stepvalue1=24000
-stepvalue2=32000
-
-sparse_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
+sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000,\
 'sparsity_target':0.8,'sparsity_start_iter':3000,'sparsity_start_factor':0.80,\
@@ -99,7 +97,7 @@ config_name_prev=$config_name
 stage="test"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
+test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000}"
 
@@ -118,7 +116,7 @@ python ./models/image_segmentation.py --config_param="$config_param" --solver_pa
 stage="test_quantize"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-test_solver_param="{'type':'Adam','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
+test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000}"
 

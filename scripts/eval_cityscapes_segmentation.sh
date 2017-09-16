@@ -15,7 +15,7 @@ gpu="1,0" #'0'
 
 
 val_crop=0 #"1024 512"
-val_resize="1024 512"
+val_resize=0 #"1024 512"
 val_input="./data/val-image-list.txt"
 val_label="./data/val-label-list.txt"
 val_classes=5 #34
@@ -35,7 +35,7 @@ num_images=500 #100000
 #------------------------------------------------
 #initial model
 val_model="../trained/image_segmentation/cityscapes5_jsegnet21v2/initial/deploy.prototxt"
-val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/initial/cityscapes5_jsegnet21v2_iter_32000.caffemodel"
+val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/initial/cityscapes5_jsegnet21v2_iter_120000.caffemodel"
 python ./tools/utils/infer_segmentation.py --crop $val_crop --resize $val_resize --model $val_model --weights $val_weights --input $val_input --label $val_label --num_classes=$val_classes --num_images=$num_images --resize_back 
 #--label_dict="$label_dict_20_to_34" --class_dict="$class_dict"
 echo 'initial eval.'
@@ -43,7 +43,7 @@ echo 'initial eval.'
 #------------------------------------------------
 #l1reg model
 val_model="../trained/image_segmentation/cityscapes5_jsegnet21v2/l1reg/deploy.prototxt"
-val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/l1reg/cityscapes5_jsegnet21v2_iter_32000.caffemodel"
+val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/l1reg/cityscapes5_jsegnet21v2_iter_60000.caffemodel"
 python ./tools/utils/infer_segmentation.py --crop $val_crop --resize $val_resize --model $val_model --weights $val_weights --input $val_input --label $val_label --num_classes=$val_classes --num_images=$num_images --resize_back 
 #--label_dict="$label_dict_20_to_34" --class_dict="$class_dict"
 echo 'l1reg eval.'
@@ -51,12 +51,18 @@ echo 'l1reg eval.'
 #------------------------------------------------
 #sparse model
 val_model="../trained/image_segmentation/cityscapes5_jsegnet21v2/sparse/deploy.prototxt"
-val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/sparse/cityscapes5_jsegnet21v2_iter_32000.caffemodel"
+val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/sparse/cityscapes5_jsegnet21v2_iter_60000.caffemodel"
 python ./tools/utils/infer_segmentation.py --crop $val_crop --resize $val_resize --model $val_model --weights $val_weights --input $val_input --label $val_label --num_classes=$val_classes --num_images=$num_images --resize_back 
 #--label_dict="$label_dict_20_to_34" --class_dict="$class_dict"
 echo 'sparse eval.'
 
-
+#------------------------------------------------
+#quantized model
+val_model="../trained/image_segmentation/cityscapes5_jsegnet21v2/test_quantize/deploy.prototxt"
+val_weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/sparse/cityscapes5_jsegnet21v2_iter_60000.caffemodel"
+python ./tools/utils/infer_segmentation.py --crop $val_crop --resize $val_resize --model $val_model --weights $val_weights --input $val_input --label $val_label --num_classes=$val_classes --num_images=$num_images --resize_back 
+#--label_dict="$label_dict_20_to_34" --class_dict="$class_dict"
+echo 'sparse eval.'
 
 
 

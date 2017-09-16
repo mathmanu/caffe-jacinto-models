@@ -13,7 +13,7 @@ layer {
     image_list_path: "data/train-image-lmdb"
     label_list_path: "data/train-label-lmdb"
     batch_size: 16
-    shuffle: false
+    shuffle: true
     threads: 1
     backend: LMDB
   }
