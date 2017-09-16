@@ -21,7 +21,7 @@ resize="1024 512"
 
 #------------------------------------------------------
 model="../trained/image_segmentation/cityscapes5_jsegnet21v2/initial/deploy.prototxt"
-weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/initial/cityscapes5_jsegnet21v2_iter_32000.caffemodel"
+weights="../trained/image_segmentation/cityscapes5_jsegnet21v2/initial/cityscapes5_jsegnet21v2_iter_120000.caffemodel"
 
 #Infer
 #input="input/sample"
