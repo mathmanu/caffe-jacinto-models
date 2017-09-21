@@ -61,7 +61,7 @@ then
   num_classes=9
   min_ratio=5
   max_ratio=95
-  log_space_steps=1
+  log_space_steps=0
 else
   echo "Invalid dataset name"
   exit
