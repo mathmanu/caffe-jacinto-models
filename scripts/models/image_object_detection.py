@@ -37,7 +37,7 @@ def CreateAnnotatedDataLayer(source, batch_size=32, backend=P.Data.LMDB,
     if anno_type is not None:
         annotated_data_param.update({'anno_type': anno_type})
     return L.AnnotatedData(name="data", annotated_data_param=annotated_data_param,
-        data_param=dict(batch_size=batch_size, backend=backend, source=source, threads=threads),
+        data_param=dict(batch_size=batch_size, backend=backend, source=source, parser_threads=threads, threads=threads),
         ntop=ntop, **kwargs)
         
 def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
@@ -232,7 +232,7 @@ def main():
     # Specify the batch sampler.
     config_param.resize_width = 512
     config_param.resize_height = 512
-    config_param.crop_width = config_param.resize_width	
+    config_param.crop_width = config_param.resize_width
     config_param.crop_height = config_param.resize_height
 
     #feature stride can be 8, 16, 32. 16 provides the best radeoff
@@ -269,7 +269,38 @@ def main():
     config_param.num_test_image = 4952
     config_param.test_batch_size = 8
     
+    # Stores the test image names and sizes. Created by data/VOC0712/create_list.sh
+    config_param.name_size_file = "/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/test_name_size.txt"
+    # Stores LabelMapItem.
+    config_param.label_map_file = "/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/labelmap_voc.prototxt"
+
+    # minimum dimension of input image
+    config_param.log_space_steps = False #True
+    config_param.min_ratio = 10 #5 #20     # in percent %
+    config_param.max_ratio = 90            # in percent %
+    config_param.num_classes = 21
     
+    # MultiBoxLoss parameters initialization.
+    config_param.share_location = True
+    config_param.background_label_id=0
+    config_param.use_difficult_gt = True
+    config_param.normalization_mode = P.Loss.VALID
+    config_param.code_type = P.PriorBox.CENTER_SIZE
+    config_param.ignore_cross_boundary_bbox = False
+    config_param.mining_type = P.MultiBoxLoss.MAX_NEGATIVE
+    config_param.neg_pos_ratio = 3.
+    config_param.loc_weight = (config_param.neg_pos_ratio + 1.) / 4.
+    
+    #Update from params given from outside
+    #if args.config_param != None:
+    #  config_param.update(args.config_param)   
+    if args.config_param != None: 
+      for k in args.config_param.keys():
+        config_param.__setattr__(k,args.config_param[k])
+        config_param.__setitem__(k,args.config_param[k])
+    
+    config_param.min_dim = int((config_param.crop_width + config_param.crop_height)/2)
+   
     resize = "{}x{}".format(config_param.resize_width, config_param.resize_height)
     config_param.batch_sampler = [
             {
@@ -409,25 +440,6 @@ def main():
 			'crop_w': config_param.crop_width					
             }
 
-    # Stores the test image names and sizes. Created by data/VOC0712/create_list.sh
-    config_param.name_size_file = "/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/test_name_size.txt"
-    # Stores LabelMapItem.
-    config_param.label_map_file = "/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/labelmap_voc.prototxt"
-
-    # minimum dimension of input image
-    config_param.log_space_steps = False #True
-    config_param.min_dim = 512
-    config_param.min_ratio = 10 #5 #20     # in percent %
-    config_param.max_ratio = 90            # in percent %
-    config_param.num_classes = 21
-    
-    #Update from params given from outside
-    #if args.config_param != None:
-    #  config_param.update(args.config_param)   
-    if args.config_param != None: 
-      for k in args.config_param.keys():
-        config_param.__setattr__(k,args.config_param[k])
-        config_param.__setitem__(k,args.config_param[k])	
         
     # Modify the job name if you want.
     #print("config_name is {}".format(config_param.config_name))
@@ -457,17 +469,8 @@ def main():
     config_param.job_file_base = "{}/{}".format(config_param.job_dir, job_file_base_name)
     config_param.log_file = "{}.log".format(config_param.job_file_base)    
     config_param.job_file = "{}.sh".format(config_param.job_file_base)
-	
+   
     # MultiBoxLoss parameters.
-    config_param.share_location = True
-    config_param.background_label_id=0
-    config_param.train_on_diff_gt = True
-    config_param.normalization_mode = P.Loss.VALID
-    config_param.code_type = P.PriorBox.CENTER_SIZE
-    config_param.ignore_cross_boundary_bbox = False
-    config_param.mining_type = P.MultiBoxLoss.MAX_NEGATIVE
-    config_param.neg_pos_ratio = 3.
-    config_param.loc_weight = (config_param.neg_pos_ratio + 1.) / 4.
     multibox_loss_param = {
         'loc_loss_type': P.MultiBoxLoss.SMOOTH_L1,
         'conf_loss_type': P.MultiBoxLoss.SOFTMAX,
@@ -478,7 +481,7 @@ def main():
         'overlap_threshold': 0.5,
         'use_prior_for_matching': True,
         'background_label_id': config_param.background_label_id,
-        'use_difficult_gt': config_param.train_on_diff_gt,
+        'use_difficult_gt': config_param.use_difficult_gt,
         'mining_type': config_param.mining_type,
         'neg_pos_ratio': config_param.neg_pos_ratio,
         'neg_overlap': 0.5,
@@ -492,13 +495,10 @@ def main():
     if config_param.feature_stride != 16:
         ValueError("config_param.feature_stride {} is incorrect".format(config_param.feature_stride))
     
-    if config_param.model_name == 'jdetnet21v2':
-        #more complex than jdetdownnet21v2 as the res5 layer is dilated by removing stride before it
-        config_param.steps = [16, 32, 64, 128]
-        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 'ctx_output4/relu']
-    elif config_param.model_name == 'jdetdownnet21v2':
-        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 'ctx_output4/relu']
-        config_param.steps = [16, 32, 64, 128]
+    if (config_param.model_name == 'jdetnet21v2') or (config_param.model_name == 'jdetdownnet21v2'):
+        config_param.steps = [16, 32, 64, 128] #[16, 16, 32, 64, 128]
+        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
+          'ctx_output4/relu'] #, 'ctx_output5/relu']
     elif config_param.model_name == 'jdetdilnet21v2':
         config_param.steps = [16, 16, 16, 16]
         config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 'ctx_output4/relu']
@@ -525,12 +525,12 @@ def main():
     config_param.step = int(math.floor((config_param.max_ratio - config_param.min_ratio) / config_param.num_steps))
     config_param.min_sizes = []
     config_param.max_sizes = []
-	
+    
     min_dim_to_use = config_param.min_ratio*config_param.min_dim/100
     max_dim_to_use = config_param.max_ratio*config_param.min_dim/100
     if config_param.log_space_steps:
         min_max_sizes = np.logspace(np.log2(min_dim_to_use), np.log2(max_dim_to_use), num=config_param.num_steps+1, base=2)
-    else:	
+    else:
         min_max_sizes = np.linspace(min_dim_to_use, max_dim_to_use, num=config_param.num_steps+1)
     print("min_max_sizes = {}".format(min_max_sizes))
     config_param.min_sizes = list(min_max_sizes[0:config_param.num_steps])
