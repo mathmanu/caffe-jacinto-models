@@ -9,7 +9,7 @@ gpus="0,1,2"
 
 #-------------------------------------------------------
 model_name=jdetnet21v2 #jdetnet21v2 #jdetdownnet21v2 #jdetdilnet21v2 #jdetpspnet21v2 #jsegnet21v2
-dataset=cityscapes-ssd512x512 #voc0712od-ssd512x512
+dataset=cityscapes-ssd512x256 #cityscapes-ssd768x384 #cityscapes-ssd512x512 #voc0712od-ssd512x512
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
 #------------------------------------------------
@@ -28,40 +28,103 @@ else
 fi
 
 #------------------------------------------------
-type="SGD"        #"SGD"   #Adam    #"Adam"
-max_iter=120000   #120000  #64000   #32000
-stepvalue1=60000  #60000   #32000   #16000
-stepvalue2=90000  #90000   #48000   #24000
-base_lr=1e-2      #1e-2    #1e-4    #1e-3
 
 
 use_image_list=0 #known issue - use_image_list=0 && shuffle=1 => hang.
 shuffle=0        #Note shuffle is used only in training
 batch_size=32    #16
+resize_width=512
+resize_height=512
+crop_width=512
+crop_height=512
 
 #-------------------------------------------------------
 if [ $dataset = "voc0712od-ssd512x512" ]
 then
+  type="SGD"        #"SGD"   #Adam    #"Adam"
+  max_iter=120000   #120000  #64000   #32000
+  stepvalue1=60000  #60000   #32000   #16000
+  stepvalue2=90000  #90000   #48000   #24000
+  base_lr=1e-2      #1e-2    #1e-4    #1e-3
+
   train_data="/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_trainval_lmdb"
   test_data="/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_test_lmdb"
   name_size_file="/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/test_name_size.txt"
   label_map_file="/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/labelmap_voc.prototxt"
+  
   num_test_image=4952
   num_classes=21
   min_ratio=10
   max_ratio=90
   log_space_steps=0
+  use_difficult_gt=1
 elif [ $dataset = "cityscapes-ssd512x512" ]
 then
-  train_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_512/lmdb/CITY_512_train_lmdb"
-  test_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_512/lmdb/CITY_512_test_lmdb"
-  name_size_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_512/data/test_name_size.txt"
-  label_map_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_512/data/labelmap.prototxt"
+  type="SGD"        #"SGD"   #Adam    #"Adam"
+  max_iter=60000    #120000  #64000   #32000
+  stepvalue1=30000  #60000   #32000   #16000
+  stepvalue2=45000  #90000   #48000   #24000
+  base_lr=1e-2      #1e-2    #1e-4    #1e-3
+  
+  train_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_512x512/CITY_512x512_train_lmdb"
+  test_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_512x512/CITY_512x512_test_lmdb"
+  name_size_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_512x512/test_name_size.txt"
+  label_map_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_512x512/labelmap.prototxt"
+  
   num_test_image=498
   num_classes=9
-  min_ratio=5
-  max_ratio=95
+  min_ratio=10
+  max_ratio=90
   log_space_steps=0
+  use_difficult_gt=1
+elif [ $dataset = "cityscapes-ssd768x384" ]
+then
+  type="SGD"        #"SGD"   #Adam    #"Adam"
+  max_iter=60000    #120000  #64000   #32000
+  stepvalue1=30000  #60000   #32000   #16000
+  stepvalue2=45000  #90000   #48000   #24000
+  base_lr=1e-2      #1e-2    #1e-4    #1e-3
+  
+  train_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_768x384/CITY_768x384_train_lmdb"
+  test_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_768x384/CITY_768x384_test_lmdb"
+  name_size_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_768x384/test_name_size.txt"
+  label_map_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_768x384/labelmap.prototxt"
+  
+  num_test_image=498
+  num_classes=8 #9
+  min_ratio=10
+  max_ratio=90
+  log_space_steps=0
+  use_difficult_gt=1
+  
+  resize_width=768
+  resize_height=384
+  crop_width=768
+  crop_height=384
+elif [ $dataset = "cityscapes-ssd512x256" ]
+then
+  type="SGD"        #"SGD"   #Adam    #"Adam"
+  max_iter=60000    #120000  #64000   #32000
+  stepvalue1=30000  #60000   #32000   #16000
+  stepvalue2=45000  #90000   #48000   #24000
+  base_lr=1e-2      #1e-2    #1e-4    #1e-3
+  
+  train_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_512x256/CITY_512x256_train_lmdb"
+  test_data="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_512x256/CITY_512x256_test_lmdb"
+  name_size_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_512x256/test_name_size.txt"
+  label_map_file="/data/hdd/datasets/object-detect/other/cityscapes/TI_Derivatives/CITY_object_detect/lmdb/lmdb_512x256/labelmap.prototxt"
+  
+  num_test_image=498
+  num_classes=8 #9
+  min_ratio=10
+  max_ratio=90
+  log_space_steps=0
+  use_difficult_gt=1
+  
+  resize_width=512
+  resize_height=256
+  crop_width=512
+  crop_height=256
 else
   echo "Invalid dataset name"
   exit
@@ -70,16 +133,17 @@ fi
 #-------------------------------------------------------
 #Initial training
 stage="initial"
-weights=$weights_dst
-#weights="/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-models/scripts/training/cityscapes-ssd512x512_jdetnet21v2_2017-09-20_22-43-44/initial/cityscapes-ssd512x512_jdetnet21v2_iter_80000.caffemodel"
+#weights=$weights_dst
+weights="/data/mmcodec_video2_tier3/users/manu/experiments/object/detection/2017/2017.09/caffe-0.16/voc0712od-ssd512x512_jdetnet21v2_2017-09-19_16-17-34_pyr-max-pool_1x1head_(72.82%)/initial/voc0712od-ssd512x512_jdetnet21v2_iter_120000.caffemodel"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
-'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,
+'log_space_steps':$log_space_steps,'use_difficult_gt':$use_difficult_gt,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'resize_width':512,'resize_height':512,'batch_size':$batch_size}" 
+'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$solver_param
 config_name_prev=$config_name
@@ -101,9 +165,10 @@ l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
-'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,
+'log_space_steps':$log_space_steps,'use_difficult_gt':$use_difficult_gt,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'resize_width':512,'resize_height':512,'batch_size':$batch_size}" 
+'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$l1reg_solver_param
 config_name_prev=$config_name
@@ -121,9 +186,10 @@ sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
-'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,
+'log_space_steps':$log_space_steps,'use_difficult_gt':$use_difficult_gt,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'resize_width':512,'resize_height':512,'batch_size':$batch_size}" 
+'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$sparse_solver_param
 config_name_prev=$config_name
@@ -140,11 +206,11 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_p
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
-'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,
+'log_space_steps':$log_space_steps,'use_difficult_gt':$use_difficult_gt,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'resize_width':512,'resize_height':512,'batch_size':$batch_size,\
-'num_test_image':500,'test_batch_size':10,\
-'caffe_cmd':'test_detection','display_sparsity':1}" 
+'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
+'test_batch_size':10,'caffe_cmd':'test_detection','display_sparsity':1}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -161,11 +227,11 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_p
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
-'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,'log_space_steps':$log_space_steps,\
+'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,
+'log_space_steps':$log_space_steps,'use_difficult_gt':$use_difficult_gt,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'resize_width':512,'resize_height':512,'batch_size':$batch_size,\
-'num_test_image':500,'test_batch_size':10,\
-'caffe_cmd':'test_detection'}" 
+'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
+'test_batch_size':10,'caffe_cmd':'test_detection'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 
