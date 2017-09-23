@@ -35,18 +35,34 @@ config_name_prev=$config_name
 
 
 #-------------------------------------------------------
+#l1 regularized training before sparsification
+stage="l1reg"
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
+
+max_iter=80000 #160000 #320000
+base_lr=0.01  #use a lower lr for fine tuning
+
+l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
+'regularization_type':'L1','weight_decay':1e-5}"
+
+config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+'pretrain_model':'$weights'}" 
+
+python ./models/image_classification.py --config_param="$config_param" --solver_param=$l1reg_solver_param
+config_name_prev=$config_name
+
+
+#-------------------------------------------------------
 #incremental sparsification and finetuning
 stage="sparse"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-max_iter=160000 #320000
-type=SGD
-base_lr=0.01  #use a lower lr for fine tuning
-sparsity_start_iter=20000
+sparsity_start_iter=1000
 sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000,\
-'sparsity_target':0.8,'sparsity_start_iter':$sparsity_start_iter,'sparsity_start_factor':0.0,\
+'sparsity_target':0.8,'sparsity_start_iter':$sparsity_start_iter,'sparsity_start_factor':0.8,\
 'sparsity_step_iter':1000,'sparsity_step_factor':0.01}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
