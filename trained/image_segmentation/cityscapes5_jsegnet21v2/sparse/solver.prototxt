@@ -28,6 +28,6 @@ sparse_mode: SPARSE_UPDATE
 sparsity_target: 0.8
 sparsity_step_factor: 0.01
 sparsity_step_iter: 1000
-sparsity_start_iter: 3000
-sparsity_start_factor: 0.8
+sparsity_start_iter: 1000
+sparsity_start_factor: 0.6
 
