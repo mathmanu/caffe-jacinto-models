@@ -15,7 +15,7 @@ gpu="1,0" #'0'
 
 
 val_crop=0 #"1024 512"
-val_resize=0 #"1024 512"
+val_resize="1024 512"
 val_input="./data/val-image-list.txt"
 val_label="./data/val-label-list.txt"
 val_classes=5 #34
