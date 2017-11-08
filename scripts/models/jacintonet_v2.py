@@ -123,6 +123,7 @@ def jacintonet11(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
    
 def jsegnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
    upsample=True): 
+   in_place = True
    if stride_list == None:
      stride_list = [2,2,2,2,1]
    if dilation_list == None:
@@ -130,10 +131,6 @@ def jsegnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_outpu
 
    out_layer = jacintonet11_base(net, from_layer=from_layer, use_batchnorm=use_batchnorm, use_relu=use_relu, \
       num_output=num_output, stride_list=stride_list, dilation_list=dilation_list, freeze_layers=freeze_layers)
-   
-   from_layer = out_layer
-   out_layer = 'res5a_branch2b'
-   out_layer = ConvBNLayer(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=512, kernel_size=[3,3], pad=dilation, stride=1, group=4, dilation=dilation) 
    
    #--   
    from_layer = out_layer
