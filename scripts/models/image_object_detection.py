@@ -455,7 +455,7 @@ def main():
     # Directory which stores the job script and log file.
     config_param.job_dir = config_param.job_name
     # Directory which stores the detection results.
-    config_param.output_result_dir = "{}/results".format(config_param.job_name)
+    config_param.output_result_dir = "" #"{}/results".format(config_param.job_name)
         
     # model definition files.
     config_param.train_net_file = "{}/train.prototxt".format(config_param.save_dir)
@@ -495,19 +495,18 @@ def main():
     if config_param.feature_stride != 16:
         ValueError("config_param.feature_stride {} is incorrect".format(config_param.feature_stride))
     
-    if (config_param.model_name == 'jdetnet21v2') or (config_param.model_name == 'jdetdownnet21v2'):
-        config_param.steps = [16, 32, 64, 128] #[16, 16, 32, 64, 128]
+    if (config_param.model_name == 'jdetnet21v2'):
+        config_param.steps = [16, 32, 64, 128]
         config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
-          'ctx_output4/relu'] #, 'ctx_output5/relu']
-    elif config_param.model_name == 'jdetdilnet21v2':
-        config_param.steps = [16, 16, 16, 16]
-        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 'ctx_output4/relu']
-    elif config_param.model_name == 'jdetpspnet21v2':
-        config_param.steps = [16, 16, 16, 16]
-        config_param.mbox_source_layers = ['ctx_output1', 'ctx_output2', 'ctx_output3', 'ctx_output4']
-    elif config_param.model_name == 'jsegnet21v2':
-        config_param.steps = [8, 8, 8, 8]
-        config_param.mbox_source_layers = ['ctx_final/relu', 'ctx_final/relu', 'ctx_final/relu', 'ctx_final/relu']
+          'ctx_output4/relu']
+    elif (config_param.model_name == 'jdetnet21v2-s8'):
+        config_param.steps = [8, 16, 32, 64, 128, 128]
+        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
+          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
+    elif (config_param.model_name == 'jdetnet21v2-fpn'):
+        config_param.steps = [16, 16, 32, 64, 128, 128]
+        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
+          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
     elif config_param.model_name == 'vgg16':
         # conv4_3 ==> 38 x 38
         # fc7 ==> 19 x 19
@@ -662,21 +661,14 @@ def main():
             out_layer = models.jacintonet_v2.jdetnet21(net, from_layer=from_layer,\
               num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
               freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
-        elif config_param.model_name == 'jdetdownnet21v2':
-            out_layer = models.jacintonet_v2.jdetdownnet21(net, from_layer=from_layer,\
+        elif config_param.model_name == 'jdetnet21v2-s8':
+            out_layer = models.jacintonet_v2.jdetnet21_s8(net, from_layer=from_layer,\
+              num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)              
+        elif config_param.model_name == 'jdetnet21v2-fpn':
+            out_layer = models.jacintonet_v2.jdetnet21_fpn(net, from_layer=from_layer,\
               num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
               freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
-        elif config_param.model_name == 'jdetdilnet21v2':
-            out_layer = models.jacintonet_v2.jdetdilnet21(net, from_layer=from_layer,\
-              num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
-        elif config_param.model_name == 'jdetpspnet21v2':
-            out_layer = models.jacintonet_v2.jdetpspnet21(net, from_layer=from_layer,\
-              num_output=config_param.num_feature,freeze_layers=config_param.freeze_layers)
-        elif config_param.model_name == 'jsegnet21v2':		
-            out_layer = models.jacintonet_v2.jsegnet21(net, from_layer=from_layer,\
-            num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-            freeze_layers=config_param.freeze_layers, upsample=False)
         else:
             ValueError("Invalid model name")
         return net, out_layer
