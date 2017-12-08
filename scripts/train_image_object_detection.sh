@@ -5,11 +5,11 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0,1,2"
+gpus="0,1" #"0,1,2"
 
 #-------------------------------------------------------
-model_name=jdetnet21v2 #jdetnet21v2 #jdetdownnet21v2 #jdetdilnet21v2 #jdetpspnet21v2 #jsegnet21v2
-dataset=cityscapes-ssd512x256 #cityscapes-ssd768x384 #cityscapes-ssd512x512 #voc0712od-ssd512x512
+model_name=jdetnet21v2           #jdetnet21v2 #jdetnet21v2-fpn
+dataset=voc0712od-ssd512x512     #cityscapes-ssd768x384 #cityscapes-ssd512x512 #cityscapes-ssd512x256 #voc0712od-ssd512x512
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
 #------------------------------------------------
@@ -32,7 +32,7 @@ fi
 
 use_image_list=0 #known issue - use_image_list=0 && shuffle=1 => hang.
 shuffle=0        #Note shuffle is used only in training
-batch_size=32    #16
+batch_size=16    #32    #16
 resize_width=512
 resize_height=512
 crop_width=512
@@ -41,11 +41,11 @@ crop_height=512
 #-------------------------------------------------------
 if [ $dataset = "voc0712od-ssd512x512" ]
 then
-  type="SGD"        #"SGD"   #Adam    #"Adam"
-  max_iter=120000   #120000  #64000   #32000
-  stepvalue1=60000  #60000   #32000   #16000
-  stepvalue2=90000  #90000   #48000   #24000
-  base_lr=1e-2      #1e-2    #1e-4    #1e-3
+  type="SGD"        #"SGD"    #Adam    #"Adam"  #"Adam"
+  max_iter=120000   #120000   #120000  #60000   #30000
+  stepvalue1=60000  #60000    #60000   #30000   #15000
+  stepvalue2=90000  #90000    #90000   #45000   #25000
+  base_lr=1e-2      #1e-2     #1e-2    #1e-4    #1e-3
 
   train_data="/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_trainval_lmdb"
   test_data="/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_test_lmdb"
@@ -133,8 +133,8 @@ fi
 #-------------------------------------------------------
 #Initial training
 stage="initial"
-#weights=$weights_dst
-weights="/data/mmcodec_video2_tier3/users/manu/experiments/object/detection/2017/2017.09/caffe-0.16/voc0712od-ssd512x512_jdetnet21v2_2017-09-19_16-17-34_pyr-max-pool_1x1head_(72.82%)/initial/voc0712od-ssd512x512_jdetnet21v2_iter_120000.caffemodel"
+weights=$weights_dst
+#weights="/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-models/scripts/training/voc0712od-ssd512x512_jdetnet21v2-fpn_2017-12-16_19-31-15(58.74%)/initial/voc0712od-ssd512x512_jdetnet21v2-fpn_iter_120000.caffemodel"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
