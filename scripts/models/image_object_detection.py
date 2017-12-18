@@ -803,7 +803,7 @@ def main():
 
     # Create job file.
     with open(config_param.job_file, 'w') as f:
-      f.write('cd {}\n'.format(config_param.caffe_root))
+      #f.write('cd {}\n'.format(config_param.caffe_root))
       f.write('{} {} \\\n'.format(config_param.caffe_root, config_param.caffe_cmd))    
       if(config_param.caffe_cmd == 'test' or config_param.caffe_cmd == 'test_detection'):
         f.write('--model="{}" \\\n'.format(config_param.test_net_file))
