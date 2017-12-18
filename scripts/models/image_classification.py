@@ -62,9 +62,9 @@ def main():
     config_param.crop_size = 224
     config_param.image_width = 224
     config_param.image_height = 224
-
-    config_param.train_data = "./data/ilsvrc12_train_lmdb" 
-    config_param.test_data = "./data/ilsvrc12_val_lmdb"
+    
+    config_param.train_data = "/user/a0875091/files/data/datasets/object-detect/other/ilsvrc/2012/lmdb/size256/ilsvrc12_train_lmdb" 
+    config_param.test_data = "/user/a0875091/files/data/datasets/object-detect/other/ilsvrc/2012/lmdb/size256/ilsvrc12_val_lmdb"
 
     config_param.stride_list = [2,2,2,2,2]
     config_param.dilation_list = [1,1,1,1,1]

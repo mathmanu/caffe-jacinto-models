@@ -236,8 +236,9 @@ class KW_Args(object):
 def MobileNetBody(net, from_layer='data', fully_conv=False, reduced=False, dilated=False,
         dropout=True, freeze_layers=None, bn_type='bvlc', bn_at_start=True, caffe_fork='nvidia',
         training_type='SSD', depth_mul=1, ssd_mobile_chuanqi=False, dil_when_stride_removed=False,
-        num_output=1000, wide_factor = 1.0):
-
+        num_output_fc=1000, wide_factor = 1.0):
+  
+  exp_for_mma = True
   if freeze_layers is None:
     freeze_layers = []
   
@@ -293,7 +294,7 @@ def MobileNetBody(net, from_layer='data', fully_conv=False, reduced=False, dilat
   num_stages = len(num_dw_outputs )
   #for num_dw_output,num_sep_output, block_label in zip(num_dw_outputs, num_sep_outputs, block_labels): 
   for stg_idx in range(1,num_stages):
-    num_dw_output = num_dw_outputs[stg_idx] 
+    num_dw_output = num_dw_outputs[stg_idx]
     num_sep_output = num_sep_outputs[stg_idx] 
     block_label = block_labels[stg_idx] 
     stride = stride_list[stg_idx]
@@ -304,26 +305,40 @@ def MobileNetBody(net, from_layer='data', fully_conv=False, reduced=False, dilat
       block_name = 'conv{}_dw'.format(block_label)    
     else:  
       block_name = 'conv{}/dw'.format(block_label)
+ 
+    if exp_for_mma:
+      group = 8
+      num_output = num_sep_output
+    else:  
+      group = num_dw_output
+      num_output = num_dw_output
       
     isFrozen= block_name in freeze_layers
     op_layer_name = ConvBNLayerMobileNet(net, ip_layer_name, block_name, bn_type=bn_type, use_relu=True,
-        num_output=num_dw_output, kernel_size=3, pad=1, stride=stride,  prePostFix=prePostFix, 
-        kwArgs=kwArgs,isFrozen=isFrozen, group=num_dw_output,dilation=dilation*removed_stride_fac)
+        num_output=num_output, kernel_size=3, pad=1, stride=stride,  prePostFix=prePostFix, 
+        kwArgs=kwArgs,isFrozen=isFrozen, group=group,dilation=dilation*removed_stride_fac)
 
-    ip_layer_name = op_layer_name
-    if ssd_mobile_chuanqi:
-      block_name = 'conv{}_sep'.format(block_label)    
-    else:  
-      block_name = 'conv{}/sep'.format(block_label)    
+    need_point_wise = False
+    if exp_for_mma == True:
+      #do not do point wise only if input and output ch are same
+      if num_dw_output == num_sep_output:
+        need_point_wise = False
 
-    isFrozen= block_name in freeze_layers
+    if need_point_wise: 
+      ip_layer_name = op_layer_name
+      if ssd_mobile_chuanqi:
+        block_name = 'conv{}_sep'.format(block_label)    
+      else:  
+        block_name = 'conv{}/sep'.format(block_label)    
 
-    #have dilation for all layers after the layer where stride was removed
-    if stg_idx >= removed_stride_layer_idx:
-      removed_stride_fac = 2 
-    op_layer_name = ConvBNLayerMobileNet(net, ip_layer_name, block_name, bn_type=bn_type, use_relu=True,
-        num_output=num_sep_output, kernel_size=1, pad=0, stride=1,  prePostFix=prePostFix, 
-        kwArgs=kwArgs,isFrozen=isFrozen, group=1, dilation=dilation*removed_stride_fac)
+      isFrozen= block_name in freeze_layers
+
+      #have dilation for all layers after the layer where stride was removed
+      if stg_idx >= removed_stride_layer_idx:
+        removed_stride_fac = 2 
+      op_layer_name = ConvBNLayerMobileNet(net, ip_layer_name, block_name, bn_type=bn_type, use_relu=True,
+          num_output=num_sep_output, kernel_size=1, pad=0, stride=1,  prePostFix=prePostFix, 
+          kwArgs=kwArgs,isFrozen=isFrozen, group=1, dilation=dilation*removed_stride_fac)
 
   #--   
   # Add global pooling layer.
@@ -333,7 +348,7 @@ def MobileNetBody(net, from_layer='data', fully_conv=False, reduced=False, dilat
        
   from_layer = op_layer_name
   op_layer_name = 'fc7' #'fc'+str(num_output)
-  kwargs = { 'num_output': num_output, 
+  kwargs = { 'num_output': num_output_fc, 
     'param': [{'lr_mult': 1, 'decay_mult': 1}, {'lr_mult': 2, 'decay_mult': 0}], 
     'convolution_param': { 
        'kernel_size': 1,
