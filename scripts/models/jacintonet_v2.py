@@ -215,18 +215,18 @@ def jdetnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_outpu
       
    #---------------------------     
    #PSP style pool down
-   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}      
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
    from_layer = out_layer
    out_layer = 'pool6'
    net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param) 
    
    #--
-   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}      
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
    from_layer = out_layer
    out_layer = 'pool7'
    net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
    #--
-   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}      
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
    from_layer = out_layer
    out_layer = 'pool8'
    net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
@@ -275,17 +275,17 @@ def jdetnet21_s8(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
                
    #---------------------------     
    #PSP style pool down
-   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}      
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
    from_layer = 'res5a_branch2b/concat'
    out_layer = 'pool6'
    net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param) 
    #--
-   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}      
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
    from_layer = out_layer
    out_layer = 'pool7'
    net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
    #--
-   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':1, 'pad':0}      
+   pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':1, 'pad':1}      
    from_layer = out_layer
    out_layer = 'pool8'
    net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
