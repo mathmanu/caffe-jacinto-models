@@ -19,7 +19,8 @@ echo Logging output to "$LOG"
 
 #------------------------------------------------
 #Download the pretrained weights
-weights_dst="training/imagenet_jacintonet11v2_iter_320000.caffemodel"
+#weights_dst="training/imagenet_jacintonet11v2_iter_320000.caffemodel"
+weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto/models/ssd/cityscapes-ssd768x384_jdetnet21v2_2017-09-21_21-24-36_(32.40%)/initial/cityscapes-ssd768x384_jdetnet21v2_iter_60000.caffemodel"
 if [ -f $weights_dst ]; then
   echo "Using pretrained model $weights_dst"
 else
@@ -125,6 +126,31 @@ then
   resize_height=256
   crop_width=512
   crop_height=256
+elif [ $dataset = "ti201712-ssd720x368" ]
+then
+  type="SGD"        #"SGD"   #Adam    #"Adam"
+  max_iter=60000    #120000  #64000   #32000
+  stepvalue1=30000  #60000   #32000   #16000
+  stepvalue2=45000  #90000   #48000   #24000
+  base_lr=1e-2      #1e-2    #1e-4    #1e-3
+  
+  train_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_720x368_V1/lmdb/TI_201712_720x368_V1_train_lmdb"
+  test_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_720x368_V1/lmdb/TI_201712_720x368_V1_test_lmdb"
+  name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_720x368_V1/test_name_size.txt"
+  label_map_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_720x368_V1/labelmap.prototxt"
+  
+  num_test_image=3609
+  num_classes=4 #9
+  min_ratio=10
+  max_ratio=90
+  log_space_steps=0
+  use_difficult_gt=0
+  
+  resize_width=720
+  resize_height=368
+  crop_width=720
+  crop_height=368
+
 else
   echo "Invalid dataset name"
   exit
@@ -134,7 +160,7 @@ fi
 #Initial training
 stage="initial"
 weights=$weights_dst
-#weights="/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-models/scripts/training/voc0712od-ssd512x512_jdetnet21v2-fpn_2017-12-16_19-31-15(58.74%)/initial/voc0712od-ssd512x512_jdetnet21v2-fpn_iter_120000.caffemodel"
+#weights="/data/mmcodec_video2_tier3/users/manu/experiments/object/detection/2017/2017.09/caffe-0.16/voc0712od-ssd512x512_jdetnet21v2_2017-09-19_16-17-34_pyr-max-pool_1x1head_(72.82%)/initial/voc0712od-ssd512x512_jdetnet21v2_iter_120000.caffemodel"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
