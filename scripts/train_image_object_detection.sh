@@ -8,8 +8,9 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 gpus="0,1" #"0,1,2"
 
 #-------------------------------------------------------
-model_name=jdetnet21v2           #jdetnet21v2 #jdetnet21v2-fpn
-dataset=voc0712od-ssd512x512     #cityscapes-ssd768x384 #cityscapes-ssd512x512 #cityscapes-ssd512x256 #voc0712od-ssd512x512
+model_name=mobiledetnet-1.0           #jdetnet21v2, jdetnet21v2-s8, jdetnet21v2-fpn, mobilenet-x.x
+dataset=voc0712od-ssd512x512    #cityscapes-ssd768x384 #cityscapes-ssd512x512 #cityscapes-ssd512x256 #voc0712od-ssd512x512
+#dataset=ti201712-ssd720x368      #cityscapes-ssd768x384 #cityscapes-ssd512x512 #cityscapes-ssd512x256 #voc0712od-ssd512x512
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
 #------------------------------------------------
@@ -20,7 +21,10 @@ echo Logging output to "$LOG"
 #------------------------------------------------
 #Download the pretrained weights
 #weights_dst="training/imagenet_jacintonet11v2_iter_320000.caffemodel"
-weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto/models/ssd/cityscapes-ssd768x384_jdetnet21v2_2017-09-21_21-24-36_(32.40%)/initial/cityscapes-ssd768x384_jdetnet21v2_iter_60000.caffemodel"
+#weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto/models/ssd/cityscapes-ssd768x384_jdetnet21v2_2017-09-21_21-24-36_(32.40%)/initial/cityscapes-ssd768x384_jdetnet21v2_iter_60000.caffemodel"
+#weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto/models/ssd/voc0712od-ssd512x512_jdetnet21v2_2017-09-19_16-17-34_pyr-max-pool_1x1head_(72.82%)/initial/voc0712od-ssd512x512_jdetnet21v2_iter_120000.caffemodel"
+weights_dst="/data/mmcodec_video2_tier3/users/manu/experiments/object/classification/2017.08/caffe-0.16/imagenet_mobilenet-1.0_2017-08-17_14-27-05_(71.5%)_(finetune)/initial/imagenet_mobilenet-1.0_iter_32000.caffemodel"
+
 if [ -f $weights_dst ]; then
   echo "Using pretrained model $weights_dst"
 else
@@ -33,7 +37,7 @@ fi
 
 use_image_list=0 #known issue - use_image_list=0 && shuffle=1 => hang.
 shuffle=0        #Note shuffle is used only in training
-batch_size=16    #32    #16
+batch_size=8    #32    #16
 resize_width=512
 resize_height=512
 crop_width=512
@@ -48,10 +52,10 @@ then
   stepvalue2=90000  #90000    #90000   #45000   #25000
   base_lr=1e-2      #1e-2     #1e-2    #1e-4    #1e-3
 
-  train_data="/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_trainval_lmdb"
-  test_data="/data/hdd/datasets/object-detect/other/pascal-voc/VOCdevkit/VOC0712/lmdb/VOC0712_test_lmdb"
-  name_size_file="/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/test_name_size.txt"
-  label_map_file="/user/a0393608/files/work/code/vision/github/weiliu89_ssd/caffe/data/VOC0712/labelmap_voc.prototxt"
+  train_data="/data/hdd/data/datasets/object-detect/other/pascal-voc/combined/VOCdevkit/VOC0712/lmdb/VOC0712_trainval_lmdb"
+  test_data="/data/hdd/data/datasets/object-detect/other/pascal-voc/combined/VOCdevkit/VOC0712/lmdb/VOC0712_test_lmdb"
+  name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/VOC0712/test_name_size.txt"
+  label_map_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/VOC0712/labelmap_voc.prototxt"
   
   num_test_image=4952
   num_classes=21
@@ -144,12 +148,13 @@ then
   min_ratio=10
   max_ratio=90
   log_space_steps=0
-  use_difficult_gt=0
   
   resize_width=720
   resize_height=368
   crop_width=720
   crop_height=368
+  #ignore lables are marked as diff in TI dataset 
+  use_difficult_gt=0
 
 else
   echo "Invalid dataset name"

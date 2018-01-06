@@ -4,6 +4,7 @@ from google.protobuf import text_format
 import ast
 from models.model_libs import *
 import models.jacintonet_v2
+import models.mobilenet
 import numpy as np
 import math
 import os
@@ -219,6 +220,8 @@ def main():
     if config_param.caffe_root != None:
       config_param.caffe_root = config_param.caffe_root + '/build/tools/caffe.bin'
     config_param.caffe_cmd = 'train'
+
+    print("caffe_root = : ",  config_param.caffe_root)
 
     # Set true if you want to start training right after generating all files.
     config_param.run_soon = False
@@ -516,6 +519,10 @@ def main():
         # conv9_2 ==> 1 x 1
         config_param.mbox_source_layers = ['conv4_3', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2']
         config_param.steps = [8, 16, 32, 64, 100, 300]
+    elif 'mobiledetnet' in config_param.model_name:
+        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
+          'ctx_output4/relu', 'ctx_output5/relu']
+        config_param.steps = [16, 32, 64, 128, 128]
     else:
         ValueError("Invalid model name")
 		
@@ -577,7 +584,7 @@ def main():
         'gamma': 0.1,
         'momentum': 0.9,
         'iter_size': iter_size,
-        'snapshot': 10000,
+        'snapshot': 2000,
         'display': 100,
         'average_loss': 10,
         'type': "SGD",
@@ -669,6 +676,12 @@ def main():
             out_layer = models.jacintonet_v2.jdetnet21_fpn(net, from_layer=from_layer,\
               num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
               freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
+        elif 'mobiledetnet' in config_param.model_name:
+            #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
+            #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+            #  freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride, wide_factor=wide_factor)
+            wide_factor = float(config_param.model_name.split('-')[1])
+            out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer, wide_factor=wide_factor)
         else:
             ValueError("Invalid model name")
         return net, out_layer
