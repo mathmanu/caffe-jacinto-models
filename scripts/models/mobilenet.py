@@ -236,9 +236,13 @@ class KW_Args(object):
 def MobileNetBody(net, from_layer='data', fully_conv=False, reduced=False, dilated=False,
         dropout=True, freeze_layers=None, bn_type='bvlc', bn_at_start=True, caffe_fork='nvidia',
         training_type='SSD', depth_mul=1, ssd_mobile_chuanqi=False, dil_when_stride_removed=False,
-        num_output_fc=1000, wide_factor = 1.0):
-  
-  exp_for_mma = True
+        num_output=1000, wide_factor = 1.0, enable_fc=True):
+  #store num_ouptut as diffrent name as some APIs has num_output and may clash with this var
+  num_output_fc = num_output
+
+  #exp: use group of 8 in 3x3_dw and use 1x1_pw only if ip and op channels are different. 
+  #This experiment didn't yield good result. I think shuffle is needed for this experiment.
+  exp_for_mma = False
   if freeze_layers is None:
     freeze_layers = []
   
@@ -318,9 +322,9 @@ def MobileNetBody(net, from_layer='data', fully_conv=False, reduced=False, dilat
         num_output=num_output, kernel_size=3, pad=1, stride=stride,  prePostFix=prePostFix, 
         kwArgs=kwArgs,isFrozen=isFrozen, group=group,dilation=dilation*removed_stride_fac)
 
-    need_point_wise = False
+    need_point_wise = True
     if exp_for_mma == True:
-      #do not do point wise only if input and output ch are same
+      #do not do point wise if input and output ch are same
       if num_dw_output == num_sep_output:
         need_point_wise = False
 
@@ -340,22 +344,23 @@ def MobileNetBody(net, from_layer='data', fully_conv=False, reduced=False, dilat
           num_output=num_sep_output, kernel_size=1, pad=0, stride=1,  prePostFix=prePostFix, 
           kwArgs=kwArgs,isFrozen=isFrozen, group=1, dilation=dilation*removed_stride_fac)
 
-  #--   
-  # Add global pooling layer.
-  from_layer = op_layer_name
-  op_layer_name = 'pool6'
-  net[op_layer_name] = L.Pooling(net[from_layer], pool=P.Pooling.AVE, global_pooling=True)
-       
-  from_layer = op_layer_name
-  op_layer_name = 'fc7' #'fc'+str(num_output)
-  kwargs = { 'num_output': num_output_fc, 
-    'param': [{'lr_mult': 1, 'decay_mult': 1}, {'lr_mult': 2, 'decay_mult': 0}], 
-    'convolution_param': { 
-       'kernel_size': 1,
-       'weight_filler': { 'type': 'msra' }, 
-    },
-  }
-  net[op_layer_name] = L.Convolution(net[from_layer], **kwargs)    
+  if enable_fc:
+    #--   
+    # Add global pooling layer.
+    from_layer = op_layer_name
+    op_layer_name = 'pool6'
+    net[op_layer_name] = L.Pooling(net[from_layer], pool=P.Pooling.AVE, global_pooling=True)
+         
+    from_layer = op_layer_name
+    op_layer_name = 'fc7' #'fc'+str(num_output)
+    kwargs = { 'num_output': num_output_fc, 
+      'param': [{'lr_mult': 1, 'decay_mult': 1}, {'lr_mult': 2, 'decay_mult': 0}], 
+      'convolution_param': { 
+         'kernel_size': 1,
+         'weight_filler': { 'type': 'msra' }, 
+      },
+    }
+    net[op_layer_name] = L.Convolution(net[from_layer], **kwargs)    
   
   return op_layer_name
 
@@ -371,4 +376,55 @@ def mobilenet(net, from_layer='data', fully_conv=False, reduced=False, dilated=F
         num_output, wide_factor=wide_factor)
 
         
+def mobiledetnet(net, from_layer='data', fully_conv=False, reduced=False, dilated=False,
+        dropout=True, freeze_layers=None, bn_type='bvlc', bn_at_start=True, caffe_fork='nvidia',
+        training_type='ImageNet', depth_mul=1, ssd_mobile_chuanqi=False, dil_when_stride_removed=False,
+        num_output=1000, wide_factor=1.0, use_batchnorm=True, use_relu=True, num_intermediate=512):
+
+  op_layer_name = MobileNetBody(net, from_layer, fully_conv, reduced, dilated,
+        dropout, freeze_layers, bn_type, bn_at_start, caffe_fork,
+        training_type, depth_mul, ssd_mobile_chuanqi, dil_when_stride_removed,
+        num_output, wide_factor=wide_factor, enable_fc=False)
+  
+  #---------------------------     
+  #PSP style pool down
+  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
+  from_layer = op_layer_name 
+  out_layer = 'pool6'
+  net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param) 
+  #--
+  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
+  from_layer = out_layer
+  out_layer = 'pool7'
+  net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
+  #--
+  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':1, 'pad':1}      
+  from_layer = out_layer
+  out_layer = 'pool8'
+  net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
+
+  for top in net.tops:
+    print("top:", top)
+  #---------------------------       
+  from_layer = 'relu5_5/sep'
+  out_layer = 'ctx_output1'
+  out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)  
         
+  from_layer = 'relu6/sep'
+  out_layer = 'ctx_output2'
+  out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1) 
+        
+  from_layer = 'pool6' #'res5a_branch2b/concat' #
+  out_layer = 'ctx_output3'
+  out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              
+ 
+  from_layer = 'pool7'
+  out_layer = 'ctx_output4'
+  out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
+
+  from_layer = 'pool8'
+  out_layer = 'ctx_output5'
+  out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
+  
+  return out_layer  
+ 
