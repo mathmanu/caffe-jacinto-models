@@ -15,6 +15,52 @@ import sys
 import argparse
 from collections import OrderedDict
 
+
+def set_min_max_sizes(config_param):
+  # in percent %
+  if config_param.ssd_size == '512x512':
+    min_ratio = 15
+  elif (config_param.ssd_size == '300x300') or(config_param.ssd_size == '256x256'):
+    min_ratio = 20
+  
+  if config_param.small_objs: 
+    min_ratio = min_ratio - 5
+   
+  max_ratio = 90
+  
+  step = int(math.floor((max_ratio - min_ratio) / (config_param.num_steps - 2)))
+  min_sizes = []
+  max_sizes = []
+
+  for ratio in xrange(min_ratio, max_ratio + 1, step):
+    min_sizes.append(config_param.min_dim * ratio / 100.)
+    max_sizes.append(config_param.min_dim * (ratio + step) / 100.)
+
+  print('ratio_step_size:', step)   
+  
+  if config_param.ssd_size == '512x512':
+    if config_param.small_objs:
+      min_size_mul = 4 
+      max_size_mul = 10
+    else:  
+      min_size_mul = 7
+      max_size_mul = 15 
+  elif (config_param.ssd_size == '300x300') or (config_param.ssd_size == '256x256'):
+    if config_param.small_objs:
+      min_size_mul = 7
+      max_size_mul = 15 
+    else:
+      min_size_mul = 10
+      max_size_mul = 20
+  
+  min_sizes = [config_param.min_dim * min_size_mul / 100.] + min_sizes
+  max_sizes = [config_param.min_dim * max_size_mul / 100.] + max_sizes
+  
+  #print('min_sizes:', min_sizes)   
+  #print('max_sizes:', max_sizes)  
+
+  return min_sizes, max_sizes  
+
 def CreateAnnotatedDataLayer(source, batch_size=32, backend=P.Data.LMDB,
         output_label=True, train=True, label_map_file='', anno_type=None,
         transform_param={}, batch_sampler=[{}], threads=1):
@@ -187,7 +233,7 @@ def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
 
 def get_arguments():
     parser = argparse.ArgumentParser()   
-    parser.add_argument('--config_param', type=str, default=None, help='Extra config parameters') 	   
+    parser.add_argument('--config_param', type=str, default=None, help='Extra config parameters')      
     parser.add_argument('--solver_param', type=str, default=None, help='Extra solver parameters')        
     return parser.parse_args()
       
@@ -204,7 +250,7 @@ def main():
             
     #Start populating config_param
     config_param = OrderedDict()
-	
+  
     #Names
     config_param.config_name = 'image-objdet'
     config_param.model_name = "jacintonet11"
@@ -293,7 +339,8 @@ def main():
     config_param.mining_type = P.MultiBoxLoss.MAX_NEGATIVE
     config_param.neg_pos_ratio = 3.
     config_param.loc_weight = (config_param.neg_pos_ratio + 1.) / 4.
-    
+    config_param.min_dim = -1
+    config_param.aspect_ratios_type=0
     #Update from params given from outside
     #if args.config_param != None:
     #  config_param.update(args.config_param)   
@@ -301,8 +348,9 @@ def main():
       for k in args.config_param.keys():
         config_param.__setattr__(k,args.config_param[k])
         config_param.__setitem__(k,args.config_param[k])
-    
-    config_param.min_dim = int((config_param.crop_width + config_param.crop_height)/2)
+
+    if config_param.min_dim == -1:
+      config_param.min_dim = int((config_param.crop_width + config_param.crop_height)/2)
    
     resize = "{}x{}".format(config_param.resize_width, config_param.resize_height)
     config_param.batch_sampler = [
@@ -427,8 +475,8 @@ def main():
             'emit_constraint': {
                 'emit_type': caffe_pb2.EmitConstraint.CENTER,
                 },
-			'crop_h': config_param.crop_height,
-			'crop_w': config_param.crop_width
+      'crop_h': config_param.crop_height,
+      'crop_w': config_param.crop_width
             }
     config_param.test_transform_param = {
             'mean_value': [0, 0, 0],
@@ -439,8 +487,8 @@ def main():
                     'width': config_param.resize_width,
                     'interp_mode': [P.Resize.LINEAR],
                     },
-			'crop_h': config_param.crop_height,
-			'crop_w': config_param.crop_width					
+      'crop_h': config_param.crop_height,
+      'crop_w': config_param.crop_width          
             }
 
         
@@ -510,6 +558,13 @@ def main():
         config_param.steps = [16, 16, 32, 64, 128, 128]
         config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
           'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
+    if (config_param.model_name == 'ssdJacintoNetV2'):
+      config_param.steps = []
+      if config_param.resize_width == config_param.resize_height:
+        config_param.steps = [8, 16, 32, 64, 128, 256, 512]
+      #config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
+      #  'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
+      config_param.mbox_source_layers = ['res3a_branch2b/relu', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2', 'conv10_2']
     elif config_param.model_name == 'vgg16':
         # conv4_3 ==> 38 x 38
         # fc7 ==> 19 x 19
@@ -525,24 +580,43 @@ def main():
         config_param.steps = [16, 32, 64, 128, 128]
     else:
         ValueError("Invalid model name")
-		
+    
     # parameters for generating priors.
     config_param.num_steps = len(config_param.mbox_source_layers)  
     config_param.step = int(math.floor((config_param.max_ratio - config_param.min_ratio) / config_param.num_steps))
     config_param.min_sizes = []
     config_param.max_sizes = []
-    
+      
+    print("min_dim = {}".format(config_param.min_dim))
     min_dim_to_use = config_param.min_ratio*config_param.min_dim/100
     max_dim_to_use = config_param.max_ratio*config_param.min_dim/100
-    if config_param.log_space_steps:
-        min_max_sizes = np.logspace(np.log2(min_dim_to_use), np.log2(max_dim_to_use), num=config_param.num_steps+1, base=2)
+    if config_param.log_space_steps == 1:
+      #log
+      min_max_sizes = np.logspace(np.log2(min_dim_to_use), np.log2(max_dim_to_use), num=config_param.num_steps+1, base=2)
+      config_param.min_sizes = list(min_max_sizes[0:config_param.num_steps])
+      config_param.max_sizes = list(min_max_sizes[1:config_param.num_steps+1])
+    elif config_param.log_space_steps == 0:
+      #linear
+      min_max_sizes = np.linspace(min_dim_to_use, max_dim_to_use, num=config_param.num_steps+1)
+      config_param.min_sizes = list(min_max_sizes[0:config_param.num_steps])
+      config_param.max_sizes = list(min_max_sizes[1:config_param.num_steps+1])
     else:
-        min_max_sizes = np.linspace(min_dim_to_use, max_dim_to_use, num=config_param.num_steps+1)
-    print("min_max_sizes = {}".format(min_max_sizes))
-    config_param.min_sizes = list(min_max_sizes[0:config_param.num_steps])
-    config_param.max_sizes = list(min_max_sizes[1:config_param.num_steps+1])
-	  
-    config_param.aspect_ratios = [[2]]*config_param.num_steps #[[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+      #like original SSD
+      config_param.min_sizes, config_param.max_sizes = set_min_max_sizes(config_param)
+  
+    print("minsizes = {}".format(config_param.min_sizes))
+    print("maxsizes = {}".format(config_param.max_sizes))
+   
+    if config_param.aspect_ratios_type == 0:
+      config_param.aspect_ratios = [[2]]*config_param.num_steps 
+    else:
+      #like original SSD
+      config_param.aspect_ratios = [[2,3]]*config_param.num_steps 
+      config_param.aspect_ratios[0] = [2]
+      config_param.aspect_ratios[-1] = [2]
+      config_param.aspect_ratios[-2] = [2]
+           
+    print("ARs:",config_param.aspect_ratios)
     # L2 normalize conv4_3.
     config_param.normalizations = [-1]*config_param.num_steps #[20, -1, -1, -1, -1, -1]
     # variance used to encode/decode prior bboxes.
@@ -557,7 +631,7 @@ def main():
     # Defining which GPUs to use.
     config_param.gpulist = config_param.gpus.split(",")
     config_param.num_gpus = len(config_param.gpulist)
-
+   
     # Divide the mini-batch to different GPUs.
     iter_size = int(math.ceil(config_param.accum_batch_size/config_param.batch_size))
     solver_mode = P.Solver.CPU
@@ -578,7 +652,7 @@ def main():
         'type': "SGD",
         'base_lr': 1e-3,
         'max_iter': 32000, 
-        'weight_decay': 0.0001,
+        'weight_decay': 0.0005,
         'lr_policy': "multistep",
         'stepvalue': [24000, 30000, 32000],
         'gamma': 0.1,
@@ -598,16 +672,16 @@ def main():
         'eval_type': "detection",
         'ap_version': "11point",
         'test_initialization': False,
-		'random_seed': 33,
+        'random_seed': 33,
         }
 
     #if args.solver_param != None:
     #  solver_param.update(args.solver_param)       
     if args.solver_param != None: 
       for k in args.solver_param.keys():
-        solver_param.__setitem__(k,args.solver_param[k])	  
+        solver_param.__setitem__(k,args.solver_param[k])    
         #solver_param.__setattr__(k,args.solver_param[k])
-		
+    
     # parameters for generating detection output.
     det_out_param = {
         'num_classes': config_param.num_classes,
@@ -676,6 +750,12 @@ def main():
             out_layer = models.jacintonet_v2.jdetnet21_fpn(net, from_layer=from_layer,\
               num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
               freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
+        elif config_param.model_name == 'ssdJacintoNetV2':
+            out_layer = models.jacintonet_v2.ssdJacintoNetV2(net, from_layer=from_layer,\
+              num_output=config_param.num_feature,stride_list=config_param.stride_list,\
+              dilation_list=config_param.dilation_list,\
+              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride,\
+              ds_type = 'DFLT', use_batchnorm_mbox=False)
         elif 'mobiledetnet' in config_param.model_name:
             #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
             #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
