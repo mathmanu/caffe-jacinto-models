@@ -27,8 +27,17 @@ def set_min_max_sizes(config_param):
     min_ratio = min_ratio - 5
    
   max_ratio = 90
+
+  if config_param.reg_head_at_ds8 == False:
+    #we want to use max/min ratio as if reg head was there at ds8. And at the end remove first entry
+    config_param.num_steps += 1 
   
   step = int(math.floor((max_ratio - min_ratio) / (config_param.num_steps - 2)))
+
+  if config_param.reg_head_at_ds8 == False:
+    #we want to use max/min ratio as if reg head was there at ds8. And at the end remove first entry
+    config_param.num_steps -= 1 
+
   min_sizes = []
   max_sizes = []
 
@@ -53,8 +62,9 @@ def set_min_max_sizes(config_param):
       min_size_mul = 10
       max_size_mul = 20
   
-  min_sizes = [config_param.min_dim * min_size_mul / 100.] + min_sizes
-  max_sizes = [config_param.min_dim * max_size_mul / 100.] + max_sizes
+  if config_param.reg_head_at_ds8:
+    min_sizes = [config_param.min_dim * min_size_mul / 100.] + min_sizes
+    max_sizes = [config_param.min_dim * max_size_mul / 100.] + max_sizes
   
   #print('min_sizes:', min_sizes)   
   #print('max_sizes:', max_sizes)  
@@ -351,7 +361,16 @@ def main():
 
     if config_param.min_dim == -1:
       config_param.min_dim = int((config_param.crop_width + config_param.crop_height)/2)
+
+    if config_param.ds_fac == 16: 
+      config_param.stride_list = [2,2,2,2,1]
+      config_param.dilation_list = [1,1,1,1,2]
+    elif config_param.ds_fac == 32: 
+      config_param.stride_list = [2,2,2,2,2]
+      config_param.dilation_list = [1,1,1,1,1]
    
+    print("config_param.ds_fac :", config_param.ds_fac)
+    print("config_param.stride_list :", config_param.stride_list)
     resize = "{}x{}".format(config_param.resize_width, config_param.resize_height)
     config_param.batch_sampler = [
             {
@@ -564,7 +583,23 @@ def main():
         config_param.steps = [8, 16, 32, 64, 128, 256, 512]
       #config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
       #  'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
-      config_param.mbox_source_layers = ['res3a_branch2b/relu', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2', 'conv10_2']
+      if config_param.ds_type == 'DFLT':
+        config_param.mbox_source_layers = ['res3a_branch2b/relu', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2', 'conv10_2']
+      else: 
+        if config_param.stride_list[4] == 1:
+          config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 
+          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu', 'ctx_output7/relu']
+        else:  
+          config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 
+          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
+
+        if config_param.reg_head_at_ds8 == False:
+          print("config_param.mbox_source_layers: ", config_param.mbox_source_layers) 
+          #supported only for PSP type downsampling
+          #if reg head is not connected at ds8 then number of heads will be one less
+          del config_param.mbox_source_layers[0]
+          print("config_param.mbox_source_layers: ", config_param.mbox_source_layers) 
+
     elif config_param.model_name == 'vgg16':
         # conv4_3 ==> 38 x 38
         # fc7 ==> 19 x 19
@@ -611,8 +646,9 @@ def main():
       config_param.aspect_ratios = [[2]]*config_param.num_steps 
     else:
       #like original SSD
-      config_param.aspect_ratios = [[2,3]]*config_param.num_steps 
-      config_param.aspect_ratios[0] = [2]
+      config_param.aspect_ratios = [[2,3]]*config_param.num_steps
+      if config_param.reg_head_at_ds8:
+        config_param.aspect_ratios[0] = [2]
       config_param.aspect_ratios[-1] = [2]
       config_param.aspect_ratios[-2] = [2]
            
@@ -671,7 +707,7 @@ def main():
         'test_interval': 2000,
         'eval_type': "detection",
         'ap_version': "11point",
-        'test_initialization': False,
+        'test_initialization': True,
         'random_seed': 33,
         }
 
@@ -755,7 +791,9 @@ def main():
               num_output=config_param.num_feature,stride_list=config_param.stride_list,\
               dilation_list=config_param.dilation_list,\
               freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride,\
-              ds_type = 'DFLT', use_batchnorm_mbox=False)
+              ds_type=config_param.ds_type, use_batchnorm_mbox=False,
+              fully_conv_at_end=config_param.fully_conv_at_end, 
+              reg_head_at_ds8 = config_param.reg_head_at_ds8)
         elif 'mobiledetnet' in config_param.model_name:
             #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
             #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
@@ -915,6 +953,10 @@ def main():
     # Copy the python script to job_dir.
     py_file = os.path.abspath(__file__)
     shutil.copy(py_file, config_param.job_dir)
+    
+    #copy some other utils scripts
+    shutil.copy(os.getcwd() + '/train_image_object_detection.sh', config_param.job_dir)
+    shutil.copy(os.getcwd() + '/models/jacintonet_v2.py', config_param.job_dir)
 
     # Run the job.
     os.chmod(config_param.job_file, stat.S_IRWXU)
