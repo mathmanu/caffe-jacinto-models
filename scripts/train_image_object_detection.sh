@@ -30,7 +30,7 @@ echo Logging output to "$LOG"
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-09_19-30-42/l1reg/ti201712-ssd720x368_ssdJacintoNetV2_iter_40000_52.1.caffemodel"
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_PSP_2018-01-10_19-22-21_partial_51.6/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_8000_51.6.caffemodel"
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_PSP_dsFac32_2018-01-10_22-44-54_51.7/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_28000_51_70.caffemodel"
-weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-11_10-13-46_50.7/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_4000_50.70.caffemodel"
+weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-11_10-13-46_partial_51.45/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_26000_51.45.caffemodel"
 if [ -f $weights_dst ]; then
   echo "Using pretrained model $weights_dst"
 else
@@ -62,7 +62,8 @@ ds_fac=16
 ds_type='PSP'
 
 fully_conv_at_end=1
-reg_head_at_ds8=1 
+reg_head_at_ds8=1
+concat_reg_head=0
 
 #-------------------------------------------------------
 if [ $dataset = "voc0712od-ssd512x512" ]
@@ -212,6 +213,7 @@ then
   ds_fac=32
   fully_conv_at_end=0
   reg_head_at_ds8=0
+  concat_reg_head=1
   
   resize_width=720
   resize_height=368
@@ -239,7 +241,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'log_space_steps':$log_space_steps,'use_difficult_gt':$use_difficult_gt,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
-'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,
+'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
 'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$solver_param
@@ -266,7 +268,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'log_space_steps':$log_space_steps,'use_difficult_gt':$use_difficult_gt,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
-'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,
+'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
 'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$l1reg_solver_param
@@ -289,7 +291,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'log_space_steps':$log_space_steps,'use_difficult_gt':$use_difficult_gt,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
-'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,
+'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
 'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$sparse_solver_param
@@ -312,7 +314,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'test_batch_size':10,'caffe_cmd':'test_detection','display_sparsity':1,\
-'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,
+'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
 'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
@@ -335,7 +337,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'test_batch_size':10,'caffe_cmd':'test_detection',\
-'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,
+'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
 'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param

@@ -326,7 +326,9 @@ def jdetnet21_s8(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
 
 #To match configuration used by original SSD script
 def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
-   upsample=False, num_intermediate=512, output_stride=16, use_batchnorm_mbox=True, ds_type='PSP', fully_conv_at_end=True, reg_head_at_ds8=True): 
+   upsample=False, num_intermediate=512, output_stride=16, use_batchnorm_mbox=True, ds_type='PSP', fully_conv_at_end=True, reg_head_at_ds8=True, 
+   concat_reg_head=False): 
+   
    eltwise_final = False
    if stride_list == None:
      stride_list = [2,2,2,2,1]
@@ -336,16 +338,25 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
    out_layer = jacintonet11_base(net, from_layer=from_layer, use_batchnorm=use_batchnorm, use_relu=use_relu, \
       num_output=num_output, stride_list=stride_list, dilation_list=dilation_list, freeze_layers=freeze_layers)
 
+   last_base_layer_name = out_layer
+
+   if concat_reg_head:
+     out_layer = 'res4a_branch2b/concat'    
+     net[out_layer] = L.Concat(net['res4a_branch2a/relu'], net['res4a_branch2b/relu']) 
+                           
+     out_layer = 'res5a_branch2b/concat'    
+     net[out_layer] = L.Concat(net['res5a_branch2a/relu'], net['res5a_branch2b/relu'])  
+     last_base_layer_name = out_layer
+
    if fully_conv_at_end:
-     from_layer = 'res5a_branch2b/relu'
+     from_layer = last_base_layer_name 
      out_layer = 'fc6'
      out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=1024, kernel_size=[3,3], pad=6, stride=1, group=1, dilation=6)
         
      from_layer = out_layer
      out_layer = 'fc7'
      out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=1024, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)
-
-   last_base_layer_name = out_layer 
+     last_base_layer_name = out_layer
       
    #---------------------------     
    #PSP style pool down
@@ -384,8 +395,11 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
      reg_head_idx=1
      if reg_head_at_ds8:
        from_layer = 'res3a_branch2b/relu'
-     else:  
-       from_layer = 'res4a_branch2b/relu'
+     else: 
+       if concat_reg_head:
+         from_layer = 'res4a_branch2b/concat'
+       else:  
+         from_layer = 'res4a_branch2b/relu'
 
      out_layer = 'ctx_output{}'.format(reg_head_idx)
      reg_head_idx += 1

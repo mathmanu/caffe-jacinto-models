@@ -27,16 +27,7 @@ def set_min_max_sizes(config_param):
     min_ratio = min_ratio - 5
    
   max_ratio = 90
-
-  if config_param.reg_head_at_ds8 == False:
-    #we want to use max/min ratio as if reg head was there at ds8. And at the end remove first entry
-    config_param.num_steps += 1 
-  
   step = int(math.floor((max_ratio - min_ratio) / (config_param.num_steps - 2)))
-
-  if config_param.reg_head_at_ds8 == False:
-    #we want to use max/min ratio as if reg head was there at ds8. And at the end remove first entry
-    config_param.num_steps -= 1 
 
   min_sizes = []
   max_sizes = []
@@ -62,9 +53,8 @@ def set_min_max_sizes(config_param):
       min_size_mul = 10
       max_size_mul = 20
   
-  if config_param.reg_head_at_ds8:
-    min_sizes = [config_param.min_dim * min_size_mul / 100.] + min_sizes
-    max_sizes = [config_param.min_dim * max_size_mul / 100.] + max_sizes
+  min_sizes = [config_param.min_dim * min_size_mul / 100.] + min_sizes
+  max_sizes = [config_param.min_dim * max_size_mul / 100.] + max_sizes
   
   #print('min_sizes:', min_sizes)   
   #print('max_sizes:', max_sizes)  
@@ -592,14 +582,6 @@ def main():
         else:  
           config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 
           'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
-
-        if config_param.reg_head_at_ds8 == False:
-          print("config_param.mbox_source_layers: ", config_param.mbox_source_layers) 
-          #supported only for PSP type downsampling
-          #if reg head is not connected at ds8 then number of heads will be one less
-          del config_param.mbox_source_layers[0]
-          print("config_param.mbox_source_layers: ", config_param.mbox_source_layers) 
-
     elif config_param.model_name == 'vgg16':
         # conv4_3 ==> 38 x 38
         # fc7 ==> 19 x 19
@@ -647,8 +629,7 @@ def main():
     else:
       #like original SSD
       config_param.aspect_ratios = [[2,3]]*config_param.num_steps
-      if config_param.reg_head_at_ds8:
-        config_param.aspect_ratios[0] = [2]
+      config_param.aspect_ratios[0] = [2]
       config_param.aspect_ratios[-1] = [2]
       config_param.aspect_ratios[-2] = [2]
            
@@ -791,9 +772,8 @@ def main():
               num_output=config_param.num_feature,stride_list=config_param.stride_list,\
               dilation_list=config_param.dilation_list,\
               freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride,\
-              ds_type=config_param.ds_type, use_batchnorm_mbox=False,
-              fully_conv_at_end=config_param.fully_conv_at_end, 
-              reg_head_at_ds8 = config_param.reg_head_at_ds8)
+              ds_type=config_param.ds_type, use_batchnorm_mbox=False,fully_conv_at_end=config_param.fully_conv_at_end, 
+              reg_head_at_ds8=config_param.reg_head_at_ds8, concat_reg_head=config_param.concat_reg_head)
         elif 'mobiledetnet' in config_param.model_name:
             #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
             #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
