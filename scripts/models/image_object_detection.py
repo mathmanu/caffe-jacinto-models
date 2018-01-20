@@ -164,6 +164,9 @@ def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
         num_loc_output = num_priors_per_location * 4;
         if not share_location:
             num_loc_output *= num_classes
+       
+        dilation=1
+        pad = int((kernel_size + (dilation - 1) * (kernel_size - 1)) - 1) / 2
         ConvBNLayerSSD(net, from_layer, name, use_bn=use_batchnorm, use_relu=False, lr_mult=lr_mult,
             num_output=num_loc_output, kernel_size=kernel_size, pad=pad, stride=1, use_scale=use_scale, **bn_param)
         permute_name = "{}_perm".format(name)
@@ -175,6 +178,9 @@ def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
         # Create confidence prediction layer.
         name = "{}_mbox_conf{}".format(from_layer, conf_postfix)
         num_conf_output = num_priors_per_location * num_classes;
+
+        dilation=1
+        pad = int((kernel_size + (dilation - 1) * (kernel_size - 1)) - 1) / 2
         ConvBNLayerSSD(net, from_layer, name, use_bn=use_batchnorm, use_relu=False, lr_mult=lr_mult,
             num_output=num_conf_output, kernel_size=kernel_size, pad=pad, stride=1, use_scale=use_scale, **bn_param)
         permute_name = "{}_perm".format(name)
@@ -204,6 +210,8 @@ def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
         if use_objectness:
             name = "{}_mbox_objectness".format(from_layer)
             num_obj_output = num_priors_per_location * 2;
+            dilation=1
+            pad = int((kernel_size + (dilation - 1) * (kernel_size - 1)) - 1) / 2
             ConvBNLayerSSD(net, from_layer, name, use_bn=use_batchnorm, use_relu=False, lr_mult=lr_mult,
                 num_output=num_obj_output, kernel_size=kernel_size, pad=pad, stride=1, use_scale=use_scale, **bn_param)
             permute_name = "{}_perm".format(name)
@@ -582,6 +590,9 @@ def main():
         else:  
           config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 
           'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
+        
+        if config_param.base_nw_3_head:
+          config_param.mbox_source_layers.append('ctx_output{}/relu'.format(len(config_param.mbox_source_layers)+1))  
     elif config_param.model_name == 'vgg16':
         # conv4_3 ==> 38 x 38
         # fc7 ==> 19 x 19
@@ -773,7 +784,8 @@ def main():
               dilation_list=config_param.dilation_list,\
               freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride,\
               ds_type=config_param.ds_type, use_batchnorm_mbox=False,fully_conv_at_end=config_param.fully_conv_at_end, 
-              reg_head_at_ds8=config_param.reg_head_at_ds8, concat_reg_head=config_param.concat_reg_head)
+              reg_head_at_ds8=config_param.reg_head_at_ds8, concat_reg_head=config_param.concat_reg_head,
+              base_nw_3_head=config_param.base_nw_3_head, first_hd_same_op_ch=config_param.first_hd_same_op_ch)
         elif 'mobiledetnet' in config_param.model_name:
             #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
             #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
@@ -785,12 +797,11 @@ def main():
         return net, out_layer
     
     net, out_layer = core_network(net, out_layer)
-   
     mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=config_param.mbox_source_layers,
             use_batchnorm=config_param.use_batchnorm, use_scale=config_param.use_scale, min_sizes=config_param.min_sizes, max_sizes=config_param.max_sizes,
             aspect_ratios=config_param.aspect_ratios, steps=config_param.steps, normalizations=config_param.normalizations,
             num_classes=config_param.num_classes, share_location=config_param.share_location, flip=config_param.flip, clip=config_param.clip,
-            prior_variance=config_param.prior_variance, kernel_size=3, pad=1, lr_mult=config_param.lr_mult)
+            prior_variance=config_param.prior_variance, kernel_size=config_param.ker_mbox_loc_conf, pad=1, lr_mult=config_param.lr_mult)
 
     # Create the MultiBoxLossLayer.
     name = "mbox_loss"
@@ -820,12 +831,11 @@ def main():
     out_layer = 'data/bias'    
     
     net, out_layer = core_network(net, out_layer)
-
     mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=config_param.mbox_source_layers,
             use_batchnorm=config_param.use_batchnorm, use_scale=config_param.use_scale, min_sizes=config_param.min_sizes, max_sizes=config_param.max_sizes,
             aspect_ratios=config_param.aspect_ratios, steps=config_param.steps, normalizations=config_param.normalizations,
             num_classes=config_param.num_classes, share_location=config_param.share_location, flip=config_param.flip, clip=config_param.clip,
-            prior_variance=config_param.prior_variance, kernel_size=3, pad=1, lr_mult=config_param.lr_mult,)
+            prior_variance=config_param.prior_variance, kernel_size=config_param.ker_mbox_loc_conf, pad=1, lr_mult=config_param.lr_mult)
 
     conf_name = "mbox_conf"
     if multibox_loss_param["conf_loss_type"] == P.MultiBoxLoss.SOFTMAX:

@@ -327,7 +327,7 @@ def jdetnet21_s8(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
 #To match configuration used by original SSD script
 def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
    upsample=False, num_intermediate=512, output_stride=16, use_batchnorm_mbox=True, ds_type='PSP', fully_conv_at_end=True, reg_head_at_ds8=True, 
-   concat_reg_head=False): 
+   concat_reg_head=False, base_nw_3_head=False, first_hd_same_op_ch=False): 
    
    eltwise_final = False
    if stride_list == None:
@@ -403,7 +403,8 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
 
      out_layer = 'ctx_output{}'.format(reg_head_idx)
      reg_head_idx += 1
-     out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              
+
+     out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>first_hd_same_op_ch, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              
 
      from_layer = last_base_layer_name 
      out_layer = 'ctx_output{}'.format(reg_head_idx)
@@ -435,7 +436,14 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
        out_layer = 'ctx_output{}'.format(reg_head_idx)
        reg_head_idx += 1
        out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-     
+
+     if base_nw_3_head:
+       #by default 2 heads are connected in base n/w are at res3a and res5a (at the end of base n/w)
+       from_layer = 'res4a_branch2b/relu'
+       out_layer = 'ctx_output{}'.format(reg_head_idx)
+       reg_head_idx += 1
+       out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
+
      return out_layer
    else:
      ssd_size = '512x512'

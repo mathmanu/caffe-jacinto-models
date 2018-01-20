@@ -8,14 +8,8 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 gpus="0,1" #"0,1,2"
 
 #-------------------------------------------------------
-model_name=ssdJacintoNetV2          #jdetnet21v2, jdetnet21v2-s8, jdetnet21v2-fpn,mobilenet-x.x, ssdJacintoNetV2       
-dataset=ti201712-ssd720x368        #cityscapes-ssd768x384,cityscapes-ssd512x512, cityscapes-ssd512x256, voc0712od-ssd512x512, ti201712-ssd720x368,cityscapes-ssd720x368-ticat 
-folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
-
-#------------------------------------------------
-LOG=$folder_name/train-log_"$DATE_TIME".txt
-exec &> >(tee -a "$LOG")
-echo Logging output to "$LOG"
+model_name=ssdJacintoNetV2       #jdetnet21v2, jdetnet21v2-s8, jdetnet21v2-fpn,mobilenet-x.x, ssdJacintoNetV2       
+dataset=ti201712-1024x256        #cityscapes-ssd768x384,cityscapes-ssd512x512, cityscapes-ssd512x256, voc0712od-ssd512x512, ti201712-ssd720x368,cityscapes-ssd720x368-ticat 
 
 #------------------------------------------------
 #Download the pretrained weights
@@ -30,7 +24,8 @@ echo Logging output to "$LOG"
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-09_19-30-42/l1reg/ti201712-ssd720x368_ssdJacintoNetV2_iter_40000_52.1.caffemodel"
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_PSP_2018-01-10_19-22-21_partial_51.6/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_8000_51.6.caffemodel"
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_PSP_dsFac32_2018-01-10_22-44-54_51.7/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_28000_51_70.caffemodel"
-weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-11_10-13-46_partial_51.45/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_26000_51.45.caffemodel"
+#weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-11_10-13-46/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_26000_51.45.caffemodel"
+weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_ssdJacintoNetV2_2018-01-16_13-10-14/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_60000.caffemodel"
 if [ -f $weights_dst ]; then
   echo "Using pretrained model $weights_dst"
 else
@@ -64,6 +59,8 @@ ds_type='PSP'
 fully_conv_at_end=1
 reg_head_at_ds8=1
 concat_reg_head=0
+#kernel size for mbox_loc, mbox_conf conv
+ker_mbox_loc_conf=3
 
 #-------------------------------------------------------
 if [ $dataset = "voc0712od-ssd512x512" ]
@@ -212,8 +209,11 @@ then
   ds_type='PSP'
   ds_fac=32
   fully_conv_at_end=0
-  reg_head_at_ds8=0
-  concat_reg_head=1
+  reg_head_at_ds8=1
+  concat_reg_head=0
+  base_nw_3_head=0
+  ker_mbox_loc_conf=1
+  first_hd_same_op_ch=1
   
   resize_width=720
   resize_height=368
@@ -222,10 +222,57 @@ then
   #ignore lables are marked as diff in TI dataset 
   use_difficult_gt=0
 
+elif [ $dataset = "ti201712-1024x256" ]
+then
+  type="SGD"        #"SGD"   #Adam    #"Adam"
+  max_iter=60000    #120000  #64000   #32000
+  stepvalue1=30000  #60000   #32000   #16000
+  stepvalue2=45000  #90000   #48000   #24000
+  base_lr=1e-3      #1e-2    #1e-4    #1e-3
+  
+  train_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_1024x256/lmdb/TI_201712_1024x256_train_lmdb"
+  test_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_1024x256/lmdb/TI_201712_1024x256_test_lmdb"
+  name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_1024x256/test_name_size.txt"
+  label_map_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_1024x256/labelmap.prototxt"
+  
+  num_test_image=3609
+  num_classes=4 #9
+
+	min_dim=256
+	ssd_size='512x512'
+	#1:like orig SSD
+  aspect_ratios_type=1
+  small_objs=1 
+	#0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
+  log_space_steps=2
+  #'DFLT', 'PSP'
+  ds_type='PSP'
+  ds_fac=32
+  fully_conv_at_end=0
+  reg_head_at_ds8=1
+  concat_reg_head=0
+  base_nw_3_head=0
+  ker_mbox_loc_conf=1
+  first_hd_same_op_ch=1
+  
+  resize_width=1024
+  resize_height=256
+  crop_width=1024
+  crop_height=256
+  #ignore lables are marked as diff in TI dataset 
+  use_difficult_gt=0
+
 else
   echo "Invalid dataset name"
   exit
 fi
+
+folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME"_"ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1";mkdir $folder_name
+
+#------------------------------------------------
+LOG=$folder_name/train-log_"$DATE_TIME".txt
+exec &> >(tee -a "$LOG")
+echo Logging output to "$LOG"
 
 #-------------------------------------------------------
 #Initial training
@@ -242,7 +289,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$solver_param
 config_name_prev=$config_name
@@ -256,7 +303,7 @@ weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 max_iter=60000
 stepvalue1=30000
 stepvalue2=45000
-base_lr=1e-2
+#base_lr=1e-2
 
 l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
 'regularization_type':'L1','weight_decay':1e-5}"
@@ -269,7 +316,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$l1reg_solver_param
 config_name_prev=$config_name
@@ -292,7 +339,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$sparse_solver_param
 config_name_prev=$config_name
@@ -315,7 +362,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'test_batch_size':10,'caffe_cmd':'test_detection','display_sparsity':1,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -338,7 +385,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'test_batch_size':10,'caffe_cmd':'test_detection',\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 
