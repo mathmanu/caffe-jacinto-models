@@ -349,6 +349,9 @@ def main():
     config_param.loc_weight = (config_param.neg_pos_ratio + 1.) / 4.
     config_param.min_dim = -1
     config_param.aspect_ratios_type=0
+    #need it for COCO which may have gray scale image
+    config_param.force_color = 0 
+
     #Update from params given from outside
     #if args.config_param != None:
     #  config_param.update(args.config_param)   
@@ -459,6 +462,7 @@ def main():
     config_param.train_transform_param = {
             'mirror': True,
             'mean_value': [0, 0, 0],
+            'force_color':config_param.force_color,
             'resize_param': {
                     'prob': 1,
                     'resize_mode': P.Resize.WARP,
@@ -497,6 +501,7 @@ def main():
             }
     config_param.test_transform_param = {
             'mean_value': [0, 0, 0],
+            'force_color':config_param.force_color,
             'resize_param': {
                     'prob': 1,
                     'resize_mode': P.Resize.WARP,
@@ -577,8 +582,8 @@ def main():
           'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
     if (config_param.model_name == 'ssdJacintoNetV2'):
       config_param.steps = []
-      if config_param.resize_width == config_param.resize_height:
-        config_param.steps = [8, 16, 32, 64, 128, 256, 512]
+      #if config_param.resize_width == config_param.resize_height:
+        #config_param.steps = [8, 16, 32, 64, 128, 256, 512]
       #config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
       #  'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
       if config_param.ds_type == 'DFLT':
@@ -682,6 +687,7 @@ def main():
         'max_iter': 32000, 
         'weight_decay': 0.0005,
         'lr_policy': "multistep",
+        'power': 1.0,
         'stepvalue': [24000, 30000, 32000],
         'gamma': 0.1,
         'momentum': 0.9,
@@ -701,6 +707,7 @@ def main():
         'ap_version': "11point",
         'test_initialization': True,
         'random_seed': 33,
+        'show_per_class_result': True,
         }
 
     #if args.solver_param != None:
