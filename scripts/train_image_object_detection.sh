@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #-------------------------------------------------------
-DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
+DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
@@ -9,8 +9,10 @@ gpus="0,1" #"0,1,2"
 
 #-------------------------------------------------------
 model_name=ssdJacintoNetV2       #jdetnet21v2, jdetnet21v2-s8, jdetnet21v2-fpn,mobilenet-x.x, ssdJacintoNetV2       
-dataset=ti201712-1024x256        #cityscapes-ssd768x384,cityscapes-ssd512x512, cityscapes-ssd512x256, voc0712od-ssd512x512, ti201712-ssd720x368,cityscapes-ssd720x368-ticat 
-
+dataset=ti-vgg-720x368-v2        #cityscapes-ssd768x384,cityscapes-ssd512x512, cityscapes-ssd512x256,
+                                 #voc0712od, ti201712-ssd720x368,cityscapes-ssd720x368-ticat, ti201712-1024x256 
+																 #ti201712-city-720x368, ti201712-1024x512,
+																 #ti-vgg-720x368, coco
 #------------------------------------------------
 #Download the pretrained weights
 #weights_dst="training/imagenet_jacintonet11v2_iter_320000.caffemodel"
@@ -25,7 +27,12 @@ dataset=ti201712-1024x256        #cityscapes-ssd768x384,cityscapes-ssd512x512, c
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_PSP_2018-01-10_19-22-21_partial_51.6/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_8000_51.6.caffemodel"
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_PSP_dsFac32_2018-01-10_22-44-54_51.7/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_28000_51_70.caffemodel"
 #weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-11_10-13-46/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_26000_51.45.caffemodel"
-weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_ssdJacintoNetV2_2018-01-16_13-10-14/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_60000.caffemodel"
+#weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_ssdJacintoNetV2_2018-01-16_13-10-14/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_60000.caffemodel"
+#weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-17_22-11-56_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_60000_50.01.caffemodel"
+#weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-ssd720x368_ssdJacintoNetV2_2018-01-17_22-11-56_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/initial/ti201712-ssd720x368_ssdJacintoNetV2_iter_44000_50.32.caffemodel"
+#weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/coco/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1_lr_poly_24.69/initial/coco_ssdJacintoNetV2_iter_240000_24.69.caffemodel"
+#weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/cityscapes-ssd720x368-ticat/JDetNet/ssd720x368_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1_42.39/initial/cityscapes-ssd720x368-ticat_ssdJacintoNetV2_iter_60000_42.39.caffemodel"
+weights_dst="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti201712-720x368/JDetNet/20180208_22-53_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/initial/ti201712-720x368_ssdJacintoNetV2_iter_120000_53.11.caffemodel"
 if [ -f $weights_dst ]; then
   echo "Using pretrained model $weights_dst"
 else
@@ -62,17 +69,65 @@ concat_reg_head=0
 #kernel size for mbox_loc, mbox_conf conv
 ker_mbox_loc_conf=3
 
-#-------------------------------------------------------
-if [ $dataset = "voc0712od-ssd512x512" ]
-then
-  type="SGD"        #"SGD"    #Adam    #"Adam"  #"Adam"
-  max_iter=120000   #120000   #120000  #60000   #30000
-  stepvalue1=60000  #60000    #60000   #30000   #15000
-  stepvalue2=90000  #90000    #90000   #45000   #25000
-  base_lr=1e-3      #1e-2     #1e-2    #1e-4    #1e-3
+#"step", "multistep", "poly"
+lr_policy="multistep"
+force_color=0
+stepvalue3=200000 
 
-  #train_data="/data/hdd/data/datasets/object-detect/other/pascal-voc/combined/VOCdevkit/VOC0712/lmdb/VOC0712_trainval_lmdb"
-  #test_data="/data/hdd/data/datasets/object-detect/other/pascal-voc/combined/VOCdevkit/VOC0712/lmdb/VOC0712_test_lmdb"
+#-------------------------------------------------------
+if [ $dataset = "coco" ]
+then
+
+
+  train_data="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/coco/Microsoft-COCO/lmdb/coco_train_lmdb"
+  test_data="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/coco/Microsoft-COCO/lmdb/coco_minival_lmdb"
+  num_test_image=5000
+  name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/coco/minival2014_name_size.txt"
+
+  #test_data="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/coco/Microsoft-COCO/lmdb/coco_testdev_lmdb"
+  #num_test_image=20288
+  #name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/coco/test-dev2015_name_size.txt"
+
+  label_map_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/coco/labelmap_coco.prototxt"
+  
+  num_classes=81
+	force_color=1
+
+  #old options
+  #param_aspect_ratios="2,3"
+  #min_ratio=7 #10
+  #max_ratio=90
+  #log_space_steps=0
+  #use_difficult_gt=1
+
+  #201801 options
+	min_dim=512
+	ssd_size='512x512'
+	#1:like orig SSD
+  aspect_ratios_type=1
+  small_objs=1 
+	#0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
+  log_space_steps=2
+  #'DFLT', 'PSP'
+  ds_type='PSP'
+  ds_fac=32
+  fully_conv_at_end=0
+  reg_head_at_ds8=1
+  concat_reg_head=0
+  base_nw_3_head=0
+  ker_mbox_loc_conf=1
+  first_hd_same_op_ch=1
+  
+  resize_width=512
+  resize_height=512
+  crop_width=512
+  crop_height=512
+  #set to True for VOC0712
+  use_difficult_gt=0
+
+elif [ $dataset = "voc0712" ]
+then
+
   train_data="/user/a0875091/files/work/github/weiliu89/caffe-ssd/examples/VOC0712/VOC0712_trainval_lmdb"
   test_data="/user/a0875091/files/work/github/weiliu89/caffe-ssd/examples/VOC0712/VOC0712_test_lmdb"
 
@@ -81,11 +136,23 @@ then
   
   num_test_image=4952
   num_classes=21
-  param_aspect_ratios="2,3"
-  min_ratio=7 #10
-  max_ratio=90
-  log_space_steps=0
+
+  #old options
+  #param_aspect_ratios="2,3"
+  #min_ratio=7 #10
+  #max_ratio=90
+  #log_space_steps=0
+  #use_difficult_gt=1
+
+	min_dim=512
+  
+  resize_width=512
+  resize_height=512
+  crop_width=512
+  crop_height=512
+  #set to True for VOC0712
   use_difficult_gt=1
+
 elif [ $dataset = "cityscapes-ssd512x512" ]
 then
   type="SGD"        #"SGD"   #Adam    #"Adam"
@@ -131,12 +198,6 @@ then
   crop_height=384
 elif [ $dataset = "cityscapes-ssd720x368-ticat" ]
 then
-  type="SGD"        #"SGD"   #Adam    #"Adam"
-  max_iter=36000    #120000  #64000   #32000
-  stepvalue1=24000  #60000   #32000   #16000
-  stepvalue2=30000  #90000   #48000   #24000
-  base_lr=1e-3      #1e-2    #1e-4    #1e-3
-  
   train_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/CITY_720x368_TI_CATEGORY/lmdb/CITY_720x368_TI_CATEGORY_train_lmdb"
   test_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/CITY_720x368_TI_CATEGORY/lmdb/CITY_720x368_TI_CATEGORY_test_lmdb"
   name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/CITY_720x368_TI_CATEGORY/test_name_size.txt"
@@ -145,19 +206,14 @@ then
   num_test_image=498
   num_classes=4
 	min_dim=368
-	ssd_size='512x512'
-	#like orig SSD
-  aspect_ratios_type=1
-  small_objs=1 
-	#0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
-  log_space_steps=2
-  use_difficult_gt=0
   
   resize_width=720
   resize_height=368
   crop_width=720
   crop_height=368
-
+  
+  #set to True for VOC0712
+  use_difficult_gt=0
 elif [ $dataset = "cityscapes-ssd512x256" ]
 then
   type="SGD"        #"SGD"   #Adam    #"Adam"
@@ -182,14 +238,9 @@ then
   resize_height=256
   crop_width=512
   crop_height=256
-elif [ $dataset = "ti201712-ssd720x368" ]
+elif [ $dataset = "ti201712-720x368" ]
 then
-  type="SGD"        #"SGD"   #Adam    #"Adam"
-  max_iter=60000    #120000  #64000   #32000
-  stepvalue1=30000  #60000   #32000   #16000
-  stepvalue2=45000  #90000   #48000   #24000
-  base_lr=1e-3      #1e-2    #1e-4    #1e-3
-  
+    
   train_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_720x368_V1/lmdb/TI_201712_720x368_V1_train_lmdb"
   test_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_720x368_V1/lmdb/TI_201712_720x368_V1_test_lmdb"
   name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_720x368_V1/test_name_size.txt"
@@ -199,6 +250,30 @@ then
   num_classes=4 #9
 
 	min_dim=368
+  
+  resize_width=720
+  resize_height=368
+  crop_width=720
+  crop_height=368
+  #ignore lables are marked as diff in TI dataset 
+  use_difficult_gt=0
+
+elif [ $dataset = "ti201712-1024x512" ]
+then
+  type="SGD"        #"SGD"   #Adam    #"Adam"
+  max_iter=60000    #120000  #64000   #32000
+  stepvalue1=30000  #60000   #32000   #16000
+  stepvalue2=45000  #90000   #48000   #24000
+  base_lr=1e-3      #1e-2    #1e-4    #1e-3
+  
+  train_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_1024x512/lmdb/TI_201712_1024x512_train_lmdb"
+  test_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_1024x512/lmdb/TI_201712_1024x512_test_lmdb"
+  name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_1024x512/test_name_size.txt"
+  label_map_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_1024x512/labelmap.prototxt"
+  
+  num_test_image=3609
+  num_classes=4 #9
+
 	ssd_size='512x512'
 	#1:like orig SSD
   aspect_ratios_type=1
@@ -215,10 +290,11 @@ then
   ker_mbox_loc_conf=1
   first_hd_same_op_ch=1
   
-  resize_width=720
-  resize_height=368
-  crop_width=720
-  crop_height=368
+  resize_width=1024
+  resize_height=512
+  crop_width=1024
+  crop_height=512
+	min_dim=512
   #ignore lables are marked as diff in TI dataset 
   use_difficult_gt=0
 
@@ -262,12 +338,108 @@ then
   #ignore lables are marked as diff in TI dataset 
   use_difficult_gt=0
 
+elif [ $dataset = "ti201712-city-720x368" ]
+then
+  type="SGD"        #"SGD"   #Adam    #"Adam"
+  max_iter=60000    #120000  #64000   #32000
+  stepvalue1=20000  #60000   #32000   #16000
+  stepvalue2=40000  #90000   #48000   #24000
+  base_lr=1e-2      #1e-2    #1e-4    #1e-3
+  
+  train_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_CITY_720x368_V3/lmdb/TI_201712_CITY_720x368_V3_train_lmdb"
+  test_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_201712_CITY_720x368_V3/lmdb/TI_201712_CITY_720x368_V3_test_lmdb"
+  name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_CITY_720x368_V3/test_name_size.txt"
+  label_map_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_CITY_720x368_V3/labelmap.prototxt"
+  
+  num_test_image=3609
+  num_classes=4 #9
+
+	min_dim=368
+	ssd_size='512x512'
+	#1:like orig SSD
+  aspect_ratios_type=1
+  small_objs=1 
+	#0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
+  log_space_steps=2
+  #'DFLT', 'PSP'
+  ds_type='PSP'
+  ds_fac=32
+  fully_conv_at_end=0
+  reg_head_at_ds8=1
+  concat_reg_head=0
+  base_nw_3_head=0
+  ker_mbox_loc_conf=1
+  first_hd_same_op_ch=1
+  
+  resize_width=720
+  resize_height=368
+  crop_width=720
+  crop_height=368
+  #ignore lables are marked as diff in TI dataset 
+  use_difficult_gt=0
+
+elif [ $dataset = "ti-vgg-720x368-v2" ]
+then
+  #In V2 removed V153,154(part of TI Demo) and V002(anno has been corrected so no need to use VGG generated)     
+  train_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_VGG16_720x368_V2/lmdb/TI_VGG16_720x368_V2_train_lmdb"
+  test_data="/user/a0875091/files/data/datasets/object-detect/ti/detection/xml/TI_VGG16_720x368_V2/lmdb/TI_VGG16_720x368_V2_test_lmdb"
+  name_size_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_VGG16_720x368_V2/test_name_size.txt"
+  label_map_file="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_VGG16_720x368_V2/labelmap.prototxt"
+  
+  num_test_image=3609
+  num_classes=4 #9
+
+	min_dim=368
+	ssd_size='512x512'
+ 
+  resize_width=720
+  resize_height=368
+  crop_width=720
+  crop_height=368
+  #ignore lables are marked as diff in TI dataset 
+  use_difficult_gt=0
 else
   echo "Invalid dataset name"
   exit
 fi
 
-folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME"_"ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1";mkdir $folder_name
+#####################common options############################
+type="SGD"        #"SGD"   #Adam    #"Adam"
+max_iter=120000   #120000  #64000   #32000
+stepvalue1=60000  #60000   #32000   #16000
+stepvalue2=90000  #90000   #48000   #24000
+base_lr=1e-3      #1e-2    #1e-4    #1e-3
+lr_policy="poly"
+power=4.0
+#default 0.0005, Manu used 0.0001
+weight_decay_L2=0.0005
+
+ssd_size='512x512'
+#1:like orig SSD
+aspect_ratios_type=1
+small_objs=1 
+#0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
+log_space_steps=2
+#'DFLT', 'PSP'
+ds_type='PSP'
+ds_fac=32
+fully_conv_at_end=0
+reg_head_at_ds8=1
+concat_reg_head=0
+base_nw_3_head=0
+ker_mbox_loc_conf=1
+first_hd_same_op_ch=1
+#common options##################################
+
+model_name_to_print=$model_name 
+if [ $model_name = 'ssdJacintoNetV2' ]
+then
+  model_name_to_print="JDetNet" 
+fi  
+
+#folder_name=training/"$dataset"_"$model_name_to_print"_"$DATE_TIME"_"ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1";mkdir $folder_name
+folder_name=training/"$dataset"/"$model_name_to_print"/"$DATE_TIME"_"ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1";mkdir training/"$dataset";mkdir training/"$dataset"/"$model_name_to_print";mkdir $folder_name
+
 
 #------------------------------------------------
 LOG=$folder_name/train-log_"$DATE_TIME".txt
@@ -281,7 +453,7 @@ weights=$weights_dst
 #weights="/data/mmcodec_video2_tier3/users/manu/experiments/object/detection/2017/2017.09/caffe-0.16/voc0712od-ssd512x512_jdetnet21v2_2017-09-19_16-17-34_pyr-max-pool_1x1head_(72.82%)/initial/voc0712od-ssd512x512_jdetnet21v2_iter_120000.caffemodel"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
+solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],'weight_decay':$weight_decay_L2}"
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'train_data':'$train_data','test_data':'$test_data','name_size_file':'$name_size_file','label_map_file':'$label_map_file',\
 'num_test_image':$num_test_image,'num_classes':$num_classes,'min_ratio':$min_ratio,'max_ratio':$max_ratio,
@@ -289,7 +461,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','force_color':$force_color}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$solver_param
 config_name_prev=$config_name
@@ -305,7 +477,7 @@ stepvalue1=30000
 stepvalue2=45000
 #base_lr=1e-2
 
-l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
+l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
 'regularization_type':'L1','weight_decay':1e-5}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
@@ -316,7 +488,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','force_color':$force_color}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$l1reg_solver_param
 config_name_prev=$config_name
@@ -325,11 +497,11 @@ config_name_prev=$config_name
 #incremental sparsification and finetuning
 stage="sparse"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
-sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
+sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
 'regularization_type':'L1','weight_decay':1e-5,\
-'sparse_mode':1,'display_sparsity':1000,\
-'sparsity_target':0.8,'sparsity_start_iter':0,'sparsity_start_factor':0.8,\
-'sparsity_step_iter':1000,'sparsity_step_factor':0.01}"
+'sparse_mode':1,'display_sparsity':2000,\
+'sparsity_target':0.65,'sparsity_start_iter':0,'sparsity_start_factor':0.5,\
+'sparsity_step_iter':2000,'sparsity_step_factor':0.05, 'sparsity_itr_increment_bfr_applying':0}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
@@ -339,7 +511,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','force_color':$force_color}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$sparse_solver_param
 config_name_prev=$config_name
@@ -349,7 +521,7 @@ config_name_prev=$config_name
 stage="test"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
+test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000}"
 
@@ -362,7 +534,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'test_batch_size':10,'caffe_cmd':'test_detection','display_sparsity':1,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','force_color':$force_color}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -372,7 +544,7 @@ python ./models/image_object_detection.py --config_param="$config_param" --solve
 stage="test_quantize"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
-test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
+test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':1000}"
 
@@ -385,7 +557,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'test_batch_size':10,'caffe_cmd':'test_detection',\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type'}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','force_color':$force_color}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 
@@ -402,7 +574,7 @@ mv --force $config_name/test_new.prototxt $config_name/test.prototxt
 
 #-------------------------------------------------------
 #run
-list_dirs=`command ls -d1 "$folder_name"/*/ | command cut -f3 -d/`
+list_dirs=`command ls -d1 "$folder_name"/*/ | command cut -f5 -d/`
 for f in $list_dirs; do "$folder_name"/$f/run.sh; done
 
 
