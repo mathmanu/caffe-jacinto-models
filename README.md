@@ -37,8 +37,9 @@ cd /user/tomato/work/caffe-jacinto-models/scripts
 * [Train sparse, quantized CNN on cifar10 dataset](docs/Cifar10_Classification_README.md) for classification. Note that this is just a toy example and no inference script is provided to test the final model.
 
 ###### Object Detect:
+* SSD: Single Shot MultiBox Detector (https://github.com/weiliu89/caffe/tree/ssd) is provided as an example for object detect task.
 * Note that for better accuracy ImageNet training (see below) is recommended before doing this object detect trianing. The object detect training will read the ImageNet trained caffemodel for doing the fine tuning on base network and learn additional layers like regression heads. 
-* [Train sparse, for Object Detect](docs/VOC0712_ObjectDetect_README.md) on the PASCAL VOC0712 dataset. Inference script is also provided to test out the final model.
+* [Train sparse for Object Detect](docs/VOC0712_ObjectDetect_README.md) on the PASCAL VOC0712 dataset. Inference script is also provided to test out the final model.
 
 ### Notes
 * Quantization is supported in the code. However, it is not enabled by default in the scripts as an improvement is in the pipeline that will enable quantization automatically during test/inference.
