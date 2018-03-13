@@ -1,4 +1,4 @@
-# Sparse, Quantized CNN training for segmentation
+# Sparse CNN training for Object detect
 
 ### Pre-requisites
 It is assumed here, that all the pre-requisites required for running Caffe-jacinto are met. Open a bash terminal and change directory into the scripts folder, as explainded earlier.
