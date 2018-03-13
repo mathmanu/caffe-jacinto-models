@@ -36,6 +36,10 @@ cd /user/tomato/work/caffe-jacinto-models/scripts
 * [Training on ILSVRC ImageNet dataset](docs/Imagenet_Classification_README.md). The 1000 class ImageNet trained weights is useful for fine tuning other tasks.
 * [Train sparse, quantized CNN on cifar10 dataset](docs/Cifar10_Classification_README.md) for classification. Note that this is just a toy example and no inference script is provided to test the final model.
 
+###### Object Detect:
+* Note that for better accuracy ImageNet training (see below) is recommended before doing this object detect trianing. The object detect training will read the ImageNet trained caffemodel for doing the fine tuning on base network and learn additional layers like regression heads. 
+* [Train sparse, for Object Detect](docs/VOC0712_ObjectDetect_README.md) on the PASCAL VOC0712 dataset. Inference script is also provided to test out the final model.
+
 ### Notes
 * Quantization is supported in the code. However, it is not enabled by default in the scripts as an improvement is in the pipeline that will enable quantization automatically during test/inference.
 
