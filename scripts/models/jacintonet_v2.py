@@ -327,7 +327,7 @@ def jdetnet21_s8(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
 #To match configuration used by original SSD script
 def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
    upsample=False, num_intermediate=512, output_stride=16, use_batchnorm_mbox=True, ds_type='PSP', fully_conv_at_end=True, reg_head_at_ds8=True, 
-   concat_reg_head=False, base_nw_3_head=False, first_hd_same_op_ch=False): 
+   concat_reg_head=False, base_nw_3_head=False, first_hd_same_op_ch=False, rhead_name_non_linear=False): 
    
    eltwise_final = False
    if stride_list == None:
@@ -392,7 +392,11 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
        net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
    
      #mbox_source_layers = ['res3a_branch2b_relu', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2','conv10_2']
-     reg_head_idx=1
+     if rhead_name_non_linear:
+       reg_head_idx=6
+     else:
+       reg_head_idx=1
+
      if reg_head_at_ds8:
        from_layer = 'res3a_branch2b/relu'
      else: 
@@ -402,6 +406,10 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
          from_layer = 'res4a_branch2b/relu'
 
      out_layer = 'ctx_output{}'.format(reg_head_idx)
+
+     if rhead_name_non_linear:
+       reg_head_idx=0
+
      reg_head_idx += 1
 
      out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>first_hd_same_op_ch, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              

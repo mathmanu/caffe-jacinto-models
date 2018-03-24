@@ -341,6 +341,8 @@ def main():
     config_param.share_location = True
     config_param.background_label_id=0
     config_param.use_difficult_gt = True
+    config_param.ignore_difficult_gt = False
+    config_param.evaluate_difficult_gt = False
     config_param.normalization_mode = P.Loss.VALID
     config_param.code_type = P.PriorBox.CENTER_SIZE
     config_param.ignore_cross_boundary_bbox = False
@@ -555,6 +557,7 @@ def main():
         'use_prior_for_matching': True,
         'background_label_id': config_param.background_label_id,
         'use_difficult_gt': config_param.use_difficult_gt,
+        'ignore_difficult_gt': config_param.ignore_difficult_gt,
         'mining_type': config_param.mining_type,
         'neg_pos_ratio': config_param.neg_pos_ratio,
         'neg_overlap': 0.5,
@@ -741,7 +744,7 @@ def main():
         'num_classes': config_param.num_classes,
         'background_label_id': config_param.background_label_id,
         'overlap_threshold': 0.5,
-        'evaluate_difficult_gt': False,
+        'evaluate_difficult_gt': config_param.evaluate_difficult_gt,
         'name_size_file': config_param.name_size_file,
         }
 
@@ -792,7 +795,8 @@ def main():
               freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride,\
               ds_type=config_param.ds_type, use_batchnorm_mbox=config_param.use_batchnorm_mbox,fully_conv_at_end=config_param.fully_conv_at_end, 
               reg_head_at_ds8=config_param.reg_head_at_ds8, concat_reg_head=config_param.concat_reg_head,
-              base_nw_3_head=config_param.base_nw_3_head, first_hd_same_op_ch=config_param.first_hd_same_op_ch)
+              base_nw_3_head=config_param.base_nw_3_head, first_hd_same_op_ch=config_param.first_hd_same_op_ch,
+              num_intermediate=config_param.num_intermediate, rhead_name_non_linear=config_param.rhead_name_non_linear)
         elif 'mobiledetnet' in config_param.model_name:
             #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
             #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
