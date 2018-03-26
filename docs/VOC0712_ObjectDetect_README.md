@@ -1,81 +1,68 @@
-# Sparse CNN training for Object detect
+# Sparse CNN training and inference for Object detect
 
 ### Pre-requisites
-It is assumed here, that all the pre-requisites required for running Caffe-jacinto are met. Open a bash terminal and change directory into the scripts folder, as explainded earlier.
+It is assumed here, that all the pre-requisites required for running Caffe-jacinto are met. Open a bash terminal and change directory into the scripts folder, as explained earlier.
 
 ### Dataset preparation
-The details about how to obtain the [Cityscapes Dataset](https://www.cityscapes-dataset.com/) can be seen from their website. Download and unzip gtFine and leftImg8bit as sub-directories into a suitable folder.
-
-Change directory to the scripts folder. All the remaining scripts are to be executed from this folder.
-* cd scripts
-
-Before training, create list files needed to train on cityscapes dataset.
-* Open the file ./tools/utils/create_cityscapes_lists.sh (eg. vi ./tools/utils/create_cityscapes_lists.sh) and change the DATASETPATH to the location where you have downloaded the dataset. Under this folder, the gtFine and leftImg8bit folders of Cityscapes should be present.  
-* Then execute ./tools/utils/create_cityscapes_lists.sh. This script creates the image and label lists used for training. It also does label transformation. 
-* Then execute scripts ./tools/utils/create_cityscapes_segmentation_lmdb.sh. This script creates the image and label LMDB files that can be used to speedup training.  
-* We have chosen a smaller set of 5-classes for training. 32 classes of cityscapes are converted into 5-classes - so the trained model will learn to segment 5-classes (background, road, person, road signs, vehicle). 
-* Note: The number of classes and class mappings can be easily changed in this script. The network model prototxt may also need to be changed if the number of classes chosen is more than the output channels in the model.
-* Note: this 5-class training is different from the typical [19-class training done for cityscapes](https://github.com/mcordts/cityscapesScripts) and reported on the benchmark website. 
+We use the same LMDB format as used by original [Caffe-SSD implementation](https://github.com/weiliu89/caffe/blob/4817bf8b4200b35ada8ed0dc378dceaf38c539e4/README.md#citing-ssd). 
 
 
-### Execution
-* Open the file train_cityscapes_segmentation.sh  and look at the gpus variable. This should reflect the number of gpus that you have. For example, if you have two NVIDIA CUDA supported gpus, the gpus variable should be set to "0,1". If you have more GPUs, modify this field to reflect it so that the training will complete faster.
+### Training Execution
 
-* Execute the training by running the training script: ./train_cityscapes_segmentation.sh. 
+* The main training script is located [../scripts/train_image_object_detection.sh](../scripts/train_image_object_detection.sh). 
 
-* The training takes around 22 hours, when using one NVIDIA GTX 1080 GPU.
+* There are three example configurations provided in the script, one for PASCAL VOC0712 and other two for custom datasets.
+* Appropriate dataset can be set at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L12). 
+* For custom dataset the following parameters need to be set to appropriate values,
+* > train_data,   test_data,   name_size_file,   label_map_file,   num_test_image and 
+  num_classes. 
+* Also solver params need to be set based on the size of one epoch in the dataset.
+* Look at gpus variable at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L8). This should reflect the number of gpus that you have. For example, if you have two NVIDIA CUDA supported gpus, the gpus variable should be set to "0,1". If you have more GPUs, modify this field to reflect it so that the training will complete faster.
 
-* This script will perform all the stages required to generate a sparse CNN model. The quantized model will be placed in a folder inside scripts/training.
+* Execute the training by running the training script, 
+* > ./train_image_object_detection.sh. 
+
+* There are three stages in this training.
+
+	**Stage-1: Initial stage with L2 regularization training**
+    
+    Uses imagenet pre-trained model and trains it for object detect task for the dataset set earlier. For PASCAL VCOC0712, this stage runs for 120k iteration which approximately takes 20 hrs on 2 GTX 1080 GPUs. The trained model is stored at ./training/dataset/model_name/folder_name/initial/. The folder_name is specified at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L13). Similarly dataset and model_name are specified in the file, [./train_image_object_detection.sh](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh)
+	
+	**Stage-2: L1 regularization training**
+    This stage fine tunes stage-1 trained model to make CNN n/w amenable for sparsification.The trained model is stored at ./training/dataset/model_name/folder_name/l1reg/.
+
+	**Stage-3: Sparsification training** 
+    This stage starts with trained model in stage-2 and induces sparsity gradually. The config parameters can be adjusted to achieve desired level of sparsity at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L183-L184).The trained model is stored at ./training/dataset/model_name/folder_name/sparse/.
+  
 
 ### Results
 
-The validation accuracy is printed in the training log. However, this shows the validation accuracy evaluated for cropped regions of the validation data and it typically shows lower accuracy than the actuall full image accuracy. To obtain the accuracy of the full image at original resolution, please refer to the section on "Quality evalutation" below.
+The validation accuracy in the form of mean average precision (mAP) is printed in the run.log in the respective folder for each stage. 
 
-Following is what we got for the 5-class (background, road, person, road signs, vehicle) training.
+|Configuration-Dataset VOC0712                    |mAP        |
+| :---                                            |  :---:    |
+|Initial L2 regularized training                  |  68.66%   |
+|L1 regularized fine tuning                       |  68.07%   |
+|Sparse fine tuned(nearly 61% zero coefficients)  |  65.77%   |
+|<b>Overall impact due to sparseness              |   2.89%   |
 
 
-|Configuration                                    |Pixel Accuracy  |Mean IOU  |
-|-------------------------------------------------|----------------|----------|
-|Initial L2 regularized training                  |96.20           |83.23     |
-|L1 regularized fine tuning                       |96.32           |<b>83.94  |
-|Sparse fine tuned(nearly 80% zero coefficients)  |96.11           |82.85     |
-|Sparse(80%), Quantized(8-bit dynamic fixed point)|95.91           |<b>82.15  |
-|<b>Overall impact due to sparse+quant            |<b>-0.42        |<b>-1.79  |
-
-* 80% sparsity (i.e. zero coefficients in convolution weights) implies that the complexity of inference can be potentially reduced by 5x - by using a suitable sparse convolution implementation.
+* 61.1% sparsity (i.e. zero coefficients in convolution weights) implies that the complexity of inference can be potentially reduced by 2.5x - by using a suitable sparse convolution implementation.
 
 * It is possible to change the value of sparsity applied - see the training script for more details.
 
+### Pre-trained Model
+*The pre-trained models are made available for PASCAL VOC0712 and TI Internal automotive dataset.
+
+* **PASCAL VOC0712**: [SSD512x512(L2)](/trained/object_detection/voc0712/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_kerMbox_3_1stHdSameOpCh_1_68.66/initial_68.66/voc0712_ssdJacintoNetV2_iter_106000_68.66.caffemodel), [SSD512x512(Sparsed)](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/voc0712/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_kerMbox_3_1stHdSameOpCh_1_68.66/sparse_65.12/voc0712_ssdJacintoNetV2_iter_48000_65.12.caffemodel)
+* **TI, Auto Dataset**: [SSD720x368](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd720x368_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_55.92/initial_55.92/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_10000_55.92.caffemodel), [SSD720x368(Sparsed)](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd720x368_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_55.92/sparse_53.26/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_38000_53.26.caffemodel), [SSD768x320](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_51.41/initial_51.41/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_40000_51.41.caffemodel), [SSD768x320(Sparsed)](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_51.41/sparse_50.52/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_46000_50.52.caffemodel)
+
+
 ### Inference using the trained model
-* This section explains how the trained model can be used for inference on a PC using Caffe-jacinto.
-* Open the file infer_cityscapes_segmentation.sh using a text editor and change the path of deploy model and weights (caffemodel) to the one that is generated in the recent training.
-* Run the file infer_cityscapes_segmentation.sh. 
-* This will create the output images or video in the location corresponding to the output parameter mentioned in the script. 
-* Note that the inference script is set to resize to 1024x512 resolution before inference - this is for fast inference. To do the inference on the full resolution, change the resize parameter used inside the script to:
-resize="2048 1024"
-and in deploy.prototxt used in the script, change to:
-input_shape {
-  dim: 1
-  dim: 3
-  dim: 1024
-  dim: 2048
-}
-
-### Quality evaluation of the trained model
-* The pixel accuracy and mean IOU can be measured by running eval_cityscapes_segmentation.sh
-* In default setting for evaluation, the input images are resized to 1024x512 for fast evaluation. However, this is not good for best quality.
-* To obtain best quality, please do the evaluation on full resolution. For this, change the resize parameter used inside the script to:
-resize="2048 1024"
-and in all the deploy.prototxt files used in the script, change to:
-input_shape {
-  dim: 1
-  dim: 3
-  dim: 1024
-  dim: 2048
-}
-
-### Notes
-* Doing the training with 
-use_image_list=1
-shuffle=1
-in train_cityscapes_training.sh will provide better results than what can be obtained with default settings. But that will take more time to complete the training.
+The script to run trained model through video files can be executed by the following simple commands.
+* >cd _$root/scripts/_
+* >python ./infer_video_object.py
+* Set _caffe_root_ path to folder pointing to _caffe_jacinto_ in _./infer_video_object.py_. 
+* The path of the input video needs to be updated along with video names by updating _dataset_ at the location [].
+* Output videos with detected objects are stored at the path provided by, params.OpPath at location [].
+* Detected outputs are stored in the text files too.    
