@@ -26,13 +26,13 @@ We use the same LMDB format as used by original [Caffe-SSD implementation](https
 
 	**Stage-1: Initial stage with L2 regularization training**
     
-    Uses imagenet pre-trained model and trains it for object detect task for the dataset set earlier. For PASCAL VCOC0712, this stage runs for 120k iteration which approximately takes 20 hrs on 2 GTX 1080 GPUs. The trained model is stored at ./training/dataset/model_name/folder_name/initial/. The folder_name is specified at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L13). Similarly dataset and model_name are specified in the file, [./train_image_object_detection.sh](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh)
+    Uses imagenet pre-trained model and trains it for object detect task for the dataset set earlier. For PASCAL VCOC0712, this stage runs for 120k iteration which approximately takes 20 hrs on 2 GTX 1080 GPUs. The trained model is stored at ./training/dataset/model_name/folder_name/initial/. The folder_name is specified at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/e3831348b854253c913fc7eadfa1d3739bb2e128/scripts/train_image_object_detection.sh#L220). Similarly dataset and model_name are specified in the file, [./train_image_object_detection.sh](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh)
 	
 	**Stage-2: L1 regularization training**
     This stage fine tunes stage-1 trained model to make CNN n/w amenable for sparsification.The trained model is stored at ./training/dataset/model_name/folder_name/l1reg/.
 
 	**Stage-3: Sparsification training** 
-    This stage starts with trained model in stage-2 and induces sparsity gradually. The config parameters can be adjusted to achieve desired level of sparsity at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L183-L184).The trained model is stored at ./training/dataset/model_name/folder_name/sparse/.
+    This stage starts with trained model in stage-2 and induces sparsity gradually. The config parameters can be adjusted to achieve desired level of sparsity at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/e3831348b854253c913fc7eadfa1d3739bb2e128/scripts/train_image_object_detection.sh#L285).The trained model is stored at ./training/dataset/model_name/folder_name/sparse/.
   
 
 ### Results
@@ -54,8 +54,8 @@ The validation accuracy in the form of mean average precision (mAP) is printed i
 ### Pre-trained Model
 *The pre-trained models are made available for PASCAL VOC0712 and TI Internal automotive dataset.
 
-* **PASCAL VOC0712**: [SSD512x512(L2)](../trained/object_detection/voc0712/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_kerMbox_3_1stHdSameOpCh_1/initial/voc0712_ssdJacintoNetV2_iter_106000.caffemodel), [SSD512x512(Sparsed)](../trained/object_detection/voc0712/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_kerMbox_3_1stHdSameOpCh_1/sparse/voc0712_ssdJacintoNetV2_iter_48000.caffemodel)
-* **TI, Auto Dataset**: [SSD720x368](../trained/object_detection/ti-720x368/JDetNet/ssd720x368_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1/initial/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_10000.caffemodel), [SSD720x368(Sparsed)](../trained/object_detection/ti-720x368/JDetNet/ssd720x368_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1/sparse/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_38000.caffemodel), [SSD768x320](../trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1/initial/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_40000.caffemodel), [SSD768x320(Sparsed)](../trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1/sparse/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_46000.caffemodel)
+* **PASCAL VOC0712**: [SSD512x512(L2)](/trained/object_detection/voc0712/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_kerMbox_3_1stHdSameOpCh_1_68.66/initial_68.66/voc0712_ssdJacintoNetV2_iter_106000_68.66.caffemodel), [SSD512x512(Sparsed)](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/voc0712/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_kerMbox_3_1stHdSameOpCh_1_68.66/sparse_65.12/voc0712_ssdJacintoNetV2_iter_48000_65.12.caffemodel)
+* **TI, Auto Dataset**: [SSD720x368](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd720x368_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_55.92/initial_55.92/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_10000_55.92.caffemodel), [SSD720x368(Sparsed)](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd720x368_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_55.92/sparse_53.26/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_38000_53.26.caffemodel), [SSD768x320](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_51.41/initial_51.41/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_40000_51.41.caffemodel), [SSD768x320(Sparsed)](/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_51.41/sparse_50.52/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_46000_50.52.caffemodel)
 
 
 ### Inference using the trained model
@@ -63,6 +63,6 @@ The script to run trained model through video files can be executed by the follo
 * >cd _$root/scripts/_
 * >python ./infer_video_object.py
 * Set _caffe_root_ path to folder pointing to _caffe_jacinto_ in _./infer_video_object.py_. 
-* The path of the input video needs to be updated along with video names by updating _dataset_ at the location [].
-* Output videos with detected objects are stored at the path provided by, params.OpPath at location [].
+* The path of the input video needs to be updated along with video names by updating _dataset_ at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/e3831348b854253c913fc7eadfa1d3739bb2e128/scripts/infer_video_object.py#L14).
+* Output videos with detected objects are stored at the path provided by, params.OpPath at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/e3831348b854253c913fc7eadfa1d3739bb2e128/scripts/infer_video_object.py#L102).
 * Detected outputs are stored in the text files too.    
