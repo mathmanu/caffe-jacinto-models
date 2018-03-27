@@ -1,5 +1,5 @@
-# Caffe-jacinto
-###### Caffe-jacinto - embedded deep learning framework
+# Caffe-jacinto-models
+###### Example scripts for Caffe-jacinto (embedded deep learning framework)
 
 Caffe-jacinto-models provides example scripts for training sparse models using [tidsp/caffe-jacinto](https://github.com/tidsp/caffe-jacinto). These scripts enable training of sparse CNN models - resulting in low complexity models that can be used in embedded platforms. 
 
