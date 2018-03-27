@@ -79,7 +79,7 @@ def set_common_params(params):
   # When these options are non zero first crop (if enabled) then resizing will be done before anything else
   params.ResizeW=0
   params.ResizeH=0
-  params.NMS_FLAG=1
+  params.NMS_FLAG=0
   params.MUL_TILE_SCL_MD=1  # 0:multiple tiles, 1: multiple scales
   params.NUM_SCALES=1
   params.AR_TYPE=2          # 0:height according to tile height (def), 1:width according to tile width, 2: maintain original AR till it hits limit
