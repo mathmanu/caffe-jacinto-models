@@ -64,6 +64,6 @@ The script to run trained model through video files can be executed by the follo
 * >python ./infer_video_object.py
 * Set _caffe_root_ path to folder pointing to _caffe_jacinto_ in _./infer_video_object.py_. 
 * The path of the input video needs to be updated along with video names by updating _dataset_ in the script.
-* Output videos with detected objects are stored at the path provided by, params.OpPath in teh script.
+* Output videos with detected objects are stored at the path provided by params.OpPath in the script.
 * Detected outputs are stored in the text files too.    
 
