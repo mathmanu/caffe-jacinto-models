@@ -1,63 +1,46 @@
-# Sparse CNN training and inference for Object detect
+# Caffe-jacinto
+###### Caffe-jacinto - embedded deep learning framework
 
-### Pre-requisites
-It is assumed here, that all the pre-requisites required for running Caffe-jacinto are met. Open a bash terminal and change directory into the scripts folder, as explainded earlier.
+Caffe-jacinto-models provides example scripts for training sparse models using [tidsp/caffe-jacinto](https://github.com/tidsp/caffe-jacinto). These scripts enable training of sparse CNN models - resulting in low complexity models that can be used in embedded platforms. 
 
-### Dataset preparation
-We use the same LMDB format as used by original [Caffe-SSD implmentation](https://github.com/weiliu89/caffe/blob/4817bf8b4200b35ada8ed0dc378dceaf38c539e4/README.md#citing-ssd). 
+For example, the semantic segmentation example shows how to train a model that is nearly 80% sparse (only 20% non-zero coefficients) and 8-bit quantized. This reduces the complexity of convolution layers by nearly <b>5x</b>. An inference engine designed to efficiently take advantage of sparsity can run <b>significantly faster</b> by using such a model. 
+
+Care has to be taken to strike the right balance between quality and speedup. We have obtained more than 4x overall speedup for CNN inference on embedded device by applying sparsity. Since 8-bit multiplier is sufficient (instead of floating point), the speedup can be even higher on some platforms.
+
+### Prerequisite
+Please see the documentation of [tidsp/caffe-jacinto](https://github.com/tidsp/caffe-jacinto). The build procedure is same as the building of any other Caffe fork. Make sure that the following is done, before attempting to use the scripts in this directory. 
+1.  Clone caffe-jacinto. caffe-jacinto and caffe-jacinto-models should be at the same directory level. For example, if the path to this repository is /user/tomato/work/caffe-jacinto-models, then the path to caffe-jacinto should be /user/tomato/work/caffe-jacinto
+2.  Checkout the correct branch
+    *git checkout caffe-0.16*
+3.  Build caffe-jacinto. Make sure to build the libraries, tools and pycaffe. Make sure that the pycaffe folder (for example:  /user/tomato/work/caffe-jacinto/python) is in your environment variable PYTHONPATH defined in .bashrc. Also make sure that PYTHONPATH starts with a : so that the import of local folders work.
+Example:<br>
+export PYTHONPATH=:/user/tomato/work/caffe-jacinto/python:$PYTHONPATH
+
+### Installation
+* After cloning this repository, switch to the branch caffe-0.16, if it is not checked out already.
+-- *git checkout caffe-0.16*
+
+### Features
+
+Note that Caffe-jacinto-models does not directly support any embedded/low-power device. But the models trained by it can be used for fast inference on such a device due to the sparsity and quantization.
+
+### Examples
+The scripts for the following examples are provided in the folder caffe-jacinto-models/scripts. Change dierctory into the scripts folder first, before attempting to start training. For example:
+cd /user/tomato/work/caffe-jacinto-models/scripts
+
+###### Semantic segmentation:
+* Note that ImageNet training (see below) is recommended before doing this segmentation training to create the pre-trained weights. The segmentation training will read the ImageNet trained caffemodel for doing the fine tuning on segmentation. However it is possible to directly do segmentation training without ImageNet training, but the quality might be inferior.
+* [Train sparse, quantized CNN for semantic segmentation](docs/Cityscapes_Segmentation_README.md) on the cityscapes dataset. Inference script is also provided to test out the final model.
+
+###### Classification:
+* [Training on ILSVRC ImageNet dataset](docs/Imagenet_Classification_README.md). The 1000 class ImageNet trained weights is useful for fine tuning other tasks.
+* [Train sparse, quantized CNN on cifar10 dataset](docs/Cifar10_Classification_README.md) for classification. Note that this is just a toy example and no inference script is provided to test the final model.
+
+###### Object Detect:
+* Note that for better accuracy ImageNet training (see below) is recommended before doing this object detect trianing. The object detect training will read the ImageNet trained caffemodel for doing the fine tuning on base network and learn additional layers like regression heads. 
+* [Train sparse, for Object Detect](docs/VOC0712_ObjectDetect_README.md) on the PASCAL VOC0712 dataset. Inference script is also provided to test out the final model.
+
+### Notes
+* Quantization is supported in the code. However, it is not enabled by default in the scripts as an improvement is in the pipeline that will enable quantization automatically during test/inference.
 
 
-### Training Execution
-* The main training script is located at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L8). 
-* There are three example configurations provided in the script, one for PASCAL VOC0712 and other two for custom datasets.
-* Appropriate dataset can be set at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L12). 
-* For custom dataset the following parameters need to be set to appropriate values,
-* > train_data,   test_data,   name_size_file,   label_map_file,   num_test_image and 
-  num_classes. 
-* Also solver params need to be set based on the size of one epoch in the dataset.
-* Look at gpus variable at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L8). This should reflect the number of gpus that you have. For example, if you have two NVIDIA CUDA supported gpus, the gpus variable should be set to "0,1". If you have more GPUs, modify this field to reflect it so that the training will complete faster.
-
-* Execute the training by running the training script, 
-* > ./train_image_object_detection.sh. 
-
-* There are three stages in this training.
-
-	**Stage-1: Initial stage with L2 regularization training**
-    
-    Uses imagenet pre-trained model and trains it for object detect task for the dataset set earlier. For PASCAL VCOC0712, this stage runs for 120k iteration which approximately takes 20 hrs on 2 GTX 1080 GPUs. The trained model is stored at ./training/dataset/model_name/folder_name/initial/. The folder_name is specified at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L13). Similarly dataset and model_name are specified in the file, [./train_image_object_detection.sh](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh)
-	
-	**Stage-2: L1 regularization training**
-    This stage fine tunes stage-1 trained model to make CNN n/w amenable for sparsification.The trained model is stored at ./training/dataset/model_name/folder_name/l1reg/.
-
-	**Stage-3: Sparsification training** 
-    This stage starts with trained model in stage-2 and induces sparsity gradually. The config parameters can be adjusted to achieve desired level of sparsity at this [location](https://github.com/tidsp/caffe-jacinto-models/blob/79621dde7528bb33f4740fb9a760162b15ec2fd6/scripts/train_image_object_detection.sh#L183-L184).The trained model is stored at ./training/dataset/model_name/folder_name/sparse/.
-  
-
-### Results
-
-The validation accuracy in the form of mean average precision (mAP) is printed in the run.log in the respective folder for each stage. 
-
-|Configuration-Dataset VOC0712                    |mAP        |
-| :---                                            |  :---:    |
-|Initial L2 regularized training                  |  68.66%   |
-|L1 regularized fine tuning                       |  68.07%   |
-|Sparse fine tuned(nearly 75% zero coefficients)  |  65.66%   |
-|<b>Overall impact due to sparseness              |    2.0%   |
-
-* 61.1% sparsity (i.e. zero coefficients in convolution weights) implies that the complexity of inference can be potentially reduced by 2.5x - by using a suitable sparse convolution implementation.
-
-* It is possible to change the value of sparsity applied - see the training script for more details.
-
-### Pre-trained Model
-*The pre-trained models are made available for PASCAL VOC0712 and TI Internal automotive dataset.
-* PASCAL VOC 0712: SSD512x512(L2), SSD512x512(Sparsed)
-* TI, Auto Dataset: SSD720x368, SSD720x368(Sparsed), SSD768x320, SSD768x320(Sparsed)
-
-### Inference using the trained model
-The script to run trained model through video files can be executed by the following simple commands.
-* cd _$root/scripts/_
-* python ./infer_video_object.py
-* Set _caffe_root_ path to folder point to _caffe_jacinto_ in _infer_video_object.py_. 
-* The path of the input video needs to be updated along with video names by updating _dataset_ at the location [].
-* Output videos with detected objects are stored at the path provided by, params.OpPath at location [].
-* Detected outputs are stored in the text files too.    
