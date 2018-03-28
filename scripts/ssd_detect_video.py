@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib
 #matplotlib.rcParams['backend'] = "Qt4Agg"
 import matplotlib.pyplot as plt
-from nms import non_max_suppression_fast
 
 #%matplotlib inline
 from PIL import Image
@@ -1032,6 +1031,9 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
     params.meanPixVec[idx] = data * ipScale
 
   params.override()
+
+  if params.enNMS:
+    from nms import non_max_suppression_fast
 
   opPath, fileName = os.path.split(params.opFileName)
   print ("opPath : ", opPath)
