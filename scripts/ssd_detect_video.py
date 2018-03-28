@@ -1032,7 +1032,6 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
 
   params.override()
 
-
   opPath, fileName = os.path.split(params.opFileName)
   print ("opPath : ", opPath)
   if not os.path.exists(opPath):
