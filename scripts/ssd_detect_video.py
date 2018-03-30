@@ -371,7 +371,7 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjs
   if(params.enNMS):
     nmsTh = 0.45 #0.5
     #print detObjRectListNPArray 
-    detObjRectListNPArray = nms_core(detObjRectListNPArray, nmsTh, pick, age_based_check=False, testMode=True)
+    detObjRectListNPArray = nms_core(detObjRectListNPArray, nmsTh, pick, age_based_check=False, testMode=False)
     print (len(detObjRectListNPArray )),
     print detObjRectListNPArray,
 
@@ -905,7 +905,7 @@ def wrapMulScls(imageCurFrame, transformer, net, params,
     print " Objs bef,afr NMS, %d " % (len(wrapMulScls.gPoolDetObjs )),
   if(params.enNMS and len(wrapMulScls.gPoolDetObjs)):
     nmsTh = 0.45 #0.5
-    wrapMulScls.gPoolDetObjs = nms_core(wrapMulScls.gPoolDetObjs, nmsTh, pick, age_based_check=True, testMode=True)    
+    wrapMulScls.gPoolDetObjs = nms_core(wrapMulScls.gPoolDetObjs, nmsTh, pick, age_based_check=True, testMode=False)    
     wrapMulScls.gPoolDetObjs = np.array(wrapMulScls.gPoolDetObjs)
     if print_frame_info:
       print "type(wrapMulScls.gPoolDetObjs): ", type(wrapMulScls.gPoolDetObjs)
