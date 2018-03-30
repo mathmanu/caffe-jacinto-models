@@ -660,6 +660,20 @@ def main():
       config_param.prior_variance = [0.1, 0.1, 0.2, 0.2]
     else:
       config_param.prior_variance = [0.1]
+
+    if config_param.chop_num_heads > 0:
+      print("Chopping heads")
+      del config_param.min_sizes[-config_param.chop_num_heads:]
+      del config_param.max_sizes[-config_param.chop_num_heads:]
+      del config_param.aspect_ratios[-config_param.chop_num_heads:]
+      del config_param.normalizations[-config_param.chop_num_heads:]
+      del config_param.mbox_source_layers[-config_param.chop_num_heads:]
+
+      print("minsizes = {}".format(config_param.min_sizes))
+      print("maxsizes = {}".format(config_param.max_sizes))
+      print("aspect_ratios = {}".format(config_param.aspect_ratios))
+      print(config_param.mbox_source_layers)
+
     config_param.flip = True
     config_param.clip = False
 
@@ -796,7 +810,8 @@ def main():
               ds_type=config_param.ds_type, use_batchnorm_mbox=config_param.use_batchnorm_mbox,fully_conv_at_end=config_param.fully_conv_at_end, 
               reg_head_at_ds8=config_param.reg_head_at_ds8, concat_reg_head=config_param.concat_reg_head,
               base_nw_3_head=config_param.base_nw_3_head, first_hd_same_op_ch=config_param.first_hd_same_op_ch,
-              num_intermediate=config_param.num_intermediate, rhead_name_non_linear=config_param.rhead_name_non_linear)
+              num_intermediate=config_param.num_intermediate, rhead_name_non_linear=config_param.rhead_name_non_linear,
+              chop_num_heads=config_param.chop_num_heads)
         elif 'mobiledetnet' in config_param.model_name:
             #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
             #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
