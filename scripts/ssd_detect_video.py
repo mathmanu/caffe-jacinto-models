@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib
 #matplotlib.rcParams['backend'] = "Qt4Agg"
 import matplotlib.pyplot as plt
+from nms_ti import nms_core
 
 #%matplotlib inline
 from PIL import Image
@@ -370,7 +371,7 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjs
   if(params.enNMS):
     nmsTh = 0.45 #0.5
     #print detObjRectListNPArray 
-    detObjRectListNPArray = non_max_suppression_fast(detObjRectListNPArray, nmsTh, pick)
+    detObjRectListNPArray = nms_core(detObjRectListNPArray, nmsTh, pick, age_based_check=False, testMode=True)
     print (len(detObjRectListNPArray )),
     print detObjRectListNPArray,
 
@@ -902,10 +903,9 @@ def wrapMulScls(imageCurFrame, transformer, net, params,
 
   if print_frame_info:
     print " Objs bef,afr NMS, %d " % (len(wrapMulScls.gPoolDetObjs )),
-  if(params.enNMS):
+  if(params.enNMS and len(wrapMulScls.gPoolDetObjs)):
     nmsTh = 0.45 #0.5
-    #print detObjRectListNPArray 
-    wrapMulScls.gPoolDetObjs = non_max_suppression_fast(wrapMulScls.gPoolDetObjs, nmsTh, pick, age_based_check=True)
+    wrapMulScls.gPoolDetObjs = nms_core(wrapMulScls.gPoolDetObjs, nmsTh, pick, age_based_check=True, testMode=True)    
     wrapMulScls.gPoolDetObjs = np.array(wrapMulScls.gPoolDetObjs)
     if print_frame_info:
       print "type(wrapMulScls.gPoolDetObjs): ", type(wrapMulScls.gPoolDetObjs)
@@ -1032,8 +1032,6 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
 
   params.override()
 
-  if params.enNMS:
-    from nms import non_max_suppression_fast
 
   opPath, fileName = os.path.split(params.opFileName)
   print ("opPath : ", opPath)
