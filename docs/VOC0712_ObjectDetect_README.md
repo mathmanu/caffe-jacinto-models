@@ -52,10 +52,10 @@ The validation accuracy in the form of mean average precision (mAP) is printed i
 * It is possible to change the value of sparsity applied - see the training script for more details.
 
 ### Pre-trained Model
-*The pre-trained models are made available for PASCAL VOC0712 and TI Internal automotive dataset.
+*The pre-trained models are made available for PASCAL VOC0712.
 
 * **PASCAL VOC0712**: [SSD512x512(L2)](../trained/object_detection/voc0712/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_kerMbox_3_1stHdSameOpCh_1/initial/voc0712_ssdJacintoNetV2_iter_106000.caffemodel), [SSD512x512(Sparsed)](../trained/object_detection/voc0712/JDetNet/ssd512x512_ds_PSP_dsFac_32_fc_0_hdDS8_1_kerMbox_3_1stHdSameOpCh_1/sparse/voc0712_ssdJacintoNetV2_iter_48000.caffemodel)
-* **TI, Auto Dataset**: [SSD720x368](../trained/object_detection/ti-720x368/JDetNet/ssd720x368_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1/initial/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_10000.caffemodel), [SSD720x368(Sparsed)](../trained/object_detection/ti-720x368/JDetNet/ssd720x368_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1/sparse/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_38000.caffemodel), [SSD768x320](../trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1/initial/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_40000.caffemodel), [SSD768x320(Sparsed)](../trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1/sparse/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_46000.caffemodel)
+
 
 
 ### Inference using the trained model
