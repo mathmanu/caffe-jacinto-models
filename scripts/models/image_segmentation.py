@@ -91,7 +91,7 @@ def main():
                             
     # Evaluate on whole test set.
     config_param.num_test_image = 500
-    config_param.test_batch_size = 4
+    config_param.test_batch_size = 1
     config_param.test_batch_size_in_proto = config_param.test_batch_size      
     
     #more threads doesn't seem to help speed up - but you can try increasing this, at the cost of system becoming more slugginsh to respond if you are doing something else parallely.

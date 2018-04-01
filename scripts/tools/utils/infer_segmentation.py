@@ -27,12 +27,13 @@ def get_arguments():
     parser.add_argument('--weights', type=str, default='', help='Path to pre-trained folder')      
     parser.add_argument('--crop', nargs='+', help='crop-width crop-height')      
     parser.add_argument('--resize', nargs='+', help='resize-width resize-height')   
-    parser.add_argument('--blend', action='store_true', help='Do chroma belnding at output for visualization')      
+    parser.add_argument('--blend', type=int, default=0, help='0:raw labels(in gray scale), 1:Do chroma belnding at output for visualization, 2:output in color pallet form')  
     parser.add_argument('--palette', type=str, default='', help='Color palette')   
     parser.add_argument('--batch_size', type=int, default=1, help='Batch of images to process')   
     parser.add_argument('--resize_back', action="store_true", help='Upsize back a resized label for evaluation')
     parser.add_argument('--label_dict', type=str, default='', help='Lookup to be applied to prediction to match with gt labels')    
     parser.add_argument('--class_dict', type=str, default='', help='Grouping of classes in evaluation. Also ignored classea')   
+    parser.add_argument('--resize_op_to_ip_size', action="store_true", help='if ouput label needs to be resized to input size, def:disbale')   
     return parser.parse_args()
 
 def create_lut(label_dict):
@@ -58,10 +59,13 @@ def check_paths(args):
         output_type = 'list'        
       else:
         output_type = 'folder'    
-      if os.path.exists(args.output) and os.path.isdir(args.output):
-        shutil.rmtree(args.output)            
+
       if output_type == 'folder':
-        os.mkdir(args.output)
+        print(args.output) 
+        if not os.path.exists(args.output):
+          os.mkdir(args.output)
+        else:
+          print('path ' + args.output + ' exists')
                      
     ext = os.path.splitext(args.input)[1]
     if (ext == '.mp4' or ext == '.MP4'):
@@ -103,12 +107,14 @@ def chroma_blend(image, color):
         
 def resize_image(color_image, size): #size in (height, width)
     im = Image.fromarray(color_image)
+    #print("Resizing image to W: ", size[1], "H: ", size[0]) 
     im = im.resize((size[1], size[0]), Image.ANTIALIAS) #(width, height)
     im = np.array(im, dtype=np.uint8)
     return im
 
 def resize_label(label_image, size): #size in (height, width)
     im = Image.fromarray(label_image.astype(np.uint8))
+    #print("Resizing lable to W: ", size[1], "H: ", size[0]) 
     im = im.resize((size[1], size[0]), Image.NEAREST) #(width, height)
     im = np.array(im, dtype=np.uint8)
     return im
@@ -152,16 +158,32 @@ def infer_blob(args, net, input_bgr, input_label=None):
     if args.resize and args.resize_back:
        prediction = resize_label(prediction, image_size)
        input_bgr = input_bgr_orig
-                        
-    if args.blend:
+
+    if args.blend == 1:
+        #blend output with input 
         prediction_size = (prediction.shape[0], prediction.shape[1], 3)    
         output_image = args.palette[prediction.ravel()].reshape(prediction_size)
-        output_image = crop_color_image2(output_image, image_size)    
+        output_size = image_size
+        if args.resize_op_to_ip_size:
+          output_size = output_image.shape 
+        output_image = crop_color_image2(output_image, output_size)    
         output_image = chroma_blend(input_bgr, output_image)            
-    else:           
+    elif args.blend == 0:
+        #raw output
         prediction_size = (prediction.shape[0], prediction.shape[1])
         output_image = prediction.ravel().reshape(prediction_size)
-        output_image = crop_gray_image2(output_image, image_size)
+        output_size = image_size
+        if args.resize_op_to_ip_size:
+          output_size = output_image.shape 
+        output_image = crop_gray_image2(output_image, output_size)
+    elif args.blend == 2:
+        #output in color pallet form
+        prediction_size = (prediction.shape[0], prediction.shape[1], 3)    
+        output_image = args.palette[prediction.ravel()].reshape(prediction_size)
+        output_size = image_size
+        if args.resize_op_to_ip_size:
+          output_size = output_image.shape 
+        output_image = crop_color_image2(output_image, output_size)    
     return output_image, input_label
  
                                
@@ -204,6 +226,8 @@ def eval_blob(args, net, input_blob, label_blob, confusion_matrix):
     gt_labels = label_blob.ravel()
     det_labels = output_blob.ravel().clip(0,args.num_classes)
     gt_labels_valid_ind = np.where(gt_labels != 255)
+    #print("gt_labels.shape", gt_labels.shape)
+    #print("det_labels.shape", det_labels.shape)
     gt_labels_valid = gt_labels[gt_labels_valid_ind]
     det_labels_valid = det_labels[gt_labels_valid_ind]
     #print(len(np.where(gt_labels_valid==det_labels_valid)[0]))
@@ -319,7 +343,9 @@ def infer_image_list(args, net):
           cv2.imwrite(output_name, output_blob) 
           output_name_list.append(output_name)           
         count += 1
-        if ((count % (total/20)) == 0):
+        #how many times intermediate accuracy needs to be shown
+        num_times_show_accuracy = min(20, total)
+        if ((count % (total/num_times_show_accuracy)) == 0):
           accuracy, mean_iou, iou = compute_accuracy(args, confusion_matrix)   
           print('pixel_accuracy={}, mean_iou={}, iou={}'.format(accuracy, mean_iou, iou))
          
@@ -382,7 +408,7 @@ def main():
 
     input_type, output_type = check_paths(args)
     
-    if args.label and args.blend:
+    if args.label and (args.blend!=0):
       raise ValueError('When doing evaluation by specifying --label, --blend should not be used')
         
     args.label_lut = []  
