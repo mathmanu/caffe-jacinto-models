@@ -35,7 +35,7 @@ ds_fac=32
 #down sampling type: 'DFLT', 'PSP'
 ds_type='PSP'
 
-#regression head at downsamling 8 layer: 0,1 
+#regression head at downsampling 8 layer: 0,1 
 reg_head_at_ds8=1
 
 #use concat layers for regression heads
@@ -93,6 +93,9 @@ base_nw_3_head=0
 #1:first head num of op channel same as other layers, 0: first hd double the number of op channel
 first_hd_same_op_ch=1
 
+#To chop of last few heads. It will make max/min size computed based on original number of heads
+chop_num_heads=0
+
 #known issue - use_image_list=0 && shuffle=1 => hang.
 use_image_list=0 
 
@@ -101,25 +104,25 @@ shuffle=0
 
 #sparsity will be induced gradually starting from this value
 sparsity_start_factor=0.5
+
+#"TYPE1": matching res with SSD512x512, "TYPE2": custom size
+voc0712_cfg_type="TYPE1"
+
+#use batch norm for mbox layer1:enable,0:disable
+use_batchnorm_mbox=1
+
 #-------------------------------------------------------
 if [ $dataset = "voc0712" ]
 then
-
   train_data="../../caffe-jacinto/examples/VOC0712/VOC0712_trainval_lmdb"
   test_data="../../caffe-jacinto/examples/VOC0712/VOC0712_test_lmdb"
 
   name_size_file="../../caffe-jacinto/data/VOC0712/test_name_size.txt"
   label_map_file="../../caffe-jacinto/data/VOC0712/labelmap_voc.prototxt"
-  
+ 
   num_test_image=4952
   num_classes=21
 
-  min_dim=512
-  
-  resize_width=512
-  resize_height=512
-  crop_width=512
-  crop_height=512
   batch_size=16    #32    #16
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
@@ -127,16 +130,31 @@ then
   stepvalue1=60000   #60000   #32000   #16000
   stepvalue2=90000   #90000   #48000   #24000
   base_lr=1e-2       #1e-2    #1e-4    #1e-3
+ 
+  sparsity_start_factor=0.25
   
-  #use batch norm ofr mbox layer1:enable,0:disable
-  use_batchnorm_mbox=1
-
-  sparsity_start_factor=0.25 
+  if [ $voc0712_cfg_type = "TYPE1" ] 
+  then 
+    min_dim=512
+    resize_width=512
+    resize_height=512
+    crop_width=512
+    crop_height=512
+    use_batchnorm_mbox=0
+  else
+    min_dim=368
+    resize_width=768
+    resize_height=320
+    crop_width=768
+    crop_height=320
+    small_objs=1
+    ker_mbox_loc_conf=1
+    chop_num_heads=1
+    reg_head_at_ds8=0
+  fi  
 
 elif [ $dataset = "ti-custom-cfg1" ]
 then
-  #In V2 removed V153,154(part of TI Demo) and V002(anno has been corrected so no need to use VGG generated)     
- 
   train_data="../../caffe-jacinto/examples/ti-custom-cfg1/ti-custom-cfg1_trainval_lmdb"
   test_data="../../caffe-jacinto/examples/ti-custom-cfg1/ti-custom-cfg1_test_lmdb"
 
@@ -148,13 +166,14 @@ then
 
   min_dim=368
  
-  resize_width=720
-  resize_height=368
-  crop_width=720
-  crop_height=368
+  resize_width=768
+  resize_height=320
+  crop_width=768
+  crop_height=320
   use_difficult_gt=0
   small_objs=1
   ker_mbox_loc_conf=1
+  chop_num_heads=1
   batch_size=16      #32    #16
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
@@ -241,7 +260,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,\
 'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type',\
 'rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,\
-'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$solver_param
 config_name_prev=$config_name
@@ -253,8 +272,8 @@ max_iter_L1=60000
 stepvalue1_L1=30000
 stepvalue2_L1=45000
 base_lr_L1=1e-3       #1e-2    #1e-4    #1e-3
-weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter_L1.caffemodel
-l1reg_solver_param="{'type':'$type','base_lr':$base_lr_L1,'max_iter':$max_iter_L1,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1_L1,$stepvalue2_L1,$stepvalue3],\
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
+l1reg_solver_param="{'type':'$type','base_lr':$base_lr_L1,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1_L1,$stepvalue2_L1,$stepvalue3],\
 'regularization_type':'L1','weight_decay':1e-5}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
@@ -265,7 +284,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$l1reg_solver_param
 config_name_prev=$config_name
@@ -281,7 +300,7 @@ lr_policy="poly"
 #set it to 4.0 for poly
 power=4.0
 base_lr=1e-3       #1e-2    #1e-4    #1e-3
-weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter_L1.caffemodel
 sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':2000,\
@@ -297,7 +316,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox, 'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$sparse_solver_param
 config_name_prev=$config_name
@@ -320,7 +339,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'test_batch_size':10,'caffe_cmd':'test_detection','display_sparsity':1,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -345,7 +364,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
 'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,\
 'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,\
-'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 

@@ -20,8 +20,8 @@ def get_arguments():
     parser.add_argument('--search_string', type=str, default='*.png', help='Wildcard. eg. train/*/*.png')
     parser.add_argument('--output_dir', type=str, default='label-folder', help='Path to output folder')    
     parser.add_argument('--label_dict', type=str, default=None, help='Label type translation. eg. {17:0, 19:1}')
-    parser.add_argument('--width', type=int, default=None, help='Output Image Width')
-    parser.add_argument('--height', type=int, default=None, help='Output Image Height')    
+    parser.add_argument('--width', type=int, default=0, help='Output Image Width')
+    parser.add_argument('--height', type=int, default=0, help='Output Image Height')    
     parser.add_argument('--rand_seed', type=int, default=0, help='Rand seed for shuffling')   
     parser.add_argument('--shuffle', action="store_true", help='Shuffle list of images')        
     return parser.parse_args()
@@ -51,7 +51,8 @@ def create_folder(args, image_indices):
             shape_orig = im.shape                      
             if args.height and args.width:
                 im = Image.fromarray(im, 'P')                
-                im = im.resize([args.height, args.width], Image.NEAREST)
+                #PIL  resize has W followed by H as params
+                im = im.resize([args.width, args.height], Image.NEAREST)
             im = np.array(im, dtype=np.uint8)   
             if args.label_dict:
                 im = lut[im]                    
@@ -60,7 +61,8 @@ def create_folder(args, image_indices):
             im_orig = np.array(im, dtype=np.uint8)  
             shape_orig = im_orig.shape                             
             if args.height and args.width:
-                im = im.resize([args.height, args.width], Image.ANTIALIAS)
+                #PIL  resize has W followed by H as params
+                im = im.resize([args.width, args.height], Image.ANTIALIAS)
             im = np.array(im, dtype=np.uint8)
             #im = im[:,:,::-1]          #RGB to BGR
             #im = im.transpose((2,0,1)) #Channel x Height x Width order (switch from H x W x C)

@@ -49,7 +49,8 @@ def create_lmdb(args, image_indices):
                 shape_orig = im.shape       
                 if args.height and args.width:
                     im = Image.fromarray(im, 'P')                
-                    im = im.resize([args.height, args.width], Image.NEAREST)
+                    #PIL  resize has W followed by H as params
+                    im = im.resize([args.width, args.height], Image.NEAREST)
                 if args.label_dict:
                     im = lut[im]     
                 im = np.array(im, dtype=np.uint8)                   
@@ -58,7 +59,8 @@ def create_lmdb(args, image_indices):
                 im_orig = np.array(im, dtype=np.uint8)  
                 shape_orig = im_orig.shape                             
                 if args.height and args.width:
-                    im = im.resize([args.height, args.width], Image.ANTIALIAS)
+                  #PIL  resize has W followed by H as params
+                  im = im.resize([args.width, args.height], Image.ANTIALIAS)
                 im = np.array(im, dtype=np.uint8)
                 im = im[:,:,::-1]          #RGB to BGR
                 im = im.transpose((2,0,1)) #Channel x Height x Width order (switch from H x W x C)
