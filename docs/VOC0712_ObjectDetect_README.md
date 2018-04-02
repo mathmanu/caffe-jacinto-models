@@ -1,7 +1,11 @@
 # Sparse CNN training and inference for Object detect
 
 ### Pre-requisites
-It is assumed here, that all the pre-requisites required for running Caffe-jacinto are met. Open a bash terminal and change directory into the scripts folder, as explained earlier.
+* It is assumed here, that all the pre-requisites required for running Caffe-jacinto are met. 
+* caffe-jacinto should have been built using commands *make -j16* and *make pycaffe* at the caffe-jacinto root directory.
+* Set environment varibale CAFFE_ROOT pointing to caffe-jacinto folder, e.g. export CAFFE_ROOT=/user/github/caffe-jacinto. 
+* Open a bash terminal and change directory into the scripts folder, as explained earlier. 
+
 
 ### Dataset preparation
 We use the same LMDB format as used by original [Caffe-SSD implementation](https://github.com/weiliu89/caffe/blob/4817bf8b4200b35ada8ed0dc378dceaf38c539e4/README.md#citing-ssd). 
