@@ -93,6 +93,9 @@ base_nw_3_head=0
 #1:first head num of op channel same as other layers, 0: first hd double the number of op channel
 first_hd_same_op_ch=1
 
+#To chop of last few heads. It will make max/min size computed based on original number of heads
+chop_num_heads=0
+
 #known issue - use_image_list=0 && shuffle=1 => hang.
 use_image_list=0 
 
@@ -110,7 +113,7 @@ then
 
   name_size_file="../../caffe-jacinto/data/VOC0712/test_name_size.txt"
   label_map_file="../../caffe-jacinto/data/VOC0712/labelmap_voc.prototxt"
-  
+ 
   num_test_image=4952
   num_classes=21
 
@@ -241,7 +244,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,\
 'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type',\
 'rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,\
-'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$solver_param
 config_name_prev=$config_name
@@ -265,7 +268,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$l1reg_solver_param
 config_name_prev=$config_name
@@ -297,7 +300,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox, 'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$sparse_solver_param
 config_name_prev=$config_name
@@ -320,7 +323,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'resize_width':$resize_width,'resize_height':$resize_height,'crop_width':$crop_width,'crop_height':$crop_height,'batch_size':$batch_size,\
 'test_batch_size':10,'caffe_cmd':'test_detection','display_sparsity':1,\
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
-'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -345,7 +348,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'aspect_ratios_type':$aspect_ratios_type,'ssd_size':'$ssd_size','small_objs':$small_objs,'min_dim':$min_dim,'concat_reg_head':$concat_reg_head,
 'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,\
 'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type','rhead_name_non_linear':$rhead_name_non_linear,\
-'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox}" 
+'force_color':$force_color,'num_intermediate':$num_intermediate,'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$test_solver_param
 
