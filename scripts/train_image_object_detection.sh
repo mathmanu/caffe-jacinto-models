@@ -5,10 +5,10 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0,1" #"0,1,2"
+gpus="0,1" #"0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
 
 #-------------------------------------------------------
-model_name=ssdJacintoNetV2       #ssdJacintoNetV2       
+model_name=ssdJacintoNetV2       #ssdJacintoNetV2  #mobiledetnet-0.5     
 dataset=voc0712                  #voc0712,ti-custom-cfg1,ti-custom-cfg2
 #------------------------------------------------
 
@@ -276,8 +276,7 @@ config_name_prev=$config_name
 #-------------------------------------------------------
 #incremental sparsification and finetuning
 stage="sparse"
-#Using two GPUS for this step gives strange results. Imbalanced accuracy between two
-#GPUs.
+#Using more than one GPU for this step gives strange results. Imbalanced accuracy between the GPUs.
 gpus="0" #"0,1,2"
 batch_size=8
 lr_policy="poly"

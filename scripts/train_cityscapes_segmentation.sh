@@ -4,6 +4,9 @@
 DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
+#------------------------------------------------
+gpus="0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
+
 #-------------------------------------------------------
 model_name=jsegnet21v2
 dataset=cityscapes5
@@ -24,9 +27,6 @@ else
   wget $weights_src -O $weights_dst
 fi
 
-#------------------------------------------------
-#using more than two gpus doesn't seem to be helping when using use_image_list=1, due to read bottleneck.
-gpus="0,1,2"
 
 
 #-------------------------------------------------------
@@ -76,6 +76,8 @@ config_name_prev=$config_name
 #-------------------------------------------------------
 #incremental sparsification and finetuning
 stage="sparse"
+#Using more than one GPU for this step gives strange results. Imbalanced accuracy between the GPUs.
+gpus="0" #"0,1,2"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\

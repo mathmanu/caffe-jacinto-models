@@ -4,6 +4,9 @@
 DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
+#------------------------------------------------
+gpus="0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
+
 #-------------------------------------------------------
 model_name=mobilenet-1.0 #mobileresnet-1.0 #jacintonet11v2
 dataset=cifar10
@@ -18,7 +21,6 @@ echo Logging output to "$LOG"
 caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
 #-------------------------------------------------------
-gpus="0,1,2"
 max_iter=64000
 base_lr=0.1
 type=SGD
@@ -72,6 +74,8 @@ config_name_nonsparse=$config_name
 #-------------------------------------------------------
 #incremental sparsification and finetuning
 stage="sparse"
+#Using more than one GPU for this step gives strange results. Imbalanced accuracy between the GPUs.
+gpus="0" #"0,1,2"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 #max_iter=64000

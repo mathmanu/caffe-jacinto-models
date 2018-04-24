@@ -403,8 +403,8 @@ def mobiledetnet(net, from_layer='data', fully_conv=False, reduced=False, dilate
   out_layer = 'pool8'
   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
 
-  for top in net.tops:
-    print("top:", top)
+  #for top in net.tops:
+  #  print("top:", top)
   #---------------------------       
   from_layer = 'relu5_5/sep'
   out_layer = 'ctx_output1'
@@ -414,7 +414,7 @@ def mobiledetnet(net, from_layer='data', fully_conv=False, reduced=False, dilate
   out_layer = 'ctx_output2'
   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1) 
         
-  from_layer = 'pool6' #'res5a_branch2b/concat' #
+  from_layer = 'pool6'
   out_layer = 'ctx_output3'
   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              
  

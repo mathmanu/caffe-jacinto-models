@@ -16,7 +16,7 @@ echo Logging output to "$LOG"
 
 
 #------------------------------------------------
-gpus="0,1,2"
+gpus="0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
 max_iter=32000
 stepvalue=24000
 base_lr=1e-4
@@ -67,6 +67,8 @@ config_name_prev=$config_name
 #-------------------------------------------------------
 #incremental sparsification and finetuning
 stage="sparse"
+#Using more than one GPU for this step gives strange results. Imbalanced accuracy between the GPUs.
+gpus="0" #"0,1,2"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 base_lr=1e-5  #use a lower lr for fine tuning
