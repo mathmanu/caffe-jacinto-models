@@ -8,7 +8,7 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 gpus="0,1,2" #"0,1"         #IMPORTANT: change this to "0" if you have only one GPU. Adjust batch_size (below) if the GPU memory is not sufficient.
 
 #-------------------------------------------------------
-model_name=mobiledetnet-0.5       #ssdJacintoNetV2  #mobiledetnet-0.5     
+model_name=mobiledetnet-0.5      #ssdJacintoNetV2  #mobiledetnet-0.5  #mobiledetnet-1.0 
 dataset=voc0712                  #voc0712,ti-custom-cfg1,ti-custom-cfg2
 #------------------------------------------------
 
@@ -23,8 +23,8 @@ else
 fi
 
 #------------------------------------------------
-#ssd-size:'512x512', '300x300','256x256'
-ssd_size='512x512'
+#ssd-size:'512x512', '300x300','256x256', '512x256'
+ssd_size='512x256'
 
 #0:[1,2,1/2] for each reg head, 1:like orig SSD
 aspect_ratios_type=1
@@ -42,7 +42,7 @@ reg_head_at_ds8=1
 concat_reg_head=0
 
 #kernel size for mbox_loc, mbox_conf conv
-ker_mbox_loc_conf=3
+ker_mbox_loc_conf=1
 
 #if unintialized value: Average of W,H will be used as min dim
 min_dim=-1
@@ -76,8 +76,8 @@ lr_policy="multistep"
 #set it to 4.0 for poly
 power=1.0
 
-#0.0005 (orignal SSD), 0.0001
-weight_decay_L2=0.0001
+#0.0005 (orignal SSD), 0.0001, lower wd for mobilenet dw layers is handled internally.
+weight_decay_L2=1e-4
 
 #0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
 log_space_steps=2
@@ -117,12 +117,12 @@ then
   num_test_image=4952
   num_classes=21
 
-  min_dim=512
+  min_dim=256
   
   resize_width=512
-  resize_height=512
+  resize_height=256
   crop_width=512
-  crop_height=512
+  crop_height=256
   batch_size=48    #16
 
   type="SGD"         #"SGD"   #Adam    #"Adam"

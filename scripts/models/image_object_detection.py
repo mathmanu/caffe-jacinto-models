@@ -18,6 +18,7 @@ from collections import OrderedDict
 
 def set_min_max_sizes(config_param):
   # in percent %
+  min_ratio = 15
   if config_param.ssd_size == '512x512':
     min_ratio = 15
   elif (config_param.ssd_size == '300x300') or(config_param.ssd_size == '256x256'):
@@ -38,6 +39,8 @@ def set_min_max_sizes(config_param):
 
   print('ratio_step_size:', step)   
   
+  min_size_mul = 4 if config_param.small_objs else 7
+  max_size_mul = 10 if config_param.small_objs else 15 
   if config_param.ssd_size == '512x512':
     if config_param.small_objs:
       min_size_mul = 4 
@@ -612,8 +615,8 @@ def main():
         config_param.steps = [8, 16, 32, 64, 100, 300]
     elif 'mobiledetnet' in config_param.model_name:
         config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
-          'ctx_output4/relu', 'ctx_output5/relu']
-        config_param.steps = [16, 32, 64, 128, 128]
+          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
+        config_param.steps = [8, 16, 32, 64, 128, 128]
     else:
         ValueError("Invalid model name")
     
