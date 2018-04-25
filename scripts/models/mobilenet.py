@@ -412,28 +412,28 @@ def mobiledetnet(net, from_layer='data', fully_conv=False, reduced=False, dilate
   #  print("top:", top)
   
   #---------------------------       
-  from_layer = 'relu4_1/sep'
-  out_layer = 'ctx_output1'
-  out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1) 
+  #from_layer = 'relu4_1/sep'
+  #out_layer = 'ctx_output????'
+  #out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1) 
   
   from_layer = 'relu5_5/sep'
-  out_layer = 'ctx_output2'
+  out_layer = 'ctx_output1'
   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)  
         
   from_layer = 'relu6/sep'
-  out_layer = 'ctx_output3'
+  out_layer = 'ctx_output2'
   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1) 
         
   from_layer = 'pool6'
-  out_layer = 'ctx_output4'
+  out_layer = 'ctx_output3'
   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              
  
   from_layer = 'pool7'
-  out_layer = 'ctx_output5'
+  out_layer = 'ctx_output4'
   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
 
   from_layer = 'pool8'
-  out_layer = 'ctx_output6'
+  out_layer = 'ctx_output5'
   out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
   
   return out_layer  

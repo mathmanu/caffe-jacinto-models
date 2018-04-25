@@ -615,8 +615,8 @@ def main():
         config_param.steps = [8, 16, 32, 64, 100, 300]
     elif 'mobiledetnet' in config_param.model_name:
         config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
-          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
-        config_param.steps = [8, 16, 32, 64, 128, 128]
+          'ctx_output4/relu', 'ctx_output5/relu'] #, 'ctx_output6/relu']
+        config_param.steps = [16, 32, 64, 128, 256] #[8, 16, 32, 64, 128, 256]
     else:
         ValueError("Invalid model name")
     
@@ -820,7 +820,7 @@ def main():
             #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
             #  freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride, wide_factor=wide_factor)
             wide_factor = float(config_param.model_name.split('-')[1])
-            out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer, wide_factor=wide_factor)
+            out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer, wide_factor=wide_factor, num_intermediate=config_param.num_intermediate)
         else:
             ValueError("Invalid model name")
         return net, out_layer
