@@ -39,8 +39,8 @@ def set_min_max_sizes(config_param):
 
   print('ratio_step_size:', step)   
   
-  min_size_mul = 4 if config_param.small_objs else 7
-  max_size_mul = 10 if config_param.small_objs else 15 
+  min_size_mul = 7
+  max_size_mul = 15
   if config_param.ssd_size == '512x512':
     if config_param.small_objs:
       min_size_mul = 4 

@@ -139,8 +139,29 @@ def ConvBNLayerSSD(net, from_layer, out_name, use_bn, use_relu, num_output,
     bn_prefix, bn_postfix, scale_prefix, scale_postfix,
     bias_prefix, bias_postfix, group, dilation, in_place, use_bias, lr_mult)         
    
-    
+
+def ConvBNLayerDWSep1x1First(net, from_layer, out_name, use_bn, use_relu, num_output,
+    kernel_size, pad, stride, use_scale=False, moving_average_fraction=0.99, eps=0.0001, conv_prefix='', conv_postfix='',
+    bn_prefix='', bn_postfix='/bn', scale_prefix='', scale_postfix='/scale',
+    bias_prefix='', bias_postfix='/bias', group=1, dilation=1, in_place=True, use_bias=False, lr_mult=1):
+
+    #1x1 is done first and then dw layer since we don't know the number of input channels
+    #this order is different from what mobilenet does
+    out_layer = ConvBNLayer(net, from_layer, out_name+"/1x1", use_bn, use_relu, num_output,
+    1, 0, stride, use_scale, moving_average_fraction, eps, conv_prefix, conv_postfix,
+    bn_prefix, bn_postfix, scale_prefix, scale_postfix,
+    bias_prefix, bias_postfix, group, 1, in_place, use_bias, lr_mult)    
+
+    #dw layer
+    from_layer = out_layer
+    out_layer = ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
+    kernel_size, pad, stride, use_scale, moving_average_fraction, eps, conv_prefix, conv_postfix,
+    bn_prefix, bn_postfix, scale_prefix, scale_postfix,
+    bias_prefix, bias_postfix, num_output, dilation, in_place, use_bias, lr_mult)    
+
+    return out_layer
          
+
 def ResBody(net, from_layer, block_name, out2a, out2b, out2c, stride, use_branch1):
   # ResBody(net, 'pool1', '2a', 64, 64, 256, 1, True)
 
