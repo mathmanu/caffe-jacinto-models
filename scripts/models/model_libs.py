@@ -1,5 +1,6 @@
 """This file is from: https://github.com/weiliu89/caffe"""
 import os
+import copy
 import caffe
 from caffe import layers as L
 from caffe import params as P
@@ -91,14 +92,21 @@ def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
   [kernel_h, kernel_w] = UnpackVariable(kernel_size, 2)
   [pad_h, pad_w] = UnpackVariable(pad, 2)
   [stride_h, stride_w] = UnpackVariable(stride, 2)
+  
+  #lower wd for dw layers as per mobilenet paper - not working - harder to train
+  kwargs_conv = copy.deepcopy(kwargs)
+  decay_mult = 0.01 if group == num_output else 1.0
+  param = {'decay_mult': decay_mult}
+  kwargs_conv['param'][0]['decay_mult'] = decay_mult
+  
   if kernel_h == kernel_w:
     net[conv_name] = L.Convolution(net[from_layer], num_output=num_output,
-        kernel_size=kernel_h, pad=pad_h, stride=stride_h, **kwargs)
+        kernel_size=kernel_h, pad=pad_h, stride=stride_h, **kwargs_conv)
     out_layer = conv_name        
   else:
     net[conv_name] = L.Convolution(net[from_layer], num_output=num_output,
         kernel_h=kernel_h, kernel_w=kernel_w, pad_h=pad_h, pad_w=pad_w,
-        stride_h=stride_h, stride_w=stride_w, **kwargs)
+        stride_h=stride_h, stride_w=stride_w, **kwargs_conv)
     out_layer = conv_name
   if use_bn:
     bn_name = '{}{}{}'.format(bn_prefix, out_name, bn_postfix)

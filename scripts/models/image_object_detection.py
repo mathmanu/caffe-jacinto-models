@@ -731,10 +731,10 @@ def main():
         config_param.steps = [16, 32, 64, 128]
         config_param.mbox_source_layers = out_layer_names
     elif (config_param.model_name == 'jdetnet21v2-s8'):
-        config_param.steps = [8, 16, 32, 64, 128, 128]
+        config_param.steps = [8, 16, 32, 64, 128, 256]
         config_param.mbox_source_layers = out_layer_names
     elif (config_param.model_name == 'jdetnet21v2-fpn'):
-        config_param.steps = [16, 16, 32, 64, 128, 128]
+        config_param.steps = [16, 16, 32, 64, 128, 256]
         config_param.mbox_source_layers = out_layer_names
     if (config_param.model_name == 'ssdJacintoNetV2'):
       config_param.steps = []

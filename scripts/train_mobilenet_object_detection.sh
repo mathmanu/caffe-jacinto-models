@@ -77,12 +77,13 @@ lr_policy="multistep"
 power=1.0
 
 #0.0005 (orignal SSD), 0.0001
-weight_decay_L2=1e-5 #lower wd for mobilenet
+#wd of dw layers will be lowered even furter inside the script using decay_mult
+weight_decay_L2=1e-4  
 
 #0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
 log_space_steps=2
-min_ratio=15 #has not effect when log_space_steps=2
-max_ratio=90 #has not effect when log_space_steps=2
+min_ratio=15 #has not effect when log_space_steps=2 (set min_dim appropriately)
+max_ratio=90 #has not effect when log_space_steps=2 (set min_dim appropriately)
 
 #1:FC layer like originalk SSD, 0: no FC layer
 fully_conv_at_end=0
@@ -117,7 +118,7 @@ then
   num_test_image=4952
   num_classes=21
 
-  min_dim=256
+  min_dim=512 #256
   
   resize_width=512
   resize_height=256
