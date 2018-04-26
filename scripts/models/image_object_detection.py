@@ -242,6 +242,41 @@ def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
     return mbox_layers
 
 
+def CoreNetwork(config_param, net, from_layer):
+    if config_param.model_name == 'jdetnet21v2':
+        out_layer, out_layer_names = models.jacintonet_v2.jdetnet21(net, from_layer=from_layer,\
+          num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+          freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
+    elif config_param.model_name == 'jdetnet21v2-s8':
+        out_layer, out_layer_names = models.jacintonet_v2.jdetnet21_s8(net, from_layer=from_layer,\
+          num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+          freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)              
+    elif config_param.model_name == 'jdetnet21v2-fpn':
+        out_layer, out_layer_names = models.jacintonet_v2.jdetnet21_fpn(net, from_layer=from_layer,\
+          num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+          freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
+    elif config_param.model_name == 'ssdJacintoNetV2':
+        out_layer, out_layer_names = models.jacintonet_v2.ssdJacintoNetV2(net, from_layer=from_layer,\
+          num_output=config_param.num_feature,stride_list=config_param.stride_list,\
+          dilation_list=config_param.dilation_list,\
+          freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride,\
+          ds_type=config_param.ds_type, use_batchnorm_mbox=config_param.use_batchnorm_mbox,fully_conv_at_end=config_param.fully_conv_at_end, 
+          reg_head_at_ds8=config_param.reg_head_at_ds8, concat_reg_head=config_param.concat_reg_head,
+          base_nw_3_head=config_param.base_nw_3_head, first_hd_same_op_ch=config_param.first_hd_same_op_ch,
+          num_intermediate=config_param.num_intermediate, rhead_name_non_linear=config_param.rhead_name_non_linear,
+          chop_num_heads=config_param.chop_num_heads)
+    elif 'mobiledetnet' in config_param.model_name:
+        #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
+        #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+        #  freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride, wide_factor=wide_factor)
+        wide_factor = float(config_param.model_name.split('-')[1])
+        out_layer, out_layer_names = models.mobilenet.mobiledetnet(net, from_layer=from_layer, wide_factor=wide_factor, num_intermediate=config_param.num_intermediate)
+    else:
+        ValueError("Invalid model name")
+
+    return net, out_layer, out_layer_names
+
+
 def get_arguments():
     parser = argparse.ArgumentParser()   
     parser.add_argument('--config_param', type=str, default=None, help='Extra config parameters')      
@@ -574,108 +609,6 @@ def main():
     if config_param.feature_stride != 16:
         ValueError("config_param.feature_stride {} is incorrect".format(config_param.feature_stride))
     
-    if (config_param.model_name == 'jdetnet21v2'):
-        config_param.steps = [16, 32, 64, 128]
-        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
-          'ctx_output4/relu']
-    elif (config_param.model_name == 'jdetnet21v2-s8'):
-        config_param.steps = [8, 16, 32, 64, 128, 128]
-        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
-          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
-    elif (config_param.model_name == 'jdetnet21v2-fpn'):
-        config_param.steps = [16, 16, 32, 64, 128, 128]
-        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
-          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
-    if (config_param.model_name == 'ssdJacintoNetV2'):
-      config_param.steps = []
-      #if config_param.resize_width == config_param.resize_height:
-        #config_param.steps = [8, 16, 32, 64, 128, 256, 512]
-      #config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
-      #  'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
-      if config_param.ds_type == 'DFLT':
-        config_param.mbox_source_layers = ['res3a_branch2b/relu', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2', 'conv10_2']
-      else: 
-        if config_param.stride_list[4] == 1:
-          config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 
-          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu', 'ctx_output7/relu']
-        else:  
-          config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', 
-          'ctx_output4/relu', 'ctx_output5/relu', 'ctx_output6/relu']
-        
-        if config_param.base_nw_3_head:
-          config_param.mbox_source_layers.append('ctx_output{}/relu'.format(len(config_param.mbox_source_layers)+1))  
-    elif config_param.model_name == 'vgg16':
-        # conv4_3 ==> 38 x 38
-        # fc7 ==> 19 x 19
-        # conv6_2 ==> 10 x 10
-        # conv7_2 ==> 5 x 5
-        # conv8_2 ==> 3 x 3
-        # conv9_2 ==> 1 x 1
-        config_param.mbox_source_layers = ['conv4_3', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2']
-        config_param.steps = [8, 16, 32, 64, 100, 300]
-    elif 'mobiledetnet' in config_param.model_name:
-        config_param.mbox_source_layers = ['ctx_output1/relu', 'ctx_output2/relu', 'ctx_output3/relu', \
-          'ctx_output4/relu', 'ctx_output5/relu'] #, 'ctx_output6/relu']
-        config_param.steps = [16, 32, 64, 128, 256] #[8, 16, 32, 64, 128, 256]
-    else:
-        ValueError("Invalid model name")
-    
-    # parameters for generating priors.
-    config_param.num_steps = len(config_param.mbox_source_layers)  
-    config_param.step = int(math.floor((config_param.max_ratio - config_param.min_ratio) / config_param.num_steps))
-    config_param.min_sizes = []
-    config_param.max_sizes = []
-      
-    print("min_dim = {}".format(config_param.min_dim))
-    min_dim_to_use = config_param.min_ratio*config_param.min_dim/100
-    max_dim_to_use = config_param.max_ratio*config_param.min_dim/100
-    if config_param.log_space_steps == 1:
-      #log
-      min_max_sizes = np.logspace(np.log2(min_dim_to_use), np.log2(max_dim_to_use), num=config_param.num_steps+1, base=2)
-      config_param.min_sizes = list(min_max_sizes[0:config_param.num_steps])
-      config_param.max_sizes = list(min_max_sizes[1:config_param.num_steps+1])
-    elif config_param.log_space_steps == 0:
-      #linear
-      min_max_sizes = np.linspace(min_dim_to_use, max_dim_to_use, num=config_param.num_steps+1)
-      config_param.min_sizes = list(min_max_sizes[0:config_param.num_steps])
-      config_param.max_sizes = list(min_max_sizes[1:config_param.num_steps+1])
-    else:
-      #like original SSD
-      config_param.min_sizes, config_param.max_sizes = set_min_max_sizes(config_param)
-  
-    print("minsizes = {}".format(config_param.min_sizes))
-    print("maxsizes = {}".format(config_param.max_sizes))
-   
-    if config_param.aspect_ratios_type == 0:
-      config_param.aspect_ratios = [[2]]*config_param.num_steps 
-    else:
-      #like original SSD
-      config_param.aspect_ratios = [[2,3]]*config_param.num_steps
-      config_param.aspect_ratios[0] = [2]
-      config_param.aspect_ratios[-1] = [2]
-      config_param.aspect_ratios[-2] = [2]
-           
-    print("ARs:",config_param.aspect_ratios)
-    # L2 normalize conv4_3.
-    config_param.normalizations = [-1]*config_param.num_steps #[20, -1, -1, -1, -1, -1]
-    # variance used to encode/decode prior bboxes.
-    if config_param.code_type == P.PriorBox.CENTER_SIZE:
-      config_param.prior_variance = [0.1, 0.1, 0.2, 0.2]
-    else:
-      config_param.prior_variance = [0.1]
-
-    if config_param.chop_num_heads > 0:
-      print("Chopping heads")
-      del config_param.min_sizes[-config_param.chop_num_heads:]
-      del config_param.max_sizes[-config_param.chop_num_heads:]
-      del config_param.aspect_ratios[-config_param.chop_num_heads:]
-      del config_param.normalizations[-config_param.chop_num_heads:]
-      del config_param.mbox_source_layers[-config_param.chop_num_heads:]
-
-      print("minsizes = {}".format(config_param.min_sizes))
-      print("maxsizes = {}".format(config_param.max_sizes))
-      print("aspect_ratios = {}".format(config_param.aspect_ratios))
-      print(config_param.mbox_source_layers)
 
     config_param.flip = True
     config_param.clip = False
@@ -792,40 +725,99 @@ def main():
     net['data/bias'] = L.Bias(net[out_layer], in_place=False, **bias_kwargs)
     out_layer = 'data/bias'           
 
-    def core_network(net, from_layer):
-        if config_param.model_name == 'jdetnet21v2':
-            out_layer = models.jacintonet_v2.jdetnet21(net, from_layer=from_layer,\
-              num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
-        elif config_param.model_name == 'jdetnet21v2-s8':
-            out_layer = models.jacintonet_v2.jdetnet21_s8(net, from_layer=from_layer,\
-              num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)              
-        elif config_param.model_name == 'jdetnet21v2-fpn':
-            out_layer = models.jacintonet_v2.jdetnet21_fpn(net, from_layer=from_layer,\
-              num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride)
-        elif config_param.model_name == 'ssdJacintoNetV2':
-            out_layer = models.jacintonet_v2.ssdJacintoNetV2(net, from_layer=from_layer,\
-              num_output=config_param.num_feature,stride_list=config_param.stride_list,\
-              dilation_list=config_param.dilation_list,\
-              freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride,\
-              ds_type=config_param.ds_type, use_batchnorm_mbox=config_param.use_batchnorm_mbox,fully_conv_at_end=config_param.fully_conv_at_end, 
-              reg_head_at_ds8=config_param.reg_head_at_ds8, concat_reg_head=config_param.concat_reg_head,
-              base_nw_3_head=config_param.base_nw_3_head, first_hd_same_op_ch=config_param.first_hd_same_op_ch,
-              num_intermediate=config_param.num_intermediate, rhead_name_non_linear=config_param.rhead_name_non_linear,
-              chop_num_heads=config_param.chop_num_heads)
-        elif 'mobiledetnet' in config_param.model_name:
-            #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
-            #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-            #  freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride, wide_factor=wide_factor)
-            wide_factor = float(config_param.model_name.split('-')[1])
-            out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer, wide_factor=wide_factor, num_intermediate=config_param.num_intermediate)
-        else:
-            ValueError("Invalid model name")
-        return net, out_layer
+    net, out_layer, out_layer_names = CoreNetwork(config_param, net, out_layer)
+
+    if (config_param.model_name == 'jdetnet21v2'):
+        config_param.steps = [16, 32, 64, 128]
+        config_param.mbox_source_layers = out_layer_names
+    elif (config_param.model_name == 'jdetnet21v2-s8'):
+        config_param.steps = [8, 16, 32, 64, 128, 128]
+        config_param.mbox_source_layers = out_layer_names
+    elif (config_param.model_name == 'jdetnet21v2-fpn'):
+        config_param.steps = [16, 16, 32, 64, 128, 128]
+        config_param.mbox_source_layers = out_layer_names
+    if (config_param.model_name == 'ssdJacintoNetV2'):
+      config_param.steps = []
+      if config_param.ds_type == 'DFLT':
+        config_param.mbox_source_layers = ['res3a_branch2b/relu', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2', 'conv10_2']
+        config_param.mbox_source_layers = out_layer_names
+        
+        if config_param.base_nw_3_head:
+          config_param.mbox_source_layers.append('ctx_output{}/relu'.format(len(config_param.mbox_source_layers)+1))  
+    elif config_param.model_name == 'vgg16':
+        # conv4_3 ==> 38 x 38
+        # fc7 ==> 19 x 19
+        # conv6_2 ==> 10 x 10
+        # conv7_2 ==> 5 x 5
+        # conv8_2 ==> 3 x 3
+        # conv9_2 ==> 1 x 1
+        config_param.mbox_source_layers = ['conv4_3', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2']
+        config_param.steps = [8, 16, 32, 64, 100, 300]
+    elif 'mobiledetnet' in config_param.model_name:
+        config_param.mbox_source_layers = out_layer_names
+        config_param.steps = [16, 32, 64, 128, 256] #[8, 16, 32, 64, 128, 256]
+    else:
+        ValueError("Invalid model name")
     
-    net, out_layer = core_network(net, out_layer)
+    #-------------------------------------------------------------------
+    # parameters for generating priors.
+    config_param.num_steps = len(config_param.mbox_source_layers)  
+    config_param.step = int(math.floor((config_param.max_ratio - config_param.min_ratio) / config_param.num_steps))
+    config_param.min_sizes = []
+    config_param.max_sizes = []
+      
+    print("min_dim = {}".format(config_param.min_dim))
+    min_dim_to_use = config_param.min_ratio*config_param.min_dim/100
+    max_dim_to_use = config_param.max_ratio*config_param.min_dim/100
+    if config_param.log_space_steps == 1:
+      #log
+      min_max_sizes = np.logspace(np.log2(min_dim_to_use), np.log2(max_dim_to_use), num=config_param.num_steps+1, base=2)
+      config_param.min_sizes = list(min_max_sizes[0:config_param.num_steps])
+      config_param.max_sizes = list(min_max_sizes[1:config_param.num_steps+1])
+    elif config_param.log_space_steps == 0:
+      #linear
+      min_max_sizes = np.linspace(min_dim_to_use, max_dim_to_use, num=config_param.num_steps+1)
+      config_param.min_sizes = list(min_max_sizes[0:config_param.num_steps])
+      config_param.max_sizes = list(min_max_sizes[1:config_param.num_steps+1])
+    else:
+      #like original SSD
+      config_param.min_sizes, config_param.max_sizes = set_min_max_sizes(config_param)
+  
+    print("minsizes = {}".format(config_param.min_sizes))
+    print("maxsizes = {}".format(config_param.max_sizes))
+   
+    if config_param.aspect_ratios_type == 0:
+      config_param.aspect_ratios = [[2]]*config_param.num_steps 
+    else:
+      #like original SSD
+      config_param.aspect_ratios = [[2,3]]*config_param.num_steps
+      config_param.aspect_ratios[0] = [2]
+      config_param.aspect_ratios[-1] = [2]
+      config_param.aspect_ratios[-2] = [2]
+           
+    print("ARs:",config_param.aspect_ratios)
+    # L2 normalize conv4_3.
+    config_param.normalizations = [-1]*config_param.num_steps #[20, -1, -1, -1, -1, -1]
+    # variance used to encode/decode prior bboxes.
+    if config_param.code_type == P.PriorBox.CENTER_SIZE:
+      config_param.prior_variance = [0.1, 0.1, 0.2, 0.2]
+    else:
+      config_param.prior_variance = [0.1]
+
+    if config_param.chop_num_heads > 0:
+      print("Chopping heads")
+      del config_param.min_sizes[-config_param.chop_num_heads:]
+      del config_param.max_sizes[-config_param.chop_num_heads:]
+      del config_param.aspect_ratios[-config_param.chop_num_heads:]
+      del config_param.normalizations[-config_param.chop_num_heads:]
+      del config_param.mbox_source_layers[-config_param.chop_num_heads:]
+
+      print("minsizes = {}".format(config_param.min_sizes))
+      print("maxsizes = {}".format(config_param.max_sizes))
+      print("aspect_ratios = {}".format(config_param.aspect_ratios))
+      print(config_param.mbox_source_layers)
+    
+    
     mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=config_param.mbox_source_layers,
             use_batchnorm=config_param.use_batchnorm, use_scale=config_param.use_scale, min_sizes=config_param.min_sizes, max_sizes=config_param.max_sizes,
             aspect_ratios=config_param.aspect_ratios, steps=config_param.steps, normalizations=config_param.normalizations,
@@ -845,6 +837,8 @@ def main():
         print(net.to_proto(), file=f)
     #shutil.copy(train_net_file, job_dir)
 
+
+    #-------------------------------------------------------------------
     # Create test net.
     net = caffe.NetSpec()
     net.data, net.label = CreateAnnotatedDataLayer(config_param.test_data, batch_size=config_param.test_batch_size,
@@ -859,7 +853,8 @@ def main():
     net['data/bias'] = L.Bias(net[out_layer], in_place=False, **bias_kwargs)
     out_layer = 'data/bias'    
     
-    net, out_layer = core_network(net, out_layer)
+    net, out_layer, out_layer_names = CoreNetwork(config_param, net, out_layer)
+    
     mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=config_param.mbox_source_layers,
             use_batchnorm=config_param.use_batchnorm, use_scale=config_param.use_scale, min_sizes=config_param.min_sizes, max_sizes=config_param.max_sizes,
             aspect_ratios=config_param.aspect_ratios, steps=config_param.steps, normalizations=config_param.normalizations,

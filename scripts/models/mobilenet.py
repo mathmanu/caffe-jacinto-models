@@ -412,6 +412,8 @@ def mobiledetnet(net, from_layer='data', fully_conv=False, reduced=False, dilate
   #  print("top:", top)
   
   #---------------------------       
+  out_layer_names = []
+  
   #from_layer = 'relu4_1/sep'
   #out_layer = 'ctx_output????'
   #out_layer = ConvBNLayerDWSep1x1First(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=3, pad=1, stride=1, group=1, dilation=1) 
@@ -419,22 +421,27 @@ def mobiledetnet(net, from_layer='data', fully_conv=False, reduced=False, dilate
   from_layer = 'relu5_5/sep'
   out_layer = 'ctx_output1'
   out_layer = ConvBNLayerDWSep1x1First(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=3, pad=1, stride=1, group=1, dilation=1)  
-        
+  out_layer_names += [out_layer]
+  
   from_layer = 'relu6/sep'
   out_layer = 'ctx_output2'
   out_layer = ConvBNLayerDWSep1x1First(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=3, pad=1, stride=1, group=1, dilation=1) 
-        
+  out_layer_names += [out_layer]
+  
   from_layer = 'pool6'
   out_layer = 'ctx_output3'
   out_layer = ConvBNLayerDWSep1x1First(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=3, pad=1, stride=1, group=1, dilation=1)              
- 
+  out_layer_names += [out_layer]
+  
   from_layer = 'pool7'
   out_layer = 'ctx_output4'
   out_layer = ConvBNLayerDWSep1x1First(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=3, pad=1, stride=1, group=1, dilation=1)        
-
+  out_layer_names += [out_layer]
+  
   from_layer = 'pool8'
   out_layer = 'ctx_output5'
   out_layer = ConvBNLayerDWSep1x1First(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=3, pad=1, stride=1, group=1, dilation=1)        
+  out_layer_names += [out_layer]
   
-  return out_layer  
+  return out_layer, out_layer_names
  

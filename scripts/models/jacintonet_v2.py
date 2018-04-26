@@ -233,23 +233,29 @@ def jdetnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_outpu
 
    
    #---------------------------        
+   out_layer_names = []
+  
    from_layer = 'res5a_branch2b/relu'
    out_layer = 'ctx_output1'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              
- 
+   out_layer_names += [out_layer]
+   
    from_layer = 'pool6'
    out_layer = 'ctx_output2'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
+   out_layer_names += [out_layer]
+   
    from_layer = 'pool7'
    out_layer = 'ctx_output3'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
+   out_layer_names += [out_layer]
    
    from_layer = 'pool8'
    out_layer = 'ctx_output4'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
-   return out_layer
+   out_layer_names += [out_layer]
+   
+   return out_layer, out_layer_names
 
 def jdetnet21_s8(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
    upsample=False, num_intermediate=512, output_stride=16): 
@@ -298,31 +304,39 @@ def jdetnet21_s8(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
    net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
 
    #---------------------------       
+   out_layer_names = []
+   
    from_layer = 'res3a_branch2b/concat'
    out_layer = 'ctx_output1'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)  
-         
+   out_layer_names += [out_layer]
+   
    from_layer = 'res4a_branch2b/concat'
    out_layer = 'ctx_output2'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1) 
-         
+   out_layer_names += [out_layer]
+   
    from_layer = 'conv7/relu' #'res5a_branch2b/concat' #
    out_layer = 'ctx_output3'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              
- 
+   out_layer_names += [out_layer]
+   
    from_layer = 'pool6'
    out_layer = 'ctx_output4'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
+   out_layer_names += [out_layer]
+   
    from_layer = 'pool7'
    out_layer = 'ctx_output5'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
+   out_layer_names += [out_layer]
    
    from_layer = 'pool8'
    out_layer = 'ctx_output6'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
-   return out_layer  
+   out_layer_names += [out_layer]
+   
+   return out_layer, out_layer_names
 
 #To match configuration used by original SSD script
 def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
@@ -360,6 +374,8 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
      last_base_layer_name = out_layer
       
    #---------------------------     
+   out_layer_names = []
+  
    #PSP style pool down
    if ds_type == 'PSP':
      if chop_num_heads < 4:
@@ -423,45 +439,52 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
      out_layer = 'ctx_output{}'.format(reg_head_idx)
      reg_head_idx += 1
      out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
+     out_layer_names += [out_layer]
+    
      if chop_num_heads < 4:
        from_layer = 'pool6'
        out_layer = 'ctx_output{}'.format(reg_head_idx)
        reg_head_idx += 1
        out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-     
+       out_layer_names += [out_layer]
+    
      if chop_num_heads < 3:
        from_layer = 'pool7'
        out_layer = 'ctx_output{}'.format(reg_head_idx)
        reg_head_idx += 1
        out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
+       out_layer_names += [out_layer]
+    
      if chop_num_heads < 2:
        from_layer = 'pool8'
        out_layer = 'ctx_output{}'.format(reg_head_idx)
        reg_head_idx += 1
        out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-     
+       out_layer_names += [out_layer]
+    
      if chop_num_heads < 1:
        from_layer = 'pool9'
        out_layer = 'ctx_output{}'.format(reg_head_idx)
        reg_head_idx += 1
        out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-      
+       out_layer_names += [out_layer]
+    
      if stride_list[4] == 1:
        from_layer = 'pool10'
        out_layer = 'ctx_output{}'.format(reg_head_idx)
        reg_head_idx += 1
        out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
+       out_layer_names += [out_layer]
+    
      if base_nw_3_head:
        #by default 2 heads are connected in base n/w are at res3a and res5a (at the end of base n/w)
        from_layer = 'res4a_branch2b/relu'
        out_layer = 'ctx_output{}'.format(reg_head_idx)
        reg_head_idx += 1
        out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>1, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
-     return out_layer
+       out_layer_names += [out_layer]
+    
+     return out_layer, out_layer_names
    else:
      ssd_size = '512x512'
      training_type = 'SSD'
@@ -512,11 +535,12 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
        ConvBNLayer(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_outputs[idx],
            kernel_sizes[idx], pads[idx], strides[idx], lr_mult=lr_mult, bn_postfix=bn_postfix,
            scale_postfix=scale_postfix)
+       out_layer_names += [out_layer]
        from_layer = out_layer
        if one_or_two == 2:
          blk_idx = blk_idx + 1
 
-     return net
+     return out_layer, out_layer_names
    #---------------------------       
 
    
@@ -638,30 +662,38 @@ def jdetnet21_fpn(net, from_layer=None, use_batchnorm=True, use_relu=True, num_o
    net[out_layer] = L.Eltwise(net[out_layer_1x1], net[from_layer])
                               
    #---------------------------  
+   out_layer_names = []
+   
    #SSD heads start here
    from_layer = 'res4a_branch2a_plus'
    out_layer = 'ctx_output1'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)   
-      
+   out_layer_names += [out_layer]
+
    from_layer = 'res4a_branch2b_plus'
    out_layer = 'ctx_output2'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)          
+   out_layer_names += [out_layer]
    
    from_layer = 'res5a_branch2b_plus'
    out_layer = 'ctx_output3'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
- 
+   out_layer_names += [out_layer]
+   
    from_layer = 'pool6_plus'
    out_layer = 'ctx_output4'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
+   out_layer_names += [out_layer]
+   
    from_layer = 'pool7_plus'
    out_layer = 'ctx_output5'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
+   out_layer_names += [out_layer]
    
    from_layer = 'pool8'
    out_layer = 'ctx_output6'
    out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm, use_relu, num_output=num_intermediate, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)        
-
-   return out_layer
+   out_layer_names += [out_layer]
+   
+   return out_layer, out_layer_names
 

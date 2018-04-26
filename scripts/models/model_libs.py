@@ -107,15 +107,15 @@ def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
   if use_scale:
     sb_name = '{}{}{}'.format(scale_prefix, out_name, scale_postfix)
     net[sb_name] = L.Scale(net[out_layer], in_place=True, **sb_kwargs)
-    #out_layer = sb_name      
+    out_layer = sb_name      
   if use_bias:
     bias_name = '{}{}{}'.format(bias_prefix, out_name, bias_postfix)
     net[bias_name] = L.Bias(net[out_layer], in_place=True, **bias_kwargs)
-    #out_layer = bias_name      
+    out_layer = bias_name      
   if use_relu:
     relu_name = '{}/relu'.format(conv_name)
     net[relu_name] = L.ReLU(net[out_layer], in_place=True)
-    #out_layer = relu_name   
+    out_layer = relu_name   
     
   return out_layer    
     
