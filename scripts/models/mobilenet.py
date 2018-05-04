@@ -23,7 +23,7 @@ def ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=True, num_output=0
   [stride_h, stride_w] = UnpackVariable(stride, 2)
   #lower wd for dw layers as per mobilenet paper - not sure if it helps
   kwargs_conv = copy.deepcopy(kwargs_conv_grp[isFrozen])
-  decay_mult = 0.01 if group == num_output else 1.0
+  decay_mult = 0.01 if group == num_output else 1
   param = {'decay_mult': decay_mult}
   kwargs_conv['param'][0]['decay_mult'] = decay_mult
   print("conv_name: {} {}x{} {} - group={}".format(conv_name, kernel_w, kernel_h, num_output, group))

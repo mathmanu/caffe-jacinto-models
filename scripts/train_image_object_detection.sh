@@ -5,7 +5,7 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0,1" #"0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
+gpus="0,1" #"0,1,2"   #IMPORTANT: change this to "0" if you have only one GPU and adjust batch_size (below) accordingly
 
 #-------------------------------------------------------
 model_name=ssdJacintoNetV2       #ssdJacintoNetV2  #mobiledetnet-0.5     
@@ -13,14 +13,7 @@ dataset=voc0712                  #voc0712,ti-custom-cfg1,ti-custom-cfg2
 #------------------------------------------------
 
 #Download the pretrained weights
-weights_dst="training/imagenet_jacintonet11v2_iter_320000.caffemodel"
-
-if [ -f $weights_dst ]; then
-  echo "Using pretrained model $weights_dst"
-else
-  weights_src="https://github.com/tidsp/caffe-jacinto-models/blob/caffe-0.15/trained/image_classification/imagenet_jacintonet11v2/initial/imagenet_jacintonet11v2_iter_320000.caffemodel?raw=true"
-  wget $weights_src -O $weights_dst
-fi
+weights_dst="../trained/image_classification/imagenet_jacintonet11v2/initial/imagenet_jacintonet11v2_iter_320000.caffemodel"
 
 #------------------------------------------------
 #ssd-size:'512x512', '300x300','256x256'

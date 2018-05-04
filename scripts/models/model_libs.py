@@ -95,7 +95,7 @@ def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
   
   #lower wd for dw layers as per mobilenet paper - not working - harder to train
   kwargs_conv = copy.deepcopy(kwargs)
-  decay_mult = 0.01 if group == num_output else 1.0
+  decay_mult = 0.01 if group == num_output else 1
   param = {'decay_mult': decay_mult}
   kwargs_conv['param'][0]['decay_mult'] = decay_mult
   

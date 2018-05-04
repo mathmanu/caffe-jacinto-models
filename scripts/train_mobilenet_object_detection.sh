@@ -15,13 +15,6 @@ dataset=voc0712                  #voc0712,ti-custom-cfg1,ti-custom-cfg2
 #Download the pretrained weights
 weights_dst="../trained/image_classification/imagenet_mobilenet-0.5/initial/imagenet_mobilenet-0.5_iter_320000.caffemodel"
 
-if [ -f $weights_dst ]; then
-  echo "Using pretrained model $weights_dst"
-else
-  weights_src="https://github.com/tidsp/caffe-jacinto-models/blob/caffe-0.15/trained/image_classification/imagenet_jacintonet11v2/initial/imagenet_jacintonet11v2_iter_320000.caffemodel?raw=true"
-  wget $weights_src -O $weights_dst
-fi
-
 #------------------------------------------------
 #ssd-size:'512x512', '300x300','256x256', '512x256', '768x320'
 ssd_size='512x256' #'768x320'

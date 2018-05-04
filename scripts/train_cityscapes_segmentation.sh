@@ -19,15 +19,7 @@ echo Logging output to "$LOG"
 
 #------------------------------------------------
 #Download the pretrained weights
-weights_dst="training/imagenet_jacintonet11v2_iter_320000.caffemodel"
-if [ -f $weights_dst ]; then
-  echo "Using pretrained model $weights_dst"
-else
-  weights_src="https://github.com/tidsp/caffe-jacinto-models/blob/caffe-0.15/trained/image_classification/imagenet_jacintonet11v2/initial/imagenet_jacintonet11v2_iter_320000.caffemodel?raw=true"
-  wget $weights_src -O $weights_dst
-fi
-
-
+weights_dst="../trained/image_classification/imagenet_jacintonet11v2/initial/imagenet_jacintonet11v2_iter_320000.caffemodel"
 
 #-------------------------------------------------------
 #Initial training
