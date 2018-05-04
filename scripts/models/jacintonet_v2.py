@@ -486,6 +486,10 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
     
      return out_layer, out_layer_names
    else:
+     out_layer_names += ['res3a_branch2b/relu']
+     if fully_conv_at_end:
+       out_layer_names += ['fc7']
+     
      ssd_size = '512x512'
      training_type = 'SSD'
      if (ssd_size == '512x512') and (training_type == 'SSD'):
