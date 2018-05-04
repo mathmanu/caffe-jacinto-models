@@ -432,9 +432,9 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
        reg_head_idx=0
 
      reg_head_idx += 1
-
      out_layer = ConvBNLayerSSD(net, from_layer, out_layer, use_batchnorm_mbox, use_relu, num_output=num_intermediate>>first_hd_same_op_ch, kernel_size=[1,1], pad=0, stride=1, group=1, dilation=1)              
-
+     out_layer_names += [out_layer]
+     
      from_layer = last_base_layer_name 
      out_layer = 'ctx_output{}'.format(reg_head_idx)
      reg_head_idx += 1

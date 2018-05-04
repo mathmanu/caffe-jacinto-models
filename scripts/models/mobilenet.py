@@ -21,7 +21,7 @@ def ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=True, num_output=0
   [kernel_h, kernel_w] = UnpackVariable(kernel_size, 2)
   [pad_h, pad_w] = UnpackVariable(pad, 2)
   [stride_h, stride_w] = UnpackVariable(stride, 2)
-  #lower wd for dw layers as per mobilenet paper - not working - harder to train
+  #lower wd for dw layers as per mobilenet paper - not sure if it helps
   kwargs_conv = copy.deepcopy(kwargs_conv_grp[isFrozen])
   decay_mult = 0.01 if group == num_output else 1.0
   param = {'decay_mult': decay_mult}
@@ -393,12 +393,12 @@ def mobiledetnet(net, from_layer='data', fully_conv=False, reduced=False, dilate
   
   #---------------------------     
   #PSP style pool down
-  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}      
+  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
   from_layer = op_layer_name 
   out_layer = 'pool6'
   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param) 
   #--
-  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}      
+  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
   from_layer = out_layer
   out_layer = 'pool7'
   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  

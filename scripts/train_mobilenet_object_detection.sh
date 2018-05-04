@@ -5,7 +5,7 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0,1,2" #"0,1"         #IMPORTANT: change this to "0" if you have only one GPU. Adjust batch_size (below) if the GPU memory is not sufficient.
+gpus="0" #"0,1,2" #"0,1"         #IMPORTANT: change this to "0" if you have only one GPU. Adjust batch_size (below) if the GPU memory is not sufficient.
 
 #-------------------------------------------------------
 model_name=mobiledetnet-0.5      #ssdJacintoNetV2  #mobiledetnet-0.5  #mobiledetnet-1.0 
@@ -23,8 +23,8 @@ else
 fi
 
 #------------------------------------------------
-#ssd-size:'512x512', '300x300','256x256', '512x256'
-ssd_size='512x256'
+#ssd-size:'512x512', '300x300','256x256', '512x256', '768x320'
+ssd_size='512x256' #'768x320'
 
 #0:[1,2,1/2] for each reg head, 1:like orig SSD
 aspect_ratios_type=1
@@ -77,13 +77,13 @@ lr_policy="multistep"
 power=1.0
 
 #0.0005 (orignal SSD), 0.0001
-#wd of dw layers will be lowered even furter inside the script using decay_mult
+#wd of dw layers may be lowered even furter inside the script using decay_mult
 weight_decay_L2=1e-4  
 
 #0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
 log_space_steps=2
-min_ratio=15 #has not effect when log_space_steps=2 (set min_dim appropriately)
-max_ratio=90 #has not effect when log_space_steps=2 (set min_dim appropriately)
+min_ratio=10 #does not have effect when log_space_steps=2 (set min_dim appropriately instead)
+max_ratio=90 #does not have effect when log_space_steps=2 (set min_dim appropriately instead)
 
 #1:FC layer like originalk SSD, 0: no FC layer
 fully_conv_at_end=0
@@ -118,13 +118,14 @@ then
   num_test_image=4952
   num_classes=21
 
-  min_dim=512 #256
-  
-  resize_width=512
-  resize_height=256
-  crop_width=512
-  crop_height=256
-  batch_size=48    #16
+  #the name for this should actually be max_dim. -1 means the avg of the image dimenations
+  min_dim=512       #768
+
+  resize_width=512  #768
+  resize_height=256 #320
+  crop_width=512    #768
+  crop_height=256   #320
+  batch_size=32     #48 #32 #16
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
   max_iter=120000    #120000  #64000   #32000

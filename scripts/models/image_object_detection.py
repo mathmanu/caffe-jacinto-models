@@ -737,13 +737,13 @@ def main():
         config_param.steps = [16, 16, 32, 64, 128, 256]
         config_param.mbox_source_layers = out_layer_names
     if (config_param.model_name == 'ssdJacintoNetV2'):
+      config_param.mbox_source_layers = out_layer_names
       config_param.steps = []
       if config_param.ds_type == 'DFLT':
         config_param.mbox_source_layers = ['res3a_branch2b/relu', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2', 'conv10_2']
         config_param.mbox_source_layers = out_layer_names
-        
         if config_param.base_nw_3_head:
-          config_param.mbox_source_layers.append('ctx_output{}/relu'.format(len(config_param.mbox_source_layers)+1))  
+          config_param.mbox_source_layers.append('ctx_output{}/relu'.format(len(config_param.mbox_source_layers)+1))
     elif config_param.model_name == 'vgg16':
         # conv4_3 ==> 38 x 38
         # fc7 ==> 19 x 19
