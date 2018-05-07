@@ -11,14 +11,18 @@ Care has to be taken to strike the right balance between quality and speedup. We
 Please see the documentation of [tidsp/caffe-jacinto](https://github.com/tidsp/caffe-jacinto). The build procedure is same as the building of any other Caffe fork. Make sure that the following is done, before attempting to use the scripts in this directory. 
 1.  Clone caffe-jacinto. caffe-jacinto and caffe-jacinto-models should be at the same directory level. For example, if the path to this repository is /user/tomato/work/caffe-jacinto-models, then the path to caffe-jacinto should be /user/tomato/work/caffe-jacinto
 2.  Checkout the correct branch
-    *git checkout caffe-0.16*
-3.  Build caffe-jacinto. Make sure to build the libraries, tools and pycaffe. Make sure that the pycaffe folder (for example:  /user/tomato/work/caffe-jacinto/python) is in your environment variable PYTHONPATH defined in .bashrc. Also make sure that PYTHONPATH starts with a : so that the import of local folders work.
+    *git checkout caffe-0.17*
+3.  Build caffe-jacinto. Make sure to build the libraries, tools and pycaffe. See caffe-jacinto documentation for more details.
+4.  Make sure that the pycaffe folder (for example:  /user/tomato/work/caffe-jacinto/python) is in your environment variable PYTHONPATH (can add this in .bashrc if you are using bash shell). Also make sure that PYTHONPATH starts with a .: so that the import of local folders work.
 Example:<br>
-export PYTHONPATH=:/user/tomato/work/caffe-jacinto/python:$PYTHONPATH
+export PYTHONPATH=.:/user/tomato/work/caffe-jacinto/python:$PYTHONPATH
+5.  Set caffe-jacinto path (for example:  /user/tomato/work/caffe-jacinto) to your CAFFE_ROOT environment variable (can set this in .bashrc if you are using bash shell)
+Example:<br>
+export CAFFE_ROOT=.:/user/tomato/work/caffe-jacinto:$PYTHONPATH
 
 ### Installation
-* After cloning this repository, switch to the branch caffe-0.16, if it is not checked out already.
--- *git checkout caffe-0.16*
+* After cloning this repository, switch to the branch caffe-0.17, if it is not checked out already.
+-- *git checkout caffe-0.17*
 
 ### Features
 
