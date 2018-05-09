@@ -5,7 +5,7 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0,1" #"0,1,2"   #IMPORTANT: change this to "0" if you have only one GPU and adjust batch_size (below) accordingly
+gpus="0" #"0,1" #"0,1,2"   #IMPORTANT: change this to "0" if you have only one GPU and adjust batch_size (below) accordingly
 
 #-------------------------------------------------------
 model_name=ssdJacintoNetV2       #ssdJacintoNetV2  #mobiledetnet-0.5     
@@ -245,12 +245,13 @@ config_name_prev=$config_name
 #-------------------------------------------------------
 #l1 regularized training before sparsification
 stage="l1reg"
-max_iter_L1=60000
-stepvalue1_L1=30000
-stepvalue2_L1=45000
-base_lr_L1=1e-3       #1e-2    #1e-4    #1e-3
-weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter_L1.caffemodel
-l1reg_solver_param="{'type':'$type','base_lr':$base_lr_L1,'max_iter':$max_iter_L1,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1_L1,$stepvalue2_L1,$stepvalue3],\
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_"$max_iter".caffemodel
+
+max_iter=60000
+stepvalue1=30000
+stepvalue2=45000
+base_lr=1e-3       #1e-2    #1e-4    #1e-3
+l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
 'regularization_type':'L1','weight_decay':1e-5}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
@@ -269,6 +270,8 @@ config_name_prev=$config_name
 #-------------------------------------------------------
 #incremental sparsification and finetuning
 stage="sparse"
+weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
+
 #Using more than one GPU for this step gives strange results. Imbalanced accuracy between the GPUs.
 gpus="0" #"0,1,2"
 batch_size=8
@@ -276,7 +279,6 @@ lr_policy="poly"
 #set it to 4.0 for poly
 power=4.0
 base_lr=1e-3       #1e-2    #1e-4    #1e-3
-weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
 'regularization_type':'L1','weight_decay':1e-5,\
 'sparse_mode':1,'display_sparsity':2000,\
