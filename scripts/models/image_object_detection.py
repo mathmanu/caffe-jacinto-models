@@ -330,8 +330,8 @@ def main():
     config_param.crop_width = config_param.resize_width
     config_param.crop_height = config_param.resize_height
 
-    #feature stride can be 8, 16, 32. 16 provides the best radeoff
-    config_param.feature_stride = 16
+    #feature stride can be 16, 32. 32 provides the best radeoff
+    config_param.feature_stride = 32
     config_param.num_feature = 512 #number of feature channels
     config_param.threads = 4
     # The database file for training data. Created by data/VOC0712/create_data.sh
@@ -406,9 +406,11 @@ def main():
     if config_param.ds_fac == 16: 
       config_param.stride_list = [2,2,2,2,1]
       config_param.dilation_list = [1,1,1,1,2]
+      config_param.feature_stride = 16
     elif config_param.ds_fac == 32: 
       config_param.stride_list = [2,2,2,2,2]
       config_param.dilation_list = [1,1,1,1,1]
+      config_param.feature_stride = 32
    
     print("config_param.ds_fac :", config_param.ds_fac)
     print("config_param.stride_list :", config_param.stride_list)
@@ -606,7 +608,7 @@ def main():
         'normalization': config_param.normalization_mode,
         }
 
-    if config_param.feature_stride != 16:
+    if config_param.feature_stride != 16 and config_param.feature_stride != 32:
         ValueError("config_param.feature_stride {} is incorrect".format(config_param.feature_stride))
     
 
@@ -727,14 +729,16 @@ def main():
 
     net, out_layer, out_layer_names = CoreNetwork(config_param, net, out_layer)
 
+    #specifying the steps explicity can improve the accuracy slightly,
+    #but is difficult to adapt to different resolutions
     if (config_param.model_name == 'jdetnet21v2'):
-        config_param.steps = [16, 32, 64, 128]
+        config_param.steps = [] #[16, 32, 64, 128]
         config_param.mbox_source_layers = out_layer_names
     elif (config_param.model_name == 'jdetnet21v2-s8'):
-        config_param.steps = [8, 16, 32, 64, 128, 256]
+        config_param.steps = [] #[8, 16, 32, 64, 128, 256]
         config_param.mbox_source_layers = out_layer_names
     elif (config_param.model_name == 'jdetnet21v2-fpn'):
-        config_param.steps = [16, 16, 32, 64, 128, 256]
+        config_param.steps = [] #[16, 16, 32, 64, 128, 256]
         config_param.mbox_source_layers = out_layer_names
     if (config_param.model_name == 'ssdJacintoNetV2'):
       config_param.mbox_source_layers = out_layer_names
@@ -755,7 +759,7 @@ def main():
         config_param.steps = [8, 16, 32, 64, 100, 300]
     elif 'mobiledetnet' in config_param.model_name:
         config_param.mbox_source_layers = out_layer_names
-        config_param.steps = [16, 32, 64, 128, 256] #[8, 16, 32, 64, 128, 256]
+        config_param.steps = [] #[16, 32, 64, 128, 256] #[8, 16, 32, 64, 128, 256]
     else:
         print("Unknown detection network. Assuming default step sizes")
         config_param.steps = []

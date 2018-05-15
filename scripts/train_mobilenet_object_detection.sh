@@ -5,7 +5,7 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0" #"0,1,2" #"0,1"         #IMPORTANT: change this to "0" if you have only one GPU. Adjust batch_size (below) if the GPU memory is not sufficient.
+gpus="0" #"0,1" #"0,1,2"         #IMPORTANT: change this to "0" if you have only one GPU. Adjust batch_size (below) if the GPU memory is not sufficient.
 
 #-------------------------------------------------------
 model_name=mobiledetnet-0.5      #ssdJacintoNetV2  #mobiledetnet-0.5  #mobiledetnet-1.0 
@@ -16,8 +16,11 @@ dataset=voc0712                  #voc0712,ti-custom-cfg1,ti-custom-cfg2
 weights_dst="../trained/image_classification/imagenet_mobilenet-0.5/initial/imagenet_mobilenet-0.5_iter_320000.caffemodel"
 
 #------------------------------------------------
+#make sure the train_data and test_data lmdb's (below) point to the correct size dataset
+
+#------------------------------------------------
 #ssd-size:'512x512', '300x300','256x256', '512x256', '768x320'
-ssd_size='512x256' #'768x320'
+ssd_size='512x256'
 
 #0:[1,2,1/2] for each reg head, 1:like orig SSD
 aspect_ratios_type=1
@@ -73,10 +76,13 @@ power=1.0
 #wd of dw layers may be lowered even furter inside the script using decay_mult
 weight_decay_L2=1e-4  
 
-#0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
-log_space_steps=2
-min_ratio=10 #does not have effect when log_space_steps=2 (set min_dim appropriately instead)
-max_ratio=90 #does not have effect when log_space_steps=2 (set min_dim appropriately instead)
+#0:linear,1:log,2:like original SSD (min/max ratio will be recomputed)
+log_space_steps=0
+
+#does not have effect when log_space_steps=2
+#adjust these suitably to get the best accuracy
+min_ratio=5
+max_ratio=95
 
 #1:FC layer like originalk SSD, 0: no FC layer
 fully_conv_at_end=0
@@ -111,14 +117,14 @@ then
   num_test_image=4952
   num_classes=21
 
-  #the name for this should actually be max_dim. -1 means the avg of the image dimenations
-  min_dim=512       #768
+  #set to -1 to use auto mode - average of min and max dimensions
+  min_dim=-1
 
-  resize_width=512  #768
-  resize_height=256 #320
-  crop_width=512    #768
-  crop_height=256   #320
-  batch_size=32     #48 #32 #16
+  resize_width=512  
+  resize_height=256 
+  crop_width=512    
+  crop_height=256   
+  batch_size=16      #can increase this if more gpus are available
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
   max_iter=120000    #120000  #64000   #32000

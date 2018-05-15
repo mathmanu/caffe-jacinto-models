@@ -72,7 +72,7 @@ power=1.0
 #0.0005 (orignal SSD), 0.0001
 weight_decay_L2=0.0001
 
-#0:log,1:linear,2:like original SSD (min/max ratio will be recomputed)
+#0:linear,1:log,2:like original SSD (min/max ratio will be recomputed)
 log_space_steps=2
 min_ratio=10
 max_ratio=90

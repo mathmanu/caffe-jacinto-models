@@ -203,7 +203,7 @@ def jsegnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_outpu
 
 
 def jdetnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
-   upsample=False, num_intermediate=512, output_stride=16): 
+   upsample=False, num_intermediate=512, output_stride=32): 
    eltwise_final = False
    if stride_list == None:
      stride_list = [2,2,2,2,1]
@@ -258,7 +258,7 @@ def jdetnet21(net, from_layer=None, use_batchnorm=True, use_relu=True, num_outpu
    return out_layer, out_layer_names
 
 def jdetnet21_s8(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
-   upsample=False, num_intermediate=512, output_stride=16): 
+   upsample=False, num_intermediate=512, output_stride=32): 
    eltwise_final = False
    if stride_list == None:
      stride_list = [2,2,2,2,2] #[2,2,2,2,1]
@@ -340,7 +340,7 @@ def jdetnet21_s8(net, from_layer=None, use_batchnorm=True, use_relu=True, num_ou
 
 #To match configuration used by original SSD script
 def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
-   upsample=False, num_intermediate=512, output_stride=16, use_batchnorm_mbox=True, ds_type='PSP', fully_conv_at_end=True, reg_head_at_ds8=True, 
+   upsample=False, num_intermediate=512, output_stride=32, use_batchnorm_mbox=True, ds_type='PSP', fully_conv_at_end=True, reg_head_at_ds8=True, 
    concat_reg_head=False, base_nw_3_head=False, first_hd_same_op_ch=False,
    rhead_name_non_linear=False, chop_num_heads=0): 
    
@@ -550,7 +550,7 @@ def ssdJacintoNetV2(net, from_layer=None, use_batchnorm=True, use_relu=True, num
    
    
 def jdetnet21_fpn(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
-   upsample=False, num_intermediate=512, output_stride=16): 
+   upsample=False, num_intermediate=512, output_stride=32): 
    in_place = True   
    eltwise_final = False
    if stride_list == None:
