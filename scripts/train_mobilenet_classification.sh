@@ -5,6 +5,9 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
 #-------------------------------------------------------
+gpus="0,1"          #IMPORTANT: change this to "0" if you have only one GPU
+
+#-------------------------------------------------------
 model_name=mobilenet-0.5 #mobilenet-1.0
 dataset=imagenet
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
@@ -17,8 +20,6 @@ echo Logging output to "$LOG"
 #------------------------------------------------
 caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
-#-------------------------------------------------------
-gpus="0,1"          #IMPORTANT: change this to "0" if you have only one GPU
 max_iter=320000
 base_lr=0.1 #0.025 #
 type=SGD

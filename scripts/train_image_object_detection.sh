@@ -28,7 +28,7 @@ ds_fac=32
 #down sampling type: 'DFLT', 'PSP'
 ds_type='PSP'
 
-#regression head at downsamling 8 layer: 0,1 
+#regression head at downsampling 8 layer: 0,1 
 reg_head_at_ds8=1
 
 #use concat layers for regression heads
@@ -97,10 +97,16 @@ shuffle=0
 
 #sparsity will be induced gradually starting from this value
 sparsity_start_factor=0.5
+
+#"TYPE1": matching res with SSD512x512, "TYPE2": custom size
+voc0712_cfg_type="TYPE1"
+
+#use batch norm for mbox layer1:enable,0:disable
+use_batchnorm_mbox=1
+
 #-------------------------------------------------------
 if [ $dataset = "voc0712" ]
 then
-
   train_data="../../caffe-jacinto/examples/VOC0712/VOC0712_trainval_lmdb"
   test_data="../../caffe-jacinto/examples/VOC0712/VOC0712_test_lmdb"
 
@@ -110,12 +116,6 @@ then
   num_test_image=4952
   num_classes=21
 
-  min_dim=512
-  
-  resize_width=512
-  resize_height=512
-  crop_width=512
-  crop_height=512
   batch_size=16    #32    #16
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
@@ -123,16 +123,31 @@ then
   stepvalue1=60000   #60000   #32000   #16000
   stepvalue2=90000   #90000   #48000   #24000
   base_lr=1e-2       #1e-2    #1e-4    #1e-3
+ 
+  sparsity_start_factor=0.25
   
-  #use batch norm ofr mbox layer1:enable,0:disable
-  use_batchnorm_mbox=1
-
-  sparsity_start_factor=0.25 
+  if [ $voc0712_cfg_type = "TYPE1" ] 
+  then 
+    min_dim=512
+    resize_width=512
+    resize_height=512
+    crop_width=512
+    crop_height=512
+    use_batchnorm_mbox=0
+  else
+    min_dim=368
+    resize_width=768
+    resize_height=320
+    crop_width=768
+    crop_height=320
+    small_objs=1
+    ker_mbox_loc_conf=1
+    chop_num_heads=1
+    reg_head_at_ds8=0
+  fi  
 
 elif [ $dataset = "ti-custom-cfg1" ]
 then
-  #In V2 removed V153,154(part of TI Demo) and V002(anno has been corrected so no need to use VGG generated)     
- 
   train_data="../../caffe-jacinto/examples/ti-custom-cfg1/ti-custom-cfg1_trainval_lmdb"
   test_data="../../caffe-jacinto/examples/ti-custom-cfg1/ti-custom-cfg1_test_lmdb"
 
@@ -144,13 +159,14 @@ then
 
   min_dim=368
  
-  resize_width=720
-  resize_height=368
-  crop_width=720
-  crop_height=368
+  resize_width=768
+  resize_height=320
+  crop_width=768
+  crop_height=320
   use_difficult_gt=0
   small_objs=1
   ker_mbox_loc_conf=1
+  chop_num_heads=1
   batch_size=16      #32    #16
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
