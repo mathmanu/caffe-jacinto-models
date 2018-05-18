@@ -103,62 +103,67 @@ def get_labelname(labelmap, labels):
     assert found == True
   return labelnames
 
+
+def readDetsFromFile(extDetFileName='', offsetX=0, offsetY=0, scaleX=1.0,
+    scaleY=1.0, curScaleImage=''):
+  f = open(extDetFileName, 'r')
+  dets_list = list(csv.reader(f, delimiter= ' '))
+  f.close()
+  
+  labels = ['background','person','trafficsign','vehicle']  
+  detections = np.zeros(shape=(1,1,len(dets_list),7))
+   
+  for idx,row in enumerate(dets_list):
+     #print row
+     cat_idx = labels.index(row[0])
+     #print("cat_idx", cat_idx)
+     #det_label
+     detections[0,0,idx,1] = cat_idx   
+  
+     #conf
+     detections[0,0,idx,2] = float(row[15])
+     #xmin    
+     detections[0,0,idx,3] = (float(row[4]) - offsetX) / (scaleX * curScaleImage.shape[1])
+     #ymin    
+     detections[0,0,idx,4] = (float(row[5]) - offsetY) / (scaleY * curScaleImage.shape[0])
+     #xmax    
+     detections[0,0,idx,5] = (float(row[6]) - offsetX) / (scaleX * curScaleImage.shape[1])
+     #ymax    
+     detections[0,0,idx,6] = (float(row[7]) - offsetY) / (scaleY * curScaleImage.shape[0])
+     #print("detection_temp[0,0,idx,:]", detection_temp[0,0,idx,:]) 
+  #print("detection.shape", detections.shape)  
+  #print("detection.dtype", detections.dtype)  
+  #print("detection[0,0,0,:]", detections[0,0,0,:]) 
+  #print np.allclose(detections, detection_temp, atol=0.001, rtol=0.01)
+
+  return detections
+
 ##################################################################################################
 def processOneCrop(curScaleImage, transformer, net, labelmapFile, drawHandle, 
     detBBoxesCurFrame, offsetX, offsetY, scaleX, scaleY, aspectRatio, confTh,
-    externalDet=False) :
-
+    externalDet=False, extDetFileName='') :
   if externalDet == False:
     transformed_image = transformer.preprocess('data', curScaleImage)
     net.blobs['data'].data[...] = transformed_image
 
     # Forward pass.
     detections = net.forward()['detection_out']
-    #print "local detection.shape ", detections.shape
-
-    # Parse the outputs.
-    det_label = detections[0,0,:,1]
-    det_conf = detections[0,0,:,2]
-    det_xmin = detections[0,0,:,3]
-    det_ymin = detections[0,0,:,4]
-    det_xmax = detections[0,0,:,5]
-    det_ymax = detections[0,0,:,6]
-
-    print("detections.shape", detections.shape)
-    print("detections[0]", detections[0,0,0,:])
-
   else:
-    
     print("read detections from file")
-    file_name = '/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180505_JDetNet_720x368_1Gmac_53.77_ofstneg80_H720_ti_prop_demo/VIRB0002_detOp_000001_stored.txt'
-    f = open(file_name, 'r')
-    dets_list = list(csv.reader(f, delimiter= ' '))
-    f.close()
-    
-    labels = ['background','person','trafficsign','vehicle']  
-    detection_temp = np.zeros(shape=(1,1,len(dets_list),7))
-     
-    for idx,row in enumerate(dets_list):
-       #print row
-       cat_idx = labels.index(row[0])
-       #print("cat_idx", cat_idx)
-       #det_label
-       detection_temp[0,0,idx,1] = cat_idx   
-    
-       #conf
-       detection_temp[0,0,idx,2] = float(row[15])
-       #xmin
-       detection_temp[0,0,idx,3] = float(row[4])
-       #ymin
-       detection_temp[0,0,idx,4] = float(row[5])
-       #xmax
-       detection_temp[0,0,idx,5] = float(row[6])
-       #ymax
-       detection_temp[0,0,idx,6] = float(row[7])
-       #print("detection_temp[0,0,idx,:]", detection_temp[0,0,idx,:]) 
-    print("detection_temp.shape", detection_temp.shape)  
-    print np.all(detections, detection_temp)
+    detections = readDetsFromFile(extDetFileName=extDetFileName, offsetX=offsetX, offsetY=offsetY,
+        scaleX=scaleX, scaleY=scaleY,curScaleImage=curScaleImage)
 
+  print("detections.shape", detections.shape)
+  print("detections.dtype", detections.dtype)
+  print("detections[0]", detections[0,0,0,:])
+
+  # Parse the outputs.
+  det_label = detections[0,0,:,1]
+  det_conf = detections[0,0,:,2]
+  det_xmin = detections[0,0,:,3]
+  det_ymin = detections[0,0,:,4]
+  det_xmax = detections[0,0,:,5]
+  det_ymax = detections[0,0,:,6]
 
   # Get detections with confidence higher than confTh(def =0.6).
   det_label_list = det_label.astype(np.int).tolist()
@@ -192,17 +197,13 @@ def processOneCrop(curScaleImage, transformer, net, labelmapFile, drawHandle,
   top_xmax = det_xmax[top_indices]
   top_ymax = det_ymax[top_indices]
 
-  #colors = plt.cm.hsv(np.linspace(0, 1, 21)).tolist()
   colors = plt.cm.hsv(np.linspace(0, 1, 255)).tolist()
 
-  #plt.imshow(image)
-  #currentAxis = plt.gca()
-  #print "curScaleImage.shape : ", curScaleImage.shape
   for i in xrange(top_conf.shape[0]):
-    xmin = int(round(top_xmin[i] * curScaleImage.shape[1]))
-    ymin = int(round(top_ymin[i] * curScaleImage.shape[0]))
-    xmax = int(round(top_xmax[i] * curScaleImage.shape[1]))
-    ymax = int(round(top_ymax[i] * curScaleImage.shape[0]))
+    xmin = top_xmin[i] * curScaleImage.shape[1]
+    ymin = top_ymin[i] * curScaleImage.shape[0]
+    xmax = top_xmax[i] * curScaleImage.shape[1]
+    ymax = top_ymax[i] * curScaleImage.shape[0]
     score = top_conf[i]
     label = int(top_label_indices[i])
     label_name = top_labels[i]
@@ -213,14 +214,12 @@ def processOneCrop(curScaleImage, transformer, net, labelmapFile, drawHandle,
     #display score and label name
     #print "xmin, ymin, xmax, ymax", xmin, " , ", ymin," , ", xmax," , ", ymax
     #print "scaleX:scaleY ", scaleX, " , ",  scaleY
-    bbox = (int(xmin*scaleX)+offsetX, int(ymin*scaleY)+offsetY,
-        int(xmax*scaleX)+offsetX, int(ymax*scaleY)+offsetY, label, score, age)
+    #print "offsetX:Y ", offsetX, " , ",  offsetY
+    bbox = (int(round(xmin*scaleX))+offsetX, int(round(ymin*scaleY))+offsetY,
+        int(round(xmax*scaleX))+offsetX, int(round(ymax*scaleY))+offsetY, label, score, age)
     #print "bbox : ", bbox  
     # store box co-ordinates along with label and score
     detBBoxesCurFrame.append(bbox)
-    #detLabelsCurFrame.append(label)
-    #detLabelNamesCurFrame.append(label_name)
-    #detScoresCurFrame.append(score)
   
   return [drawHandle,detections]
 
@@ -247,21 +246,9 @@ def drawBoxes(params=[], detObjs=[], drawHandle=[], writeBboxMap=[],
 
   colors = plt.cm.hsv(np.linspace(0, 1, 255)).tolist()
   for idx in range(detObjs.shape[0]): 
-    #if params.enNMS:     
-    #  idxBfrNMS = pick[i] 
-    #else:
-    #  idxBfrNMS = i
-
-    #score = detScoresCurFrame[idxBfrNMS] 
-    #label = detLabelsCurFrame[idxBfrNMS] 
-    #label_name = detLabelNamesCurFrame[idxBfrNMS] 
-
     label = int(detObjs[idx][4]) 
     score = detObjs[idx][5] 
     label_name = str(get_labelname(labelmap,label)[0])
-   
-    #writeOneBox(enable=params.writeBbox, bbox=detObjs[i], label_name=label_name, 
-    #  score=score, fileHndl=detObjFileHndl, writeBboxMap=writeBboixMap)
                                                                    
     if type(params.confTh) is dict:                                
       draw_cur_reg = score > params.confTh[label_name]
@@ -298,15 +285,6 @@ def writeBoxes(params=[], detObjs=[], detObjFileHndl='', writeBboxMap=[],
     labelmap=[]):
  
   for i in range(detObjs.shape[0]): 
-    #if len(pick) > 0:
-    #  idxBfrNMS = pick[i]
-    #else:
-    #  idxBfrNMS = i
-
-    #score = detScoresCurFrame[idxBfrNMS] 
-    #label = detLabelsCurFrame[idxBfrNMS] 
-    #label_name = detLabelNamesCurFrame[idxBfrNMS]
-
     label = int(detObjs[i][4])
     score = detObjs[i][5] 
     label_name = str(get_labelname(labelmap,label)[0])
@@ -318,16 +296,9 @@ def writeBoxes(params=[], detObjs=[], detObjFileHndl='', writeBboxMap=[],
 
 ##################################################################################################
 def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjsFile='', writeBboxMap=[]):
-  #imageCoreIp = np.asarray(imageCurFrame)
-  #print 'imageCoreIp.shape :',  imageCoreIp.shape
-  #imageCoreIp = imageCoreIp/255.0
-  #imageCurFrameAry = Image.fromarray((imageCoreIp*255).astype(np.uint8))
   imageCurFrameAry = deepcopy(imageCurFrame)
 
   curFrameDrawHandle = ImageDraw.Draw(imageCurFrameAry)
-
-  #if(params.enCrop):
-  #  imageCurFrame = imageCurFrame.crop((params.cropMinX,params.cropMinY,params.cropMaxX,params.cropMaxY))
 
   if ((params.resizeW <> 0) or (params.resizeH <> 0)):
     imageCurFrame = imageCurFrame.resize((params.resizeW,params.resizeH), Image.ANTIALIAS);
@@ -343,9 +314,6 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjs
   detObjRectList =[]
   combinedDetImgOp = Image.new("RGB", (w, h))
   detBBoxesCurFrame = []
-  #detLabelsCurFrame = []
-  #detLabelNamesCurFrame = []
-  #detScoresCurFrame = []
  
   offsetX = range(0,w-tileSizeX/2, params.tileStepX)
   offsetY = range(0,h-tileSizeY/2 ,params.tileStepY)
@@ -383,9 +351,10 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjs
       else:  
         confTh=params.confTh
 
+      extDetFileName = params.externalDetpath + os.path.split(detObjsFile)[1]
       processOneCrop(imageCoreIp, transformer, net, params.labelmapFile, curTileDrawHandle, detBBoxesCurFrame,
-        offsetX=left, offsetY=top,scaleX=1.0, scaleY=1.0,
-        aspectRatio=1.0, confTh=confTh, externalDet=params.externalDet)
+        offsetX=left, offsetY=top,scaleX=1.0, scaleY=1.0, aspectRatio=1.0, confTh=confTh, 
+        externalDet=params.externalDet, extDetFileName=extDetFileName)
       combinedDetImgOp.paste(imageCrop, (left,top))
 
   detObjRectListNPArray = np.array(detBBoxesCurFrame)
@@ -482,9 +451,6 @@ def wrapMulScls(imageCurFrame, transformer, net, params,
       print "scaleIdx ", scaleIdx, scaleAry[scaleIdx]
 
   detBBoxesCurFrame = []
-  #detLabelsCurFrame = []
-  #detLabelNamesCurFrame = []
-  #detScoresCurFrame = []
   for scaleIdx in range(0,numScales):
     curScale = scaleAry[scaleIdx]
     # get the rect for cur scale in full resolution quantities
@@ -525,10 +491,12 @@ def wrapMulScls(imageCurFrame, transformer, net, params,
 
     #print('offsetXmin', offsetXmin)
     confTh=params.confTh
+    extDetFileName = params.externalDetPath + os.path.split(detObjsFile)[1]
+    print("extDetFileName: ", extDetFileName)
     [imageDetOp,raw_dets_cur_frm] =  processOneCrop(imageCoreIpCurScale, transformer, net, params.labelmapFile, curFrameDrawHandle,
         detBBoxesCurFrame, offsetX=offsetXmin, offsetY=offsetYmin,scaleX=curScaleX,
         scaleY=curScaleY, aspectRatio=aspectRatio, 
-        confTh=confTh,  externalDet=params.externalDet)
+        confTh=confTh,  externalDet=params.externalDet, extDetFileName=extDetFileName)
   
   detObjRectListNPArray = np.array(detBBoxesCurFrame)
   np.set_printoptions(precision=3)
@@ -611,7 +579,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   enCrop=False, cropMinX=0, cropMinY=0,cropMaxX=0,cropMaxY=0, writeBbox=False, 
   tileStepX=0, tileStepY=0, meanPixVec=[104.0,117.0,123.0], ipScale=1.0,
   writeBboxMap=[], decFreq=1, enObjTracker=False, start_frame_num=0,
-  maxAgeTh=8, caffe_root='', externalDet=False):    
+  maxAgeTh=8, caffe_root='', externalDet=False, externalDetPath=''):    
   ###################################################################################  
   enum_multipleTiles = 0
   enum_multipleScales = 1
@@ -651,6 +619,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
       print "maxAgeTh" , self.maxAgeTh
       print "caffe_root" , self.caffe_root
       print "externalDet", externalDet
+      print "externalDetPath", externalDetPath
       print "=================================="
 
     def override(self):  
@@ -661,7 +630,6 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
 
   ################################################ 
   params=Params()
-  #objTrackerInstance=ObjTrackerClass()
 
   params.ipFileName = ipFileName
   params.opFileName = opFileName
@@ -695,7 +663,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   params.maxAgeTh = maxAgeTh
   params.caffe_root = caffe_root
   params.externalDet = externalDet
-
+  params.externalDetPath = externalDetPath
   for idx,data in enumerate(meanPixVec):
     params.meanPixVec[idx] = data * ipScale
 
@@ -721,30 +689,32 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   os.chdir(params.caffe_root)
   print("params.caffe_root: ", os.getcwd())
   sys.path.insert(0, 'python')
-  import caffe
-  caffe.set_device(1)
-  caffe.set_mode_gpu()
+  if externalDet == False:
+    import caffe
+    caffe.set_device(1)
+    caffe.set_mode_gpu()
+  
+    print("params.deployFileName", params.deployFileName)
+    print("params.modelWeights", params.modelWeights)
+    net = caffe.Net(params.deployFileName,    # defines the structure of the model
+            params.modelWeights,  # contains the trained weights
+            caffe.TEST)   # use test mode (e.g., don't perform dropout)
 
-  print("before caffe.Net")
-  print("params.deployFileName", params.deployFileName)
-  print("params.modelWeights", params.modelWeights)
-  net = caffe.Net(params.deployFileName,    # defines the structure of the model
-          params.modelWeights,  # contains the trained weights
-          caffe.TEST)   # use test mode (e.g., don't perform dropout)
-
-  print("After caffe.Net")
-  vizCNN(vizCNNEn=False, net=net)
-  # input preprocessing: 'data' is the name of the input blob == net.inputs[0]
-  transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
-  transformer.set_transpose('data', (2, 0, 1))
-  transformer.set_mean('data', np.array(meanPixVec)) # mean pixel
-  scale_mul = ipScale * 255.0
-  #print('scale_mul: ', scale_mul)
-  transformer.set_raw_scale('data', scale_mul)  # the reference model operates on images in [0,255] range instead of [0,1]
-  transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
-
-  # set net to batch size of 1
-  net.blobs['data'].reshape(1,3,params.tileSizeH,params.tileSizeW)
+    print("After caffe.Net")
+    vizCNN(vizCNNEn=False, net=net)
+    # input preprocessing: 'data' is the name of the input blob == net.inputs[0]
+    transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
+    transformer.set_transpose('data', (2, 0, 1))
+    transformer.set_mean('data', np.array(meanPixVec)) # mean pixel
+    scale_mul = ipScale * 255.0
+    #print('scale_mul: ', scale_mul)
+    transformer.set_raw_scale('data', scale_mul)  # the reference model operates on images in [0,255] range instead of [0,1]
+    transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
+    # set net to batch size of 1
+    net.blobs['data'].reshape(1,3,params.tileSizeH,params.tileSizeW)
+  else:    
+    transformer = ''
+    net = ''
 
   isVideoIp = True
   if(os.path.splitext(params.ipFileName)[1] ==''):
