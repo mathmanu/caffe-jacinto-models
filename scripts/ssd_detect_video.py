@@ -141,9 +141,9 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
 
   #use haskey based labelmap when external det is enabled  
   hash_key_based = externalDet
-  print("detections.shape", detections.shape)
-  print("detections.dtype", detections.dtype)
-  print("detections[0]", detections[0,0,0,:])
+  #print("detections.shape", detections.shape)
+  #print("detections.dtype", detections.dtype)
+  #print("detections[0]", detections[0,0,0,:])
 
   # Parse the outputs.
   det_label = detections[0,0,:,1]
@@ -662,14 +662,13 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   plt.rcParams['image.interpolation'] = 'nearest'
   plt.rcParams['image.cmap'] = 'gray'
 
-  # Make sure that caffe is on the python path:
-  curWorDir = os.getcwd();
-  os.chdir(params.caffe_root)
-  print("params.caffe_root: ", os.getcwd())
-  sys.path.insert(0, 'python')
-
-
   if externalDet == False:
+    # Make sure that caffe is on the python path:
+    curWorDir = os.getcwd();
+    os.chdir(params.caffe_root)
+    print("params.caffe_root: ", os.getcwd())
+    sys.path.insert(0, 'python')
+
     #read label map from the labelmap file
     from google.protobuf import text_format
     from caffe.proto import caffe_pb2
