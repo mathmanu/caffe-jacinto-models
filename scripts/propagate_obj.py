@@ -1,42 +1,21 @@
 ##################################################################################################
-#
+# This file contains all the functions for Obejct Propagation functionality
 ##################################################################################################
 import numpy as np
 from nms_ti import nms_core
-
 from array import array 
 from enum import IntEnum
 from copy import deepcopy
-
+from get_labelname import get_labelname
 import pylab
 import sys, getopt
 import os
 import cv2
 
-#######################################################################################################
-#FIX_ME: This should be removed as duplicated from ssd_detect_video.py
-def get_labelname(labelmap, labels):
-  from google.protobuf import text_format
-  from caffe.proto import caffe_pb2
-  
-  num_labels = len(labelmap.item)
-  labelnames = []
-  if type(labels) is not list:
-    labels = [labels]
-  for label in labels:
-    found = False
-    for i in xrange(0, num_labels):
-      if label == labelmap.item[i].label:
-        found = True
-        labelnames.append(labelmap.item[i].display_name)
-        break
-    assert found == True
-  return labelnames
-
-
+# main funtion for object propagation
 def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
     1.0, scaleY=1.0, offsetX=0, offsetY=0, params=[], labelmap=[],
-    raw_dets_cur_frm=[]):
+    raw_dets_cur_frm=[], hash_key_based=False):
   debug_print = False
   #if overlap of tracked obj is at least have this much overlap with moderate
   #confidence detections then keep it alive
@@ -68,7 +47,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
     confThList = [None] * len(det_label_list)
     for i, det_label_cur_obj in enumerate(det_label_list): 
       if(det_label_cur_obj <> -1):
-        modConfThList[i] = modConfTh[str(get_labelname(labelmap,det_label_cur_obj)[0])] 
+        modConfThList[i] = modConfTh[str(get_labelname(labelmap,det_label_cur_obj,hash_key_based=hash_key_based)[0])] 
       else:  
         #some thing went wrong. Set conservative th
         modConfThList[i] = 1.0
@@ -78,7 +57,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
   
   top_conf = det_conf[top_indices]
   top_label_indices = det_label[top_indices].tolist()
-  top_labels = get_labelname(labelmap, top_label_indices)
+  top_labels = get_labelname(labelmap, top_label_indices, hash_key_based=hash_key_based)
   top_xmin = det_xmin[top_indices]
   top_ymin = det_ymin[top_indices]
   top_xmax = det_xmax[top_indices]
@@ -310,7 +289,7 @@ def updateWithNearestKeypointpoint(curPosX=0,curPosY=0,tlX=0,
       print "minErr: ", minErr 
   return [result, curPosX,curPosY]
 
-def shouldKeepObjAlive(params=[], detObj=[], labelmap=[]):    
+def shouldKeepObjAlive(params=[], detObj=[], labelmap=[], hash_key_based=False):    
   AGE_BASED = True
   reduceScoreTh  =0.05
   AGE_IDX = 6
@@ -327,7 +306,7 @@ def shouldKeepObjAlive(params=[], detObj=[], labelmap=[]):
     detObj[SCORE_IDX] = max(0.0, float(detObj[SCORE_IDX]-reduceScoreTh))
     if type(params.confTh) is dict:                                
       label = int(detObj[LBL_IDX]) 
-      label_name = str(get_labelname(labelmap,label)[0])
+      label_name = str(get_labelname(labelmap,label,hash_key_based=hash_key_based)[0])
       keep_obj_alive = detObj[SCORE_IDX] > params.confTh[label_name]
     else:    
       keep_obj_alive = detObj[SCORE_IDX] > params.confTh

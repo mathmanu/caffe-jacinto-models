@@ -16,12 +16,16 @@ import pylab
 import imageio
 import sys, getopt
 import os
+
+from get_labelname import get_labelname
 from propagate_obj import propagate_obj
 import csv
 
 #dflt:False
 write_boxes_afr_nms = True
 
+
+###################################################################################################
 def visualize_weights(net, layer_name, padding=4, filename=''):
     # The parameters are a list of [weights, biases]
     if layer_name in net.params:
@@ -85,23 +89,6 @@ class ARType(IntEnum):
 
 REC_WIDTH = 2
 #######################################################################################################
-def get_labelname(labelmap, labels):
-  from google.protobuf import text_format
-  from caffe.proto import caffe_pb2
-  
-  num_labels = len(labelmap.item)
-  labelnames = []
-  if type(labels) is not list:
-    labels = [labels]
-  for label in labels:
-    found = False
-    for i in xrange(0, num_labels):
-      if label == labelmap.item[i].label:
-        found = True
-        labelnames.append(labelmap.item[i].display_name)
-        break
-    assert found == True
-  return labelnames
 
 
 def readDetsFromFile(extDetFileName='', offsetX=0, offsetY=0, scaleX=1.0,
@@ -139,9 +126,8 @@ def readDetsFromFile(extDetFileName='', offsetX=0, offsetY=0, scaleX=1.0,
   return detections
 
 ##################################################################################################
-def processOneCrop(curScaleImage, transformer, net, labelmapFile, drawHandle, 
-    detBBoxesCurFrame, offsetX, offsetY, scaleX, scaleY, aspectRatio, confTh,
-    externalDet=False, extDetFileName='') :
+def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFrame, offsetX, 
+    offsetY, scaleX, scaleY, aspectRatio, confTh, externalDet=False, extDetFileName='', labelmap='') :
   if externalDet == False:
     transformed_image = transformer.preprocess('data', curScaleImage)
     net.blobs['data'].data[...] = transformed_image
@@ -153,6 +139,8 @@ def processOneCrop(curScaleImage, transformer, net, labelmapFile, drawHandle,
     detections = readDetsFromFile(extDetFileName=extDetFileName, offsetX=offsetX, offsetY=offsetY,
         scaleX=scaleX, scaleY=scaleY,curScaleImage=curScaleImage)
 
+  #use haskey based labelmap when external det is enabled  
+  hash_key_based = externalDet
   print("detections.shape", detections.shape)
   print("detections.dtype", detections.dtype)
   print("detections[0]", detections[0,0,0,:])
@@ -167,12 +155,6 @@ def processOneCrop(curScaleImage, transformer, net, labelmapFile, drawHandle,
 
   # Get detections with confidence higher than confTh(def =0.6).
   det_label_list = det_label.astype(np.int).tolist()
-  from google.protobuf import text_format
-  from caffe.proto import caffe_pb2
-  
-  file = open(labelmapFile, 'r')
-  labelmap = caffe_pb2.LabelMap()
-  text_format.Merge(str(file.read()), labelmap)
 
   #indiates age of the tracked obj. In the frame it gets detected (born) set it to 0
   age=0.0
@@ -181,7 +163,7 @@ def processOneCrop(curScaleImage, transformer, net, labelmapFile, drawHandle,
     confThList = [None] * len(det_label_list)
     for i, det_label_cur_obj in enumerate(det_label_list): 
       if(det_label_cur_obj <> -1):
-        confThList[i] = confTh[str(get_labelname(labelmap,det_label_cur_obj)[0])] 
+        confThList[i] = confTh[str(get_labelname(labelmap,det_label_cur_obj, hash_key_based=hash_key_based)[0])] 
       else:  
         #some thing went wrong. Set conservative th
         confThList[i] = 1.0
@@ -191,7 +173,7 @@ def processOneCrop(curScaleImage, transformer, net, labelmapFile, drawHandle,
   
   top_conf = det_conf[top_indices]
   top_label_indices = det_label[top_indices].tolist()
-  top_labels = get_labelname(labelmap, top_label_indices)
+  top_labels = get_labelname(labelmap, top_label_indices, hash_key_based=hash_key_based)
   top_xmin = det_xmin[top_indices]
   top_ymin = det_ymin[top_indices]
   top_xmax = det_xmax[top_indices]
@@ -242,13 +224,13 @@ def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='', w
 
 ##################################################################################################
 def drawBoxes(params=[], detObjs=[], drawHandle=[], writeBboxMap=[],
-    labelmap=[]):
+    labelmap=[], hash_key_based=False):
 
   colors = plt.cm.hsv(np.linspace(0, 1, 255)).tolist()
   for idx in range(detObjs.shape[0]): 
     label = int(detObjs[idx][4]) 
     score = detObjs[idx][5] 
-    label_name = str(get_labelname(labelmap,label)[0])
+    label_name = str(get_labelname(labelmap,label,hash_key_based=hash_key_based)[0])
                                                                    
     if type(params.confTh) is dict:                                
       draw_cur_reg = score > params.confTh[label_name]
@@ -282,12 +264,12 @@ def drawBoxes(params=[], detObjs=[], drawHandle=[], writeBboxMap=[],
   return drawHandle
 ##############################################################
 def writeBoxes(params=[], detObjs=[], detObjFileHndl='', writeBboxMap=[],
-    labelmap=[]):
+    labelmap=[], hash_key_based=False):
  
   for i in range(detObjs.shape[0]): 
     label = int(detObjs[i][4])
     score = detObjs[i][5] 
-    label_name = str(get_labelname(labelmap,label)[0])
+    label_name = str(get_labelname(labelmap,label, hash_key_based=hash_key_based)[0])
    
     writeOneBox(enable=params.writeBbox, bbox=detObjs[i], label_name=label_name, 
       score=score, fileHndl=detObjFileHndl, writeBboxMap=writeBboxMap)
@@ -295,7 +277,8 @@ def writeBoxes(params=[], detObjs=[], detObjFileHndl='', writeBboxMap=[],
   return
 
 ##################################################################################################
-def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjsFile='', writeBboxMap=[]):
+def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0,
+    detObjsFile='', writeBboxMap=[], labelmap=''):
   imageCurFrameAry = deepcopy(imageCurFrame)
 
   curFrameDrawHandle = ImageDraw.Draw(imageCurFrameAry)
@@ -352,9 +335,10 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjs
         confTh=params.confTh
 
       extDetFileName = params.externalDetpath + os.path.split(detObjsFile)[1]
-      processOneCrop(imageCoreIp, transformer, net, params.labelmapFile, curTileDrawHandle, detBBoxesCurFrame,
+      processOneCrop(imageCoreIp, transformer, net, curTileDrawHandle, detBBoxesCurFrame,
         offsetX=left, offsetY=top,scaleX=1.0, scaleY=1.0, aspectRatio=1.0, confTh=confTh, 
-        externalDet=params.externalDet, extDetFileName=extDetFileName)
+        externalDet=params.externalDet, extDetFileName=extDetFileName,
+        labelmap=labelmap)
       combinedDetImgOp.paste(imageCrop, (left,top))
 
   detObjRectListNPArray = np.array(detBBoxesCurFrame)
@@ -365,7 +349,7 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjs
     if len(detObjRectListNPArray) and params.writeBbox and ((curFrameNum%params.decFreq) == 0):
       detObjFileHndl = open(detObjsFile, "w")
       writeBoxes(params=params,detObjs=detObjRectListNPArray, detObjFileHndl=detObjFileHndl, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
       detObjFileHndl.close()
 
   pick = []
@@ -383,28 +367,21 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0, detObjs
     if len(detObjRectListNPArray) and params.writeBbox and ((curFrameNum%params.decFreq) == 0):
       detObjFileHndl = open(detObjsFile, "w")
       writeBoxes(params=params,detObjs=detObjRectListNPArray, detObjFileHndl=detObjFileHndl, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
       detObjFileHndl.close()
 
   print(' ')
   if(len(detObjRectListNPArray)):
     drawBoxes(params=params,detObjs=detObjRectListNPArray, drawHandle=curFrameDrawHandle,
-        writeBboxMap=writeBboxMap,labelmap=labelmap)
+        writeBboxMap=writeBboxMap,labelmap=labelmap,hash_key_based=params.externalDet)
   return imageCurFrameAry 
 
 ##################################################################################################
-def wrapMulScls(imageCurFrame, transformer, net, params,
-    numScales=4, curFrameNum=0, detObjsFile='', writeBboxMap=[]):
+def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNum=0, 
+    detObjsFile='', writeBboxMap=[], labelmap=''):
 
   print_frame_info= False
-  from google.protobuf import text_format
-  from caffe.proto import caffe_pb2
   
-  # load labels
-  file = open(params.labelmapFile, 'r')
-  labelmap = caffe_pb2.LabelMap()
-  text_format.Merge(str(file.read()), labelmap)
-
   if(curFrameNum == 0):
     wrapMulScls.gPoolDetObjs = np.asarray([])
 
@@ -493,10 +470,10 @@ def wrapMulScls(imageCurFrame, transformer, net, params,
     confTh=params.confTh
     extDetFileName = params.externalDetPath + os.path.split(detObjsFile)[1]
     print("extDetFileName: ", extDetFileName)
-    [imageDetOp,raw_dets_cur_frm] =  processOneCrop(imageCoreIpCurScale, transformer, net, params.labelmapFile, curFrameDrawHandle,
+    [imageDetOp,raw_dets_cur_frm] =  processOneCrop(imageCoreIpCurScale, transformer, net, curFrameDrawHandle,
         detBBoxesCurFrame, offsetX=offsetXmin, offsetY=offsetYmin,scaleX=curScaleX,
-        scaleY=curScaleY, aspectRatio=aspectRatio, 
-        confTh=confTh,  externalDet=params.externalDet, extDetFileName=extDetFileName)
+        scaleY=curScaleY, aspectRatio=aspectRatio,confTh=confTh,  externalDet=params.externalDet,
+        extDetFileName=extDetFileName, labelmap=labelmap)
   
   detObjRectListNPArray = np.array(detBBoxesCurFrame)
   np.set_printoptions(precision=3)
@@ -505,10 +482,11 @@ def wrapMulScls(imageCurFrame, transformer, net, params,
     print "======================================="
     print "curFrameDetObjs:" 
     print detObjRectListNPArray
-  if params.enObjTracker:
+  if params.enObjProp:
     wrapMulScls.gPoolDetObjs = propagate_obj(gPoolDetObjs=wrapMulScls.gPoolDetObjs, 
-        curImageFloat=imageCoreIpCurScale*255.0, curFrameNum=curFrameNum, scaleX=curScaleX, scaleY=curScaleY, offsetX=offsetXmin,
-        offsetY=offsetYmin, params=params, labelmap=labelmap, raw_dets_cur_frm=raw_dets_cur_frm)
+        curImageFloat=imageCoreIpCurScale*255.0, curFrameNum=curFrameNum, scaleX=curScaleX, 
+        scaleY=curScaleY, offsetX=offsetXmin, offsetY=offsetYmin, params=params, labelmap=labelmap,
+        raw_dets_cur_frm=raw_dets_cur_frm, hash_key_based=params.externalDet)
     if print_frame_info:
       print "trackedObjs:"
       print wrapMulScls.gPoolDetObjs
@@ -530,7 +508,7 @@ def wrapMulScls(imageCurFrame, transformer, net, params,
     if len(wrapMulScls.gPoolDetObjs) and params.writeBbox and ((curFrameNum%params.decFreq) == 0):
       detObjFileHndl = open(detObjsFile, "w")
       writeBoxes(params=params,detObjs=wrapMulScls.gPoolDetObjs, detObjFileHndl=detObjFileHndl, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
       detObjFileHndl.close()
 
   pick = []
@@ -554,12 +532,12 @@ def wrapMulScls(imageCurFrame, transformer, net, params,
     if len(wrapMulScls.gPoolDetObjs) and params.writeBbox and ((curFrameNum%params.decFreq) == 0):
       detObjFileHndl = open(detObjsFile, "w")
       writeBoxes(params=params,detObjs=wrapMulScls.gPoolDetObjs, detObjFileHndl=detObjFileHndl, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
       detObjFileHndl.close()
 
   if(len(detObjRectListNPArray)):
     drawBoxes(params=params,detObjs=wrapMulScls.gPoolDetObjs, drawHandle=curFrameDrawHandle, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
 
   if print_frame_info:
     print "======================================="
@@ -578,7 +556,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   resizeW=0, resizeH=0, enNMS=True, numScales=4, arType=0, confTh=0.6,
   enCrop=False, cropMinX=0, cropMinY=0,cropMaxX=0,cropMaxY=0, writeBbox=False, 
   tileStepX=0, tileStepY=0, meanPixVec=[104.0,117.0,123.0], ipScale=1.0,
-  writeBboxMap=[], decFreq=1, enObjTracker=False, start_frame_num=0,
+  writeBboxMap=[], decFreq=1, enObjProp=False, start_frame_num=0,
   maxAgeTh=8, caffe_root='', externalDet=False, externalDetPath=''):    
   ###################################################################################  
   enum_multipleTiles = 0
@@ -615,7 +593,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
       print "tileStepY" , self.tileStepY
       print "meanPixVec" , self.meanPixVec
       print "ipScale" , self.ipScale
-      print "enObjTracker" , self.enObjTracker
+      print "enObjProp" , self.enObjProp
       print "maxAgeTh" , self.maxAgeTh
       print "caffe_root" , self.caffe_root
       print "externalDet", externalDet
@@ -659,7 +637,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   params.tileStepY = tileStepY
   params.meanPixVec = meanPixVec
   params.ipScale = ipScale
-  params.enObjTracker = enObjTracker
+  params.enObjProp = enObjProp
   params.maxAgeTh = maxAgeTh
   params.caffe_root = caffe_root
   params.externalDet = externalDet
@@ -689,7 +667,21 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   os.chdir(params.caffe_root)
   print("params.caffe_root: ", os.getcwd())
   sys.path.insert(0, 'python')
+
+
   if externalDet == False:
+    #read label map from the labelmap file
+    from google.protobuf import text_format
+    from caffe.proto import caffe_pb2
+    
+    # load labels
+    file = open(params.labelmapFile, 'r')
+    labelmap = caffe_pb2.LabelMap()
+    print "labelmap: ", labelmap
+    text_format.Merge(str(file.read()), labelmap)
+    print "labelmap: ", labelmap
+
+
     import caffe
     caffe.set_device(1)
     caffe.set_mode_gpu()
@@ -712,7 +704,12 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
     transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
     # set net to batch size of 1
     net.blobs['data'].reshape(1,3,params.tileSizeH,params.tileSizeW)
-  else:    
+  else:   
+    #should match with label map file
+    #FIX_ME:SN, make it read form label map file
+    #labelmap = {'none_of_the_above': 0, 'person': 1, 'trafficsign': 2, 'vehicle': 3}
+    labelmap = ['none_of_the_above', 'person', 'trafficsign', 'vehicle']
+
     transformer = ''
     net = ''
 
@@ -764,11 +761,12 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
       
       if(params.tileScaleMode == enum_multipleTiles):
         combinedCurFrameOp = wrapMulTiles(imageCurFrame, transformer, net, params, 
-           curFrameNum=curFrameNum,detObjsFile=detObjsFile, writeBboxMap=writeBboxMap) 
+           curFrameNum=curFrameNum,detObjsFile=detObjsFile,
+           writeBboxMap=writeBboxMap, labelmap=labelmap) 
       else:
         combinedCurFrameOp = wrapMulScls(imageCurFrame, transformer, net, params, 
            numScales=params.numScales, curFrameNum=curFrameNum,detObjsFile=detObjsFile,
-           writeBboxMap=writeBboxMap)
+           writeBboxMap=writeBboxMap, labelmap=labelmap)
 
       if isVideoOp:
         vidOp.append_data(np.asarray(combinedCurFrameOp))
@@ -802,10 +800,12 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
 
         if(params.tileScaleMode == enum_multipleTiles):
            combinedCurFrameOp = wrapMulTiles(imageCurFrame, transformer, net, params, 
-             curFrameNum=num, detObjsFile=detObjsFile, writeBboxMap=writeBboxMap) 
+             curFrameNum=num, detObjsFile=detObjsFile,
+             writeBboxMap=writeBboxMap, labelmap=labelmap) 
         else:
            combinedCurFrameOp = wrapMulScls(imageCurFrame, transformer, net, params, 
-             numScales=params.numScales, curFrameNum=num, detObjsFile=detObjsFile, writeBboxMap=writeBboxMap)
+             numScales=params.numScales, curFrameNum=num, detObjsFile=detObjsFile,
+             writeBboxMap=writeBboxMap, labelmap=labelmap)
 
         if isVideoOp:
           vidOp.append_data(np.asarray(combinedCurFrameOp))
