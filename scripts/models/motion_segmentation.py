@@ -219,60 +219,57 @@ def main():
           
         train_proto_str = []
         if phase=='train':                 
-          if config_param.use_list: 
+          if config_param.use_image_list: 
               data_kwargs = {'name': 'data', 'ntop':2, 
                  'image_data_param': { 'source': config_param.train_data, 'batch_size': config_param.train_batch_size_in_proto, 'shuffle': False } }   
               net['data'], data_extra = L.ImageData(transform_param=config_param.train_transform_param, **data_kwargs)
-          else:
-              data_kwargs = {'name': 'data', 'ntop':2, 
-                 'data_param': { 'source': config_param.train_data, 'batch_size': config_param.train_batch_size_in_proto, 'shuffle': False } }
-              net['data'], data_extra = L.Data(transform_param=config_param.train_transform_param, **data_kwargs)
-              
-          out_layer = 'data' 
-   
-          if config_param.use_list:  
+
               label_kwargs = {'name': 'label3', 'ntop':2, 
                  'image_data_param': { 'source': config_param.train_label, 'batch_size': config_param.train_batch_size_in_proto, 'shuffle': False } }
               net['label3'], label_extra = L.ImageData(transform_param=config_param.train_transform_param, **label_kwargs)
+
+              slice_kwargs = {'name':'label_slice', 'ntop':3,
+                 'slice_param':{'axis':1}}
+              slice_tops = L.Slice(net['label3'], **slice_kwargs)
+              net['label'] = slice_tops[0]
+              net['silence'] = L.Silence(data_extra, label_extra, slice_tops[1], slice_tops[2], ntop=0)
           else:
-              label_kwargs = {'name': 'label3', 'ntop':2, 
-                 'data_param': { 'source': config_param.train_label, 'batch_size': config_param.train_batch_size_in_proto, 'shuffle': False } }
-              net['label3'], label_extra = L.Data(transform_param=config_param.train_transform_param, **label_kwargs)
+              data_kwargs = {'name': 'data', 'ntop':1, 
+                 'data_param': { 'source': config_param.train_data, 'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
+              net['data'] = L.Data(transform_param=config_param.train_transform_param, **data_kwargs)
+              
+              label_kwargs = {'name': 'label3', 'ntop':1, 
+                 'data_param': { 'source': config_param.train_label, 'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
+              net['label'] = L.Data(transform_param=config_param.train_transform_param, **label_kwargs)
 
-          slice_kwargs = {'name':'label_slice', 'ntop':3,
-             'slice_param':{'axis':1}}
-          slice_tops = L.Slice(net['label3'], **slice_kwargs)
-          net['label'] = slice_tops[0]
-
-          net['silence'] = L.Silence(data_extra, label_extra, slice_tops[1], slice_tops[2], ntop=0)
+          out_layer = 'data' 
 
         elif phase=='test':     
-          if config_param.use_list:    
+          if config_param.use_image_list:    
               data_kwargs = {'name': 'data', 'ntop':2, 
                  'image_data_param': { 'source': config_param.test_data, 'batch_size': config_param.test_batch_size_in_proto, 'shuffle': False } } 
               net['data'], data_extra = L.ImageData(transform_param=config_param.test_transform_param, **data_kwargs)
-          else:
-              data_kwargs = {'name': 'data', 'ntop':2, 
-                 'data_param': { 'source': config_param.test_data, 'batch_size': config_param.test_batch_size_in_proto, 'shuffle': False } }
-              net['data'], data_extra = L.Data(transform_param=config_param.test_transform_param, **data_kwargs)
 
-          out_layer = 'data' 
- 
-          if config_param.use_list:   
               label_kwargs = {'name': 'label3', 'ntop':2, 
                  'image_data_param': { 'source': config_param.test_label, 'batch_size': config_param.test_batch_size_in_proto, 'shuffle': False } }
               net['label3'], label_extra = L.ImageData(transform_param=config_param.test_transform_param, **label_kwargs)
+
+              slice_kwargs = {'name':'label_slice', 'ntop':3,
+                'slice_param':{'axis':1}}
+              slice_tops = L.Slice(net['label3'], **slice_kwargs)
+              net['label'] = slice_tops[0]  
+
+              net['silence'] = L.Silence(data_extra, label_extra, slice_tops[1], slice_tops[2], ntop=0)
           else:
-              label_kwargs = {'name': 'label3', 'ntop':2, 
-                 'data_param': { 'source': config_param.test_label, 'batch_size': config_param.test_batch_size_in_proto, 'shuffle': False } }
-              net['label3'], label_extra = L.Data(transform_param=config_param.test_transform_param, **label_kwargs)
+              data_kwargs = {'name': 'data', 'ntop':1, 
+                 'data_param': { 'source': config_param.test_data, 'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': False } }
+              net['data'] = L.Data(transform_param=config_param.test_transform_param, **data_kwargs)
 
-          slice_kwargs = {'name':'label_slice', 'ntop':3,
-            'slice_param':{'axis':1}}
-          slice_tops = L.Slice(net['label3'], **slice_kwargs)
-          net['label'] = slice_tops[0]  
+              label_kwargs = {'name': 'label3', 'ntop':1, 
+                 'data_param': { 'source': config_param.test_label, 'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': False } }
+              net['label'] = L.Data(transform_param=config_param.test_transform_param, **label_kwargs)
 
-          net['silence'] = L.Silence(data_extra, label_extra, slice_tops[1], slice_tops[2], ntop=0)
+          out_layer = 'data' 
 
         elif phase=='deploy':
           net['data'] = L.Input(shape=[dict(dim=[1, 3, config_param.image_height, config_param.image_width])])

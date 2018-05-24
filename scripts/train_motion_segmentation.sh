@@ -32,8 +32,8 @@ stepvalue1=60000 #60000   #32000   #16000
 stepvalue2=90000 #90000   #48000   #24000
 base_lr=1e-2     #1e-2    #1e-4    #1e-3
 
-use_image_list=1
-shuffle=1
+use_image_list=0
+shuffle=0
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
