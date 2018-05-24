@@ -8,10 +8,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import ntpath
 
-sys.path.insert(0, '/user/a0393754/work/caffe/caffe-jacinto/python')
-model_path = '/user/a0393754/work/cfar10_jnet/deploy_final_sparse_quant_jacintonet11_nobn_iter_32000.prototxt'
-pretrained_path = '/user/a0393754/work/cfar10_jnet/final_sparse_quant_jacintonet11_nobn_iter_32000.caffemodel'
-input_name = '/user/a0393754/work/cfar10_jnet/dog4_128x128.png'
+#sys.path.insert(0, '/user/a0393754/work/caffe/caffe-jacinto/python')
+model_path = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/object_detection/mobiledetnet-0.5/test_quantize/output/deploy_quantize_deploy.prototxt'
+pretrained_path = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/object_detection/mobiledetnet-0.5/test_quantize/output/deploy_quantize.caffemodel'
+input_name = '/data/mmcodec_video2_tier3/users/manu/shared/inputs/VID_20141005_182635.JPG'
 
 import caffe
 caffe.set_mode_cpu()
@@ -22,15 +22,16 @@ import math
 import string
 from google.protobuf import text_format
 
-def writeNPAryAsRaw(ipFrame, fileName, opDataType=np.float32, opQ=0):
+def writeNPAryAsRaw(ipFrame, fileName, opDataType=np.float32, opScale=1):
     if opDataType != np.float32:
-        opMult = 1<<opQ
+        opMult = opScale
         qFrame = np.rint(ipFrame * opMult)
     else:
         qFrame = ipFrame
             
     fileHandle = open(fileName, 'wb')
-    ip1DAry = np.reshape(qFrame, (1, np.prod(qFrame.shape)))
+    #ip1DAry = np.reshape(qFrame, (1, np.prod(qFrame.shape)))
+    ip1DAry = np.ndarray.flatten(qFrame)
     ip1DAry = ip1DAry.astype(opDataType)
     fileHandle.write(ip1DAry)
     fileHandle.close()
@@ -71,29 +72,46 @@ def infer():
     
     # moved image reading out from predict()
     image = cv2.imread(input_name, 1).astype(np.float32) - mean_pixel
-    layer_names=['data', 'conv1a_relu', 'fc10', 'prob']    
-    blob_names=['data', 'conv1a', 'fc10', 'prob']
-    out_blobs, net = predict(model_path, pretrained_path, image, num, blobs=blob_names)
+    image = cv2.resize(image, (512,256))
+
+    out_blobs, net = predict(model_path, pretrained_path, image, num, blobs=[])
     
-    print (out_blobs['prob'])   
+    #print(net._inputs[0])    
+    #print(net._outputs[0])
+    
+    blob_names = list(net._blob_names)
+    layer_names = list(net._layer_names)
+    blob_name_to_layer_name_dict = {}
+    for layer_idx, layer_name in enumerate(layer_names):
+        #bottom_ids = list(net._bottom_ids(layer_idx))
+        top_ids = list(net._top_ids(layer_idx))
+        top_names = [blob_names[top_id] for top_id in top_ids]
+        for top_name in top_names:
+          blob_name_to_layer_name_dict[top_name] = layer_name
        
     if 'data' in out_blobs.keys():
         writeNPAryAsRaw(out_blobs['data'], 'data'+'_uint8'+'.bin', opDataType=np.uint8, opQ=8)       
           
-    for blobName in out_blobs.keys():
-       layerIndex = blob_names.index(blobName)
-       layerName = layer_names[layerIndex]
-       print layerName, blobName
-       layerParam =  getLayerByName(net_proto, layerName)  
-       if layerParam:  
-           layer = net.layers[list(net._layer_names).index(blobName)]
-           if layerParam.quantization_param.quantize_layer_out:       
-               if layerParam.quantization_param.unsigned_layer_out:   
-                   writeNPAryAsRaw(out_blobs[blobName], blobName+'_uint8'+'.bin', opDataType=np.uint8, opQ=layerParam.quantization_param.fl_layer_out)
-               else:
-                   writeNPAryAsRaw(out_blobs[blobName], blobName+'_int8'+'.bin', opDataType=np.int8, opQ=layerParam.quantization_param.fl_layer_out)       
+    for cur_blob_idx, cur_blob_name in enumerate(net.blobs.keys()):
+       cur_blob = net.blobs[cur_blob_name]
+       cur_data = cur_blob.data
+       
+       layer_name = blob_name_to_layer_name_dict[cur_blob_name]
+       #layer_id = layer_names.index(layer_name)
+       #layer = net.layers[layer_id]
+              
+       cur_blob_name_out = cur_blob_name.replace('/','.')       
+       print(layer_name, " : ", cur_blob_name, " : ", cur_blob_name_out)
+           
+       layer_param =  getLayerByName(net_proto, layer_name)             
+       if layer_param is not None and len(layer_param.quantization_param.qparam_out)>0:       
+           opScale = layer_param.quantization_param.qparam_out[0].scale
+           if layer_param.quantization_param.qparam_out[0].unsigned_data:   
+               writeNPAryAsRaw(cur_data, cur_blob_name_out+'_uint8'+'.bin', opDataType=np.uint8, opScale=opScale)
            else:
-               writeNPAryAsRaw(out_blobs[blobName], blobName+'_float32'+'.bin', opDataType=np.float32)  
+               writeNPAryAsRaw(cur_data, cur_blob_name_out+'_int8'+'.bin', opDataType=np.int8, opScale=opScale)       
+       else:
+           writeNPAryAsRaw(cur_data, cur_blob_name_out+'_float32'+'.bin', opDataType=np.float32)  
            
 def main():
     infer()
