@@ -18,11 +18,13 @@ Example:<br>
 export PYTHONPATH=.:/user/tomato/work/caffe-jacinto/python:$PYTHONPATH
 5.  Set caffe-jacinto path (for example:  /user/tomato/work/caffe-jacinto) to your CAFFE_ROOT environment variable (can set this in .bashrc if you are using bash shell)
 Example:<br>
-export CAFFE_ROOT=.:/user/tomato/work/caffe-jacinto:$PYTHONPATH
+export CAFFE_ROOT=/user/tomato/work/caffe-jacinto
 
 ### Installation
-* After cloning this repository, switch to the branch caffe-0.17, if it is not checked out already.
--- *git checkout caffe-0.17*
+* After cloning this repository, switch to the branch caffe-0.17, if it is not checked out already.<br>
+*git checkout caffe-0.17*
+* Install the required python packages
+* Important note: lmdb package installed vis conda seems to be have an error and import is failing. If you get this error, reinstall this package via pip.
 
 ### Features
 
