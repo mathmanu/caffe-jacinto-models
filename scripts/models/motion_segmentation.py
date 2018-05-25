@@ -57,7 +57,7 @@ def main():
     config_param.remove_old_models = False
     config_param.display_sparsity = False
     
-    config_param.crop_size = 640
+    config_param.crop_size = 320
     config_param.image_width = 640
     config_param.image_height = 640
 
@@ -103,11 +103,19 @@ def main():
         config_param.__setattr__(k,args.config_param[k])
         config_param.__setitem__(k,args.config_param[k])		
               
-    config_param.train_data = "data/train-image-list.txt" if config_param.use_image_list else 'data/train-image-lmdb'
+    ''' config_param.train_data = "data/train-image-list.txt" if config_param.use_image_list else 'data/train-image-lmdb'
     config_param.train_label = "data/train-label-list.txt" if config_param.use_image_list else 'data/train-label-lmdb'    
     config_param.test_data = "data/val-image-list.txt" if config_param.use_image_list else 'data/val-image-lmdb'
+    config_param.test_label = "data/val-label-list.txt" if config_param.use_image_list else 'data/val-label-lmdb' '''
+           
+    config_param.train_data1 = "data/train-image-list1.txt" if config_param.use_image_list else 'data/train-image1-lmdb'
+    config_param.train_data2 = "data/train-image-list2.txt" if config_param.use_image_list else 'data/train-image2-lmdb'
+    config_param.train_label = "data/train-label-list.txt" if config_param.use_image_list else 'data/train-label-lmdb'
+
+    config_param.test_data1 = "data/val-image-list1.txt" if config_param.use_image_list else 'data/val-image1-lmdb'
+    config_param.test_data2 = "data/val-image-list2.txt" if config_param.use_image_list else 'data/val-image2-lmdb'
     config_param.test_label = "data/val-label-list.txt" if config_param.use_image_list else 'data/val-label-lmdb'
-                  
+       
     # Modify the job name if you want.
     config_param.base_name = config_param.config_name
     config_param.job_name = config_param.base_name
@@ -189,7 +197,7 @@ def main():
             'random_seed': 1
             }
     config_param.test_transform_param = {
-            'mirror': False,
+            'mirror': False,      
             'mean_value': [0], #specify 1 or 3 values
             'crop_size': config_param.crop_size,
             'random_seed': 1
@@ -197,8 +205,10 @@ def main():
 						
     ### Hopefully you don't need to change the following ###
     # Check file.
-    check_if_exist(config_param.train_data)
-    check_if_exist(config_param.test_data)
+    check_if_exist(config_param.train_data1)
+    check_if_exist(config_param.train_data2)
+    check_if_exist(config_param.test_data1)
+    check_if_exist(config_param.test_data2)
     check_if_exist(config_param.label_map_file)
     if config_param.pretrain_model != None:    
       check_if_exist(config_param.pretrain_model)
@@ -234,12 +244,21 @@ def main():
               net['label'] = slice_tops[0]
               net['silence'] = L.Silence(data_extra, label_extra, slice_tops[1], slice_tops[2], ntop=0)
           else:
-              data_kwargs = {'name': 'data', 'ntop':1, 
-                 'data_param': { 'source': config_param.train_data, 'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
-              net['data'] = L.Data(transform_param=config_param.train_transform_param, **data_kwargs)
-              
-              label_kwargs = {'name': 'label3', 'ntop':1, 
-                 'data_param': { 'source': config_param.train_label, 'batch_size': config_param.train_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
+
+              data_kwargs = {'name': 'data1', 'ntop':1, 
+                 'data_param': { 'source': config_param.train_data1, 'batch_size': config_param.train_batch_size_in_proto, \
+                     'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
+              net['data1'] = L.Data(transform_param=config_param.train_transform_param, **data_kwargs)
+              data_kwargs = {'name': 'data2', 'ntop':1, 
+                 'data_param': { 'source': config_param.train_data2, 'batch_size': config_param.train_batch_size_in_proto, \
+                     'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
+              net['data2'] = L.Data(transform_param=config_param.train_transform_param, **data_kwargs)
+
+              net['data'] = L.Concat(net['data1'], net['data2'], axis = 1)  #concat the two images along channels
+
+              label_kwargs = {'name': 'label', 'ntop':1, 
+                 'data_param': { 'source': config_param.train_label, 'batch_size': config_param.train_batch_size_in_proto, \
+                      'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
               net['label'] = L.Data(transform_param=config_param.train_transform_param, **label_kwargs)
 
           out_layer = 'data' 
@@ -261,12 +280,21 @@ def main():
 
               net['silence'] = L.Silence(data_extra, label_extra, slice_tops[1], slice_tops[2], ntop=0)
           else:
-              data_kwargs = {'name': 'data', 'ntop':1, 
-                 'data_param': { 'source': config_param.test_data, 'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': False } }
-              net['data'] = L.Data(transform_param=config_param.test_transform_param, **data_kwargs)
+              data_kwargs = {'name': 'data1', 'ntop':1, 
+                 'data_param': { 'source': config_param.test_data1, 'batch_size': config_param.test_batch_size_in_proto, \
+                    'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
+              net['data1'] = L.Data(transform_param=config_param.test_transform_param, **data_kwargs)
 
-              label_kwargs = {'name': 'label3', 'ntop':1, 
-                 'data_param': { 'source': config_param.test_label, 'batch_size': config_param.test_batch_size_in_proto, 'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': False } }
+              data_kwargs = {'name': 'data2', 'ntop':1, 
+                 'data_param': { 'source': config_param.test_data2, 'batch_size': config_param.test_batch_size_in_proto, \
+                    'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
+              net['data2'] = L.Data(transform_param=config_param.test_transform_param, **data_kwargs)
+
+              net['data'] = L.Concat(net['data1'], net['data2'], axis = 1)  #concat the two images along channels
+
+              label_kwargs = {'name': 'label', 'ntop':1, 
+                 'data_param': { 'source': config_param.test_label, 'batch_size': config_param.test_batch_size_in_proto, \
+                   'backend':caffe_pb2.DataParameter.DB.Value('LMDB'), 'shuffle': config_param.shuffle } }
               net['label'] = L.Data(transform_param=config_param.test_transform_param, **label_kwargs)
 
           out_layer = 'data' 

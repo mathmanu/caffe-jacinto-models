@@ -9,7 +9,7 @@ gpus="0,1" #"0,1" #"0,1,2"          #IMPORTANT: change this to "0" if you have o
 
 #-------------------------------------------------------
 model_name=jsegnet21v2
-dataset=cityscapes5
+dataset=kittimodseg
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
 #------------------------------------------------
