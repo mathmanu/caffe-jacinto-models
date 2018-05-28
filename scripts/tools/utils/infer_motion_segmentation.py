@@ -14,6 +14,7 @@ import random
 import shutil
 import imageio
 import math
+import pdb
 
 def get_arguments():
     parser = argparse.ArgumentParser()
@@ -191,15 +192,15 @@ def infer_image_folder(args, net):
     print('running inference for ', len(input_indices), ' images...');
     for input_name in input_indices:
         print(input_name, end=' ')   
-        sys.stdout.flush()         
+        # sys.stdout.flush()         
         input_blob = cv2.imread(input_name)  
         output_blob, _ = infer_blob(args, net, input_blob)  
         output_name = os.path.join(args.output, os.path.basename(input_name));
         cv2.imwrite(output_name, output_blob)
     return
     
-def eval_blob(args, net, input_blob, label_blob, confusion_matrix):
-    output_blob, label_blob = infer_blob(args, net, input_blob, label_blob)
+def eval_blob(args, net, input_blob1, input_blob2, label_blob, confusion_matrix):
+    output_blob, label_blob = infer_blob(args, net, input_blob1, input_blob2, label_blob)
         
     #for r in range(output_blob.shape[0]):
     #  for c in range(output_blob.shape[1]):
@@ -226,6 +227,7 @@ def eval_blob(args, net, input_blob, label_blob, confusion_matrix):
     
     
 def compute_accuracy(args, confusion_matrix):
+    # pdb.set_trace()
     if args.class_dict:
       selected_classes = []
       for cls in args.class_dict:
@@ -260,26 +262,37 @@ def compute_accuracy(args, confusion_matrix):
           det[c] += confusion_matrix[r][c]   
           if r == c:
             tp[r] += confusion_matrix[r][c]
-           
-    tp_total = 0
-    population_total = 0           
+
+    num_nonempty_classes = 0
+    for pop in population:
+      if pop>0:
+        num_nonempty_classes += 1
+
+    precision = np.zeros(args.num_classes)
     for cls in range(num_selected_classes):
       intersection = tp[cls]
       union = population[cls] + det[cls] - tp[cls]
       iou[cls] = (intersection / union) if union else 0
-      tp_total += tp[cls]
-      population_total += population[cls]
-    
-    #print('confusion_matrix={}'.format(confusion_matrix))
-    accuracy = tp_total / population_total
-     
-    num_nonempty_classes = 0 
-    for pop in population:
-      if pop>0:
-        num_nonempty_classes += 1
-      
+      precision[cls] = tp[cls] / (det[cls])
+
     mean_iou = np.sum(iou) / num_nonempty_classes
-    return accuracy, mean_iou, iou
+    mean_precision = np.sum(precision)/num_nonempty_classes
+    accuracy = np.sum(tp) / np.sum(population)
+
+    tp_total = 0
+    fp_total = 0
+    fn_total = 0
+    for cls in range(1,num_selected_classes):
+      tp_total += tp[cls]
+      fp_total += det[cls] - tp[cls]
+      fn_total += population[cls] - tp[cls]
+
+    #print('confusion_matrix={}'.format(confusion_matrix))
+    recall_class1 = tp_total / (tp_total + fn_total)
+    precision_class1 = tp_total / (tp_total + fp_total)
+    f1_score = 2*precision_class1*recall_class1/(precision_class1 + recall_class1+1e-10)
+
+    return accuracy, mean_iou, iou, mean_precision, f1_score
       
           
 def infer_image_list(args, net):
@@ -296,6 +309,7 @@ def infer_image_list(args, net):
         input_indices2.extend([img_name.strip()])
 
     if args.label:
+      print('Reading label files')
       with open(args.label) as label_list_file:
         for label_name in label_list_file:
           label_indices.extend([label_name.strip()])
@@ -307,11 +321,13 @@ def infer_image_list(args, net):
                     
     print('running inference for ', len(input_indices1), ' images...');
     output_name_list = []
+    # pdb.set_trace()
+    
     if not label_indices:
       for (input_name1,input_name2)  in zip(input_indices1,input_indices2):
         print(input_name1)   
         print(input_name2)   
-        sys.stdout.flush()         
+        # sys.stdout.flush()         
         input_blob1 = cv2.imread(input_name1)  
         input_blob2 = cv2.imread(input_name2)  
         output_blob,_ = infer_blob(args, net, input_blob1, input_blob2)  
@@ -321,34 +337,38 @@ def infer_image_list(args, net):
           output_name_list.append(output_name)    
     else:
       confusion_matrix = np.zeros((args.num_classes, args.num_classes+1))
-      total = len(input_indices)
+      total = len(input_indices1)
       count = 0
-      for (input_name, label_name) in zip(input_indices1, label_indices):
-        input_name_base = os.path.split(input_name)[-1]
+      for (input_name1, input_name2, label_name) in zip(input_indices1, input_indices2, label_indices):
+        input_name_base1 = os.path.split(input_name1)[-1]
+        input_name_base2 = os.path.split(input_name2)[-1]
         label_name_base = os.path.split(label_name)[-1]       
         progress = count * 100 / total 
-        print((input_name_base, label_name_base, progress))   
-        sys.stdout.flush()         
-        input_blob = cv2.imread(input_name)  
+        print((input_name_base1, input_name_base2, label_name_base, progress))   
+        sys.stdout.flush()
+        input_blob1 = cv2.imread(input_name1)  
+        input_blob2 = cv2.imread(input_name2)  
         label_blob = cv2.imread(label_name) 
-        output_blob, confusion_matrix = eval_blob(args, net, input_blob, label_blob, confusion_matrix)  
+        output_blob, confusion_matrix = eval_blob(args, net, input_blob1, input_blob2, label_blob, confusion_matrix)  
         if args.output:
-          output_name = os.path.join(args.output, os.path.basename(input_name));
+          output_name = os.path.join(args.output, os.path.basename(input_name1));
           cv2.imwrite(output_name, output_blob) 
           output_name_list.append(output_name)           
         count += 1
         if ((count % (total/20)) == 0):
-          accuracy, mean_iou, iou = compute_accuracy(args, confusion_matrix)   
-          print('pixel_accuracy={}, mean_iou={}, iou={}'.format(accuracy, mean_iou, iou))
+          accuracy, mean_iou, iou, mean_precision, f1_score = compute_accuracy(args, confusion_matrix)
+          print('pixel_accuracy={}, mean_iou={}, iou={}, mean_precision = {}, f1score = {}'.\
+                format(accuracy, mean_iou, iou, mean_precision, f1_score))
          
-      print('-------------------------------------------------------------')               
-      accuracy, mean_iou, iou = compute_accuracy(args, confusion_matrix)   
-      print('Final: pixel_accuracy={}, mean_iou={}, iou={}'.format(accuracy, mean_iou, iou))
+      print('-------------------------------------------------------------')
+      accuracy, mean_iou, iou, mean_precision, f1_score = compute_accuracy(args, confusion_matrix)
+      print('Final: pixel_accuracy={}, mean_iou={}, iou={}, mean_precision = {}, f1score = {}'.\
+                format(accuracy, mean_iou, iou, mean_precision, f1_score))
       print('-------------------------------------------------------------')    
             
     if args.output:        
       with open(os.path.join(args.output,"output_name_list.txt"), "w") as output_name_list_file:
-        print(output_name_list)
+        # print(output_name_list)
         output_name_list_file.write('\n'.join(str(line) for line in output_name_list))
     return
         
@@ -361,7 +381,7 @@ def infer_video(args, net):
     for num in range(numFrames):
         print(num, end=' ')
         sys.stdout.flush()
-        input_blob = videoIpHandle.get_data(num)   
+        input_blob = videoIpHandle.get_data(num)
         input_blob = input_blob[...,::-1]    #RGB->BGR
         output_blob = infer_blob(args, net, input_blob)     
         output_blob = output_blob[...,::-1]  #BGR->RGB            
@@ -431,6 +451,7 @@ def main():
         print('Infering Video')      
         infer_video(args, net)   
     elif input_type == 'list':
+        # pdb.set_trace()
         print('Infering list')      
         infer_image_list(args, net)             
     else:   

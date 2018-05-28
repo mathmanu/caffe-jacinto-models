@@ -29,10 +29,12 @@ weights="/user/a0132471/Files/caffe-jacinto-models/scripts/training/kittimodseg_
 
 input1="./data/test-image-list1.txt"
 input2="./data/test-image-list2.txt"
+label="./data/test-label-list.txt"
 output="output/kittimod_segmentation"
 
+
 #Generate output images for chroma blended visualization
-./tools/utils/infer_motion_segmentation.py --crop $crop --resize $resize --model $model --weights $weights --input1 $input2 --input2 $input2 --output $output --num_images $num_images --resize_back --blend --palette="$palette5"
+./tools/utils/infer_motion_segmentation.py --crop $crop --resize $resize --model $model --weights $weights --input1 $input2 --input2 $input2 --output $output --num_images $num_images --resize_back --palette="$palette5"  --label=$label --num_classes=2 #--blend
 #--palette="$palette34" --label_dict="$label_dict_20_to_34"
 
 
