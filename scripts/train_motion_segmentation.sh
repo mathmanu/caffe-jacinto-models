@@ -39,7 +39,7 @@ config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'image_width':1024,'image_height':512}" 
+'image_width':1248,'image_height':384}" 
 
 python ./models/motion_segmentation.py --config_param="$config_param" --solver_param=$solver_param
 config_name_prev=$config_name
@@ -60,7 +60,7 @@ l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'image_width':1024,'image_height':512}" 
+'image_width':1248,'image_height':384}" 
 
 python ./models/motion_segmentation.py --config_param="$config_param" --solver_param=$l1reg_solver_param
 config_name_prev=$config_name
@@ -81,7 +81,7 @@ sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'image_width':1024,'image_height':512}" 
+'image_width':1248,'image_height':384}" 
 
 python ./models/motion_segmentation.py --config_param="$config_param" --solver_param=$sparse_solver_param
 config_name_prev=$config_name
@@ -98,7 +98,7 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_p
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'image_width':1024,'image_height':512,\
+'image_width':1248,'image_height':384,\
 'num_test_image':500,'test_batch_size':10,\
 'caffe_cmd':'test','display_sparsity':1}" 
 
@@ -117,7 +117,7 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_p
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'image_width':1024,'image_height':512,\
+'image_width':1248,'image_height':384,\
 'num_test_image':500,'test_batch_size':10,\
 'caffe_cmd':'test'}" 
 

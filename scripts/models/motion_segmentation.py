@@ -300,7 +300,7 @@ def main():
           out_layer = 'data' 
 
         elif phase=='deploy':
-          net['data'] = L.Input(shape=[dict(dim=[1, 3, config_param.image_height, config_param.image_width])])
+          net['data'] = L.Input(shape=[dict(dim=[1, 6, config_param.image_height, config_param.image_width])])
           out_layer = 'data'
                          
         bias_kwargs = { #fixed value with lr_mult=0
