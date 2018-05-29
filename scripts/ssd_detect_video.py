@@ -469,7 +469,7 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
     #print('offsetXmin', offsetXmin)
     confTh=params.confTh
     extDetFileName = params.externalDetPath + os.path.split(detObjsFile)[1]
-    print("extDetFileName: ", extDetFileName)
+    #print("extDetFileName: ", extDetFileName)
     [imageDetOp,raw_dets_cur_frm] =  processOneCrop(imageCoreIpCurScale, transformer, net, curFrameDrawHandle,
         detBBoxesCurFrame, offsetX=offsetXmin, offsetY=offsetYmin,scaleX=curScaleX,
         scaleY=curScaleY, aspectRatio=aspectRatio,confTh=confTh,  externalDet=params.externalDet,

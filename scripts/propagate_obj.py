@@ -16,7 +16,7 @@ import cv2
 def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
     1.0, scaleY=1.0, offsetX=0, offsetY=0, params=[], labelmap=[],
     raw_dets_cur_frm=[], hash_key_based=False):
-  debug_print = False
+  debug_print = True
   #if overlap of tracked obj is at least have this much overlap with moderate
   #confidence detections then keep it alive
   maxOverLapTh = 0.4
@@ -35,13 +35,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
   det_ymin = raw_dets_cur_frm[0,0,:,4]
   det_xmax = raw_dets_cur_frm[0,0,:,5]
   det_ymax = raw_dets_cur_frm[0,0,:,6]
-  #det_cur_mod_conf = []
-  #moderateTh = 0.2
 
-
-  #for idx, det_conf in enumerate(det_confs):
-  #  if det_conf > moderateTh:
-  #    det_cur_mod_conf.append([det_xmins[idx],det_ymins[idx],det_xmaxs[idx],det_ymaxs[idx],det_labels[idx],det_confs[idx]])
   modConfTh = 0.12
   if type(modConfTh) is dict:
     confThList = [None] * len(det_label_list)
@@ -188,9 +182,10 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       if debug_print:
         print "=========="
         print "obj in cur scale coordinate : ", tlX, ":", tlY, ":", brX, ":", brY
-      resultTLx, tlX, tlY = updateWithNearestKeypointpoint(curPosX=tlX,curPosY=tlY,tlX=tlX,
+      
+      resultTLx, tlX, tlY = updateWithNearestKeypoint(curPosX=tlX,curPosY=tlY,tlX=tlX,
          tlY=tlY, brX=brX, brY=brY, good_old=good_old, good_new=good_new)
-      resultBRy, brX, brY = updateWithNearestKeypointpoint(curPosX=brX,curPosY=brY,tlX=tlX,
+      resultBRy, brX, brY = updateWithNearestKeypoint(curPosX=brX,curPosY=brY,tlX=tlX,
          tlY=tlY, brX=brX, brY=brY, good_old=good_old, good_new=good_new)
       
       #if both TL and BR points are having good match
@@ -249,9 +244,9 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
   
   return  trackedObjs
 
-def updateWithNearestKeypointpoint(curPosX=0,curPosY=0,tlX=0,
+def updateWithNearestKeypoint(curPosX=0,curPosY=0,tlX=0,
     tlY=0, brX=0, brY=0, p0=[],p1=[],good_old=[],good_new=[]):
-  debug_print = False
+  debug_print = True
   #if L1 dist to nearest keypoint is more than this value consider it as
   #failure
   minErrTh = 50
@@ -277,9 +272,6 @@ def updateWithNearestKeypointpoint(curPosX=0,curPosY=0,tlX=0,
     if debug_print:
       print "OF_x:", nearest_old[0] - nearest_old_match[0]  
       print "OF_y:", nearest_old[1] - nearest_old_match[1]  
-
-    #curPosX += nearest_old[0] - nearest_old_match[0]  
-    #curPosY += nearest_old[1] - nearest_old_match[1]  
 
     curPosX += nearest_old_match[0] - nearest_old[0]
     curPosY += nearest_old_match[1] - nearest_old[1] 
