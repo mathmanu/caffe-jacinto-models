@@ -45,48 +45,6 @@ python ./models/motion_segmentation.py --config_param="$config_param" --solver_p
 config_name_prev=$config_name
 
 #-------------------------------------------------------
-#l1 regularized training before sparsification
-stage="l1reg"
-weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
-
-max_iter=60000
-stepvalue1=30000
-stepvalue2=45000
-base_lr=1e-2
-
-l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
-'regularization_type':'L1','weight_decay':1e-5}"
-
-config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'image_width':1248,'image_height':384,'crop_size':320}" 
-
-python ./models/motion_segmentation.py --config_param="$config_param" --solver_param=$l1reg_solver_param
-config_name_prev=$config_name
-
-#-------------------------------------------------------
-#incremental sparsification and finetuning
-stage="sparse"
-#Using more than one GPU for this step gives strange results. Imbalanced accuracy between the GPUs.
-gpus="0" #"0,1,2"
-weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
-
-sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2],\
-'regularization_type':'L1','weight_decay':1e-5,\
-'sparse_mode':1,'display_sparsity':1000,\
-'sparsity_target':0.8,'sparsity_start_iter':1000,'sparsity_start_factor':0.60,\
-'sparsity_step_iter':1000,'sparsity_step_factor':0.01}"
-
-config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
-'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
-'image_width':1248,'image_height':384,'crop_size':320}" 
-
-python ./models/motion_segmentation.py --config_param="$config_param" --solver_param=$sparse_solver_param
-config_name_prev=$config_name
-
-#-------------------------------------------------------
 #test
 stage="test"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel

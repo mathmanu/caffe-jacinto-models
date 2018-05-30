@@ -141,7 +141,8 @@ def infer_blob(args, net, input_bgr1, input_bgr2, input_label=None):
 
     if net.blobs['data'].data.shape != input_blob.shape:
         #net.blobs['data'].data.reshape(input_blob.shape)
-        raise ValueError("Pleae correct the input shape in deploy prototxt, given: "+str(input_blob.shape)+". Expected: "+str(net.blobs['data'].data.shape))
+        raise ValueError("Pleae correct the input shape in deploy prototxt, given: "+str(input_blob.shape)+\
+                         ". Expected: "+str(net.blobs['data'].data.shape))
     
 
     blobs = None #['prob', 'argMaxOut']
@@ -279,20 +280,20 @@ def compute_accuracy(args, confusion_matrix):
     mean_precision = np.sum(precision)/num_nonempty_classes
     accuracy = np.sum(tp) / np.sum(population)
 
-    tp_total = 0
-    fp_total = 0
-    fn_total = 0
-    for cls in range(1,num_selected_classes):
-      tp_total += tp[cls]
-      fp_total += det[cls] - tp[cls]
-      fn_total += population[cls] - tp[cls]
+    #DM: This part is added in order to compare with the existing MultiNet based results
+    fp = np.zeros(args.num_classes)
+    fn = np.zeros(args.num_classes)
+    recall = np.zeros(args.num_classes)
+    f1_score = np.zeros(args.num_classes)
 
-    #print('confusion_matrix={}'.format(confusion_matrix))
-    recall_class1 = tp_total / (tp_total + fn_total)
-    precision_class1 = tp_total / (tp_total + fp_total)
-    f1_score = 2*precision_class1*recall_class1/(precision_class1 + recall_class1+1e-10)
+    for cls in range(num_selected_classes):
+        fp[cls] = det[cls] - tp[cls]
+        fn[cls] = population[cls] - tp[cls]
+        recall[cls] = tp[cls] / (tp[cls] + fn[cls])
+        f1_score[cls] = 2 * precision[cls]*recall[cls] / (precision[cls] + recall[cls] + 1e-10)
 
-    return accuracy, mean_iou, iou, mean_precision, f1_score
+
+    return accuracy, mean_iou, iou, mean_precision,  precision, recall, f1_score
       
           
 def infer_image_list(args, net):
@@ -303,7 +304,7 @@ def infer_image_list(args, net):
     with open(args.input1) as image_list_file:
       for img_name in image_list_file:
         input_indices1.extend([img_name.strip()])
-        
+   
     with open(args.input2) as image_list_file:
       for img_name in image_list_file:
         input_indices2.extend([img_name.strip()])
@@ -320,6 +321,7 @@ def infer_image_list(args, net):
       label_indices = label_indices[0:min(len(label_indices),args.num_images)]  
                     
     print('running inference for ', len(input_indices1), ' images...');
+
     output_name_list = []
     # pdb.set_trace()
     
@@ -356,14 +358,16 @@ def infer_image_list(args, net):
           output_name_list.append(output_name)           
         count += 1
         if ((count % (total/20)) == 0):
-          accuracy, mean_iou, iou, mean_precision, f1_score = compute_accuracy(args, confusion_matrix)
-          print('pixel_accuracy={}, mean_iou={}, iou={}, mean_precision = {}, f1score = {}'.\
-                format(accuracy, mean_iou, iou, mean_precision, f1_score))
+            accuracy, mean_iou, iou, mean_precision, precision,recall, f1_score = compute_accuracy(args, confusion_matrix)
+
+      print('pixel_accuracy={}, mean_iou={}, iou={},precision={},recall={}, mean_precision = {}, f1score = {},\
+           '.format(accuracy, mean_iou, iou, precision,recall,mean_precision, f1_score))
          
       print('-------------------------------------------------------------')
-      accuracy, mean_iou, iou, mean_precision, f1_score = compute_accuracy(args, confusion_matrix)
-      print('Final: pixel_accuracy={}, mean_iou={}, iou={}, mean_precision = {}, f1score = {}'.\
-                format(accuracy, mean_iou, iou, mean_precision, f1_score))
+      accuracy, mean_iou, iou, mean_precision, precision, recall,f1_score = compute_accuracy(args, confusion_matrix)
+
+      print('Final:pixel_accuracy={}, mean_iou={}, iou={},precision={},recall={}, mean_precision = {}, f1score = {},\
+          '.format(accuracy, mean_iou, iou, precision,recall,mean_precision, f1_score))
       print('-------------------------------------------------------------')    
             
     if args.output:        

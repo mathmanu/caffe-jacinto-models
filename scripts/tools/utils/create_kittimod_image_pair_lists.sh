@@ -13,7 +13,12 @@ echo Logging output to "$LOG"
 
 #-------------------------------------------------------
 #export PYTHONPATH=../../../../python:$PYTHONPATH
+
+#DM: This is for image pair
 export DATASETPATH=/user/a0132471/Files/datasets/KITTI_MOD_rgb_pair_caffe
+
+#DM: This is for {dof,rgb} pair
+#export DATASETPATH=/user/a0132471/Files/datasets/KITTI_MOD_rgb_dof_caffe
 #-------------------------------------------------------
 
 #-------------------------------------------------------
@@ -42,7 +47,7 @@ echo "creating train lists"
 find ./data/train-image-folder1 -name *.png | sort > data/train-image-list1.txt
 
 ./tools/utils/create_image_folder.py --width 1248 --height 384 --image_dir=$DATASETPATH/train/image_frame2 --search_string="*.png" --output_dir=data/train-image-folder2
-find ./data/train-image-folder1 -name *.png | sort > data/train-image-list2.txt
+find ./data/train-image-folder2 -name *.png | sort > data/train-image-list2.txt
 
 
 ./tools/utils/create_image_folder.py --label --width 1248 --height 384 --image_dir=$DATASETPATH/train/mask --search_string="*.png" --output_dir=./data/train-label-folder --label_dict="$LABEL_MAP_DICT"
@@ -56,7 +61,7 @@ echo "creating val lists"
 find ./data/test-image-folder1 -name *.png | sort > data/test-image-list1.txt
 
 ./tools/utils/create_image_folder.py --width 1248 --height 384 --image_dir=$DATASETPATH/test/image_frame2 --search_string="*.png" --output_dir=data/test-image-folder2
-find ./data/test-image-folder1 -name *.png | sort > data/test-image-list2.txt
+find ./data/test-image-folder2 -name *.png | sort > data/test-image-list2.txt
 
 
 ./tools/utils/create_image_folder.py --label --width 1248 --height 384 --image_dir=$DATASETPATH/test/mask --search_string="*.png" --output_dir=./data/test-label-folder --label_dict="$LABEL_MAP_DICT"

@@ -20,8 +20,8 @@ resize="1248 384"
 
 
 #------------------------------------------------------
-model="/user/a0132471/Files/caffe-jacinto-models/scripts/training/kittimodseg_jsegnet21v2_2018-05-25_19-51-37/initial/deploy.prototxt"
-weights="/user/a0132471/Files/caffe-jacinto-models/scripts/training/kittimodseg_jsegnet21v2_2018-05-25_19-51-37/initial/kittimodseg_jsegnet21v2_iter_120000.caffemodel"
+model="/user/a0132471/Files/caffe-jacinto-models/scripts/training/kittimodseg_jsegnet21v2_2018-05-30_18-37-37/initial/deploy.prototxt"
+weights="/user/a0132471/Files/caffe-jacinto-models/scripts/training/kittimodseg_jsegnet21v2_2018-05-30_18-37-37/initial/kittimodseg_jsegnet21v2_iter_100000.caffemodel"
 
 #Infer
 #input="input/sample"
@@ -34,7 +34,7 @@ output="output/kittimod_segmentation"
 
 
 #Generate output images for chroma blended visualization
-./tools/utils/infer_motion_segmentation.py --crop $crop --resize $resize --model $model --weights $weights --input1 $input2 --input2 $input2 --output $output --num_images $num_images --resize_back --palette="$palette5"  --label=$label --num_classes=2 #--blend
+./tools/utils/infer_motion_segmentation.py --crop $crop --resize $resize --model $model --weights $weights --input1 $input1 --input2 $input2 --output $output --num_images $num_images --resize_back --palette="$palette5"  --num_classes=2 --label=$label # --blend  
 #--palette="$palette34" --label_dict="$label_dict_20_to_34"
 
 

@@ -57,7 +57,7 @@ def main():
     config_param.remove_old_models = False
     config_param.display_sparsity = False
     
-    config_param.crop_size = 320
+    config_param.crop_size = 512
     config_param.image_width = 640
     config_param.image_height = 640
 
@@ -302,6 +302,8 @@ def main():
         elif phase=='deploy':
           net['data'] = L.Input(shape=[dict(dim=[1, 6, config_param.image_height, config_param.image_width])])
           out_layer = 'data'
+          #print('height:'+ str(config_param.image_height))                 
+          #print('width:' + str(config_param.image_width))
                          
         bias_kwargs = { #fixed value with lr_mult=0
             'param': [dict(lr_mult=0, decay_mult=0)],
@@ -365,7 +367,7 @@ def main():
         net_param.name = '{}_deploy'.format(config_param.model_name)
         net_param.input.extend(['data'])
         net_param.input_shape.extend([
-            caffe_pb2.BlobShape(dim=[1, 3, config_param.image_height, config_param.image_width])])
+            caffe_pb2.BlobShape(dim=[1, 6, config_param.image_height, config_param.image_width])])
         print(net_param, file=f)
     if config_param.save_dir!=config_param.job_dir:        
       shutil.copy(config_param.deploy_net_file, config_param.job_dir)
