@@ -87,15 +87,18 @@ class ARType(IntEnum):
   AR_W_SAME_AS_DESC_W = 1
   AR_PRESERVE = 2
 
-REC_WIDTH = 2
+REC_WIDTH = 1 #2
 #######################################################################################################
 
 
 def readDetsFromFile(extDetFileName='', offsetX=0, offsetY=0, scaleX=1.0,
     scaleY=1.0, curScaleImage=''):
-  f = open(extDetFileName, 'r')
-  dets_list = list(csv.reader(f, delimiter= ' '))
-  f.close()
+
+  dets_list = []
+  if os.path.isfile(extDetFileName):
+    f = open(extDetFileName, 'r')
+    dets_list = list(csv.reader(f, delimiter= ' '))
+    f.close()
   
   labels = ['background','person','trafficsign','vehicle']  
   detections = np.zeros(shape=(1,1,len(dets_list),7))
@@ -140,7 +143,7 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
         scaleX=scaleX, scaleY=scaleY,curScaleImage=curScaleImage)
 
   #use haskey based labelmap when external det is enabled  
-  hash_key_based = externalDet
+  lblMapHashBased = externalDet
   #print("detections.shape", detections.shape)
   #print("detections.dtype", detections.dtype)
   #print("detections[0]", detections[0,0,0,:])
@@ -163,7 +166,7 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
     confThList = [None] * len(det_label_list)
     for i, det_label_cur_obj in enumerate(det_label_list): 
       if(det_label_cur_obj <> -1):
-        confThList[i] = confTh[str(get_labelname(labelmap,det_label_cur_obj, hash_key_based=hash_key_based)[0])] 
+        confThList[i] = confTh[str(get_labelname(labelmap,det_label_cur_obj, lblMapHashBased=lblMapHashBased)[0])] 
       else:  
         #some thing went wrong. Set conservative th
         confThList[i] = 1.0
@@ -173,7 +176,7 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
   
   top_conf = det_conf[top_indices]
   top_label_indices = det_label[top_indices].tolist()
-  top_labels = get_labelname(labelmap, top_label_indices, hash_key_based=hash_key_based)
+  top_labels = get_labelname(labelmap, top_label_indices, lblMapHashBased=lblMapHashBased)
   top_xmin = det_xmin[top_indices]
   top_ymin = det_ymin[top_indices]
   top_xmax = det_xmax[top_indices]
@@ -224,13 +227,13 @@ def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='', w
 
 ##################################################################################################
 def drawBoxes(params=[], detObjs=[], drawHandle=[], writeBboxMap=[],
-    labelmap=[], hash_key_based=False):
+    labelmap=[], lblMapHashBased=False):
 
   colors = plt.cm.hsv(np.linspace(0, 1, 255)).tolist()
   for idx in range(detObjs.shape[0]): 
     label = int(detObjs[idx][4]) 
     score = detObjs[idx][5] 
-    label_name = str(get_labelname(labelmap,label,hash_key_based=hash_key_based)[0])
+    label_name = str(get_labelname(labelmap,label,lblMapHashBased=lblMapHashBased)[0])
                                                                    
     if type(params.confTh) is dict:                                
       draw_cur_reg = score > params.confTh[label_name]
@@ -264,12 +267,12 @@ def drawBoxes(params=[], detObjs=[], drawHandle=[], writeBboxMap=[],
   return drawHandle
 ##############################################################
 def writeBoxes(params=[], detObjs=[], detObjFileHndl='', writeBboxMap=[],
-    labelmap=[], hash_key_based=False):
+    labelmap=[], lblMapHashBased=False):
  
   for i in range(detObjs.shape[0]): 
     label = int(detObjs[i][4])
     score = detObjs[i][5] 
-    label_name = str(get_labelname(labelmap,label, hash_key_based=hash_key_based)[0])
+    label_name = str(get_labelname(labelmap,label, lblMapHashBased=lblMapHashBased)[0])
    
     writeOneBox(enable=params.writeBbox, bbox=detObjs[i], label_name=label_name, 
       score=score, fileHndl=detObjFileHndl, writeBboxMap=writeBboxMap)
@@ -349,7 +352,7 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0,
     if len(detObjRectListNPArray) and params.writeBbox and ((curFrameNum%params.decFreq) == 0):
       detObjFileHndl = open(detObjsFile, "w")
       writeBoxes(params=params,detObjs=detObjRectListNPArray, detObjFileHndl=detObjFileHndl, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, lblMapHashBased=params.externalDet)
       detObjFileHndl.close()
 
   pick = []
@@ -367,13 +370,13 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0,
     if len(detObjRectListNPArray) and params.writeBbox and ((curFrameNum%params.decFreq) == 0):
       detObjFileHndl = open(detObjsFile, "w")
       writeBoxes(params=params,detObjs=detObjRectListNPArray, detObjFileHndl=detObjFileHndl, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, lblMapHashBased=params.externalDet)
       detObjFileHndl.close()
 
   print(' ')
   if(len(detObjRectListNPArray)):
     drawBoxes(params=params,detObjs=detObjRectListNPArray, drawHandle=curFrameDrawHandle,
-        writeBboxMap=writeBboxMap,labelmap=labelmap,hash_key_based=params.externalDet)
+        writeBboxMap=writeBboxMap,labelmap=labelmap,lblMapHashBased=params.externalDet)
   return imageCurFrameAry 
 
 ##################################################################################################
@@ -483,10 +486,12 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
     print "curFrameDetObjs:" 
     print detObjRectListNPArray
   if params.enObjProp:
+    opFilenameWOExt, fileExt = os.path.splitext(params.opFileName)
     wrapMulScls.gPoolDetObjs = propagate_obj(gPoolDetObjs=wrapMulScls.gPoolDetObjs, 
         curImageFloat=imageCoreIpCurScale*255.0, curFrameNum=curFrameNum, scaleX=curScaleX, 
         scaleY=curScaleY, offsetX=offsetXmin, offsetY=offsetYmin, params=params, labelmap=labelmap,
-        raw_dets_cur_frm=raw_dets_cur_frm, hash_key_based=params.externalDet)
+        raw_dets_cur_frm=raw_dets_cur_frm, lblMapHashBased=params.externalDet,
+        opFilenameWOExt=opFilenameWOExt)
     if print_frame_info:
       print "trackedObjs:"
       print wrapMulScls.gPoolDetObjs
@@ -508,7 +513,7 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
     if len(wrapMulScls.gPoolDetObjs) and params.writeBbox and ((curFrameNum%params.decFreq) == 0):
       detObjFileHndl = open(detObjsFile, "w")
       writeBoxes(params=params,detObjs=wrapMulScls.gPoolDetObjs, detObjFileHndl=detObjFileHndl, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, lblMapHashBased=params.externalDet)
       detObjFileHndl.close()
 
   pick = []
@@ -532,12 +537,12 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
     if len(wrapMulScls.gPoolDetObjs) and params.writeBbox and ((curFrameNum%params.decFreq) == 0):
       detObjFileHndl = open(detObjsFile, "w")
       writeBoxes(params=params,detObjs=wrapMulScls.gPoolDetObjs, detObjFileHndl=detObjFileHndl, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, lblMapHashBased=params.externalDet)
       detObjFileHndl.close()
 
   if(len(detObjRectListNPArray)):
     drawBoxes(params=params,detObjs=wrapMulScls.gPoolDetObjs, drawHandle=curFrameDrawHandle, 
-        writeBboxMap=writeBboxMap, labelmap=labelmap, hash_key_based=params.externalDet)
+        writeBboxMap=writeBboxMap, labelmap=labelmap, lblMapHashBased=params.externalDet)
 
   if print_frame_info:
     print "======================================="
@@ -662,9 +667,9 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   plt.rcParams['image.interpolation'] = 'nearest'
   plt.rcParams['image.cmap'] = 'gray'
 
+  curWorDir = os.getcwd();
   if externalDet == False:
     # Make sure that caffe is on the python path:
-    curWorDir = os.getcwd();
     os.chdir(params.caffe_root)
     print("params.caffe_root: ", os.getcwd())
     sys.path.insert(0, 'python')

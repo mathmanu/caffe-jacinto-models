@@ -15,8 +15,8 @@ import cv2
 # main funtion for object propagation
 def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
     1.0, scaleY=1.0, offsetX=0, offsetY=0, params=[], labelmap=[],
-    raw_dets_cur_frm=[], hash_key_based=False):
-  debug_print = True
+    raw_dets_cur_frm=[], lblMapHashBased=False, opFilenameWOExt=''):
+  debug_print = False
   #if overlap of tracked obj is at least have this much overlap with moderate
   #confidence detections then keep it alive
   maxOverLapTh = 0.4
@@ -41,7 +41,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
     confThList = [None] * len(det_label_list)
     for i, det_label_cur_obj in enumerate(det_label_list): 
       if(det_label_cur_obj <> -1):
-        modConfThList[i] = modConfTh[str(get_labelname(labelmap,det_label_cur_obj,hash_key_based=hash_key_based)[0])] 
+        modConfThList[i] = modConfTh[str(get_labelname(labelmap,det_label_cur_obj,lblMapHashBased=lblMapHashBased)[0])] 
       else:  
         #some thing went wrong. Set conservative th
         modConfThList[i] = 1.0
@@ -51,14 +51,20 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
   
   top_conf = det_conf[top_indices]
   top_label_indices = det_label[top_indices].tolist()
-  top_labels = get_labelname(labelmap, top_label_indices, hash_key_based=hash_key_based)
+  top_labels = get_labelname(labelmap, top_label_indices, lblMapHashBased=lblMapHashBased)
   top_xmin = det_xmin[top_indices]
   top_ymin = det_ymin[top_indices]
   top_xmax = det_xmax[top_indices]
   top_ymax = det_ymax[top_indices]
 
-  #print "cur scale image size: W: ", frame_gray.shape[1], "H:", frame_gray.shape[0]
+  #exprimental. Doesn't help
+  if False:
+    top_xmin = np.clip(top_xmin,0,1.0)
+    top_ymin = np.clip(top_ymin,0,1.0)
+    top_xmax = np.clip(top_xmax,0,1.0)
+    top_ymax = np.clip(top_ymax,0,1.0)
 
+  #print "cur scale image size: W: ", frame_gray.shape[1], "H:", frame_gray.shape[0]
   top_xmin = top_xmin * frame_gray.shape[1]
   top_ymin = top_ymin * frame_gray.shape[0]
   top_xmax = top_xmax * frame_gray.shape[1]
@@ -113,18 +119,40 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
     for idx, detObj in enumerate(objPoolInCurScale ):
       if debug_print: 
         print "XLeft-XRight: ", int(detObj[0]), ":", int(detObj[2]),
-        print "YTop-YBot   : ", int(detObj[1]),":", int(detObj[3])
+        print "YTop-YBot   : ", int(detObj[1]),":", int(detObj[3]),
       
       #initalize all pixels to zero (picture completely black)
       mask_detObjs = np.zeros(propagate_obj.old_gray.shape,np.uint8)
 
+      #clip boxes which are outside pic boundary. 
+      detObj[0] = np.clip(detObj[0],0,frame_gray.shape[1])
+      detObj[2] = np.clip(detObj[2],0,frame_gray.shape[1])
+      
+      detObj[1] = np.clip(detObj[1],0,frame_gray.shape[0])
+      detObj[3] = np.clip(detObj[3],0,frame_gray.shape[0])
+
       mask_detObjs[int(detObj[1]):int(detObj[3]),int(detObj[0]):int(detObj[2])] = 1
       areaCurObj = (detObj[2]-detObj[0]) *  (detObj[3]-detObj[1])
       if debug_print: 
-        print "areaCurObj: ", areaCurObj 
+        print "areaCurObj: ", areaCurObj
+
       # params for ShiTomasi corner detection
+      # OpenCV has a function, cv2.goodFeaturesToTrack(). It finds N strongest corners in the image by
+      # Shi-Tomasi method (or Harris Corner Detection, if you specify it). As usual, image should be a 
+      # grayscale image. Then you specify number of corners you want to find. Then you specify the 
+      # quality level, which is a value between 0-1, which denotes the minimum quality of corner below
+      # which everyone is rejected. Then we provide the minimum euclidean distance between corners detected.
+      # With all these informations, the function finds corners in the image. All corners below quality 
+      # level are rejected. Then it sorts the remaining corners based on quality in the descending order.
+      # Then function takes first strongest corner, throws away all the nearby corners in the range of
+      # minimum distance and returns N strongest corners.
+
       maxCornersCurObj = 100 #100
-      minDisanceCurObj = int(max(min(areaCurObj/24,16),4))
+      #keep min distance between  minDistTnMin and minDistTnMax.
+      #also make it depend on area
+      minDistThMin = 4
+      minDistThMax = 8
+      minDisanceCurObj = int(np.clip(areaCurObj/24,minDistThMin,minDistThMax))
       feature_params = dict( maxCorners = maxCornersCurObj,  #100
                              qualityLevel = 0.1,             #0.3
                              minDistance = minDisanceCurObj, #7
@@ -216,6 +244,8 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       else:  
         if debug_print:
           print "obj propogation failed!!"
+          print "resultTLx", resultTLx
+          print "resultBRy", resultBRy
       if debug_print:  
         print "=========="
 
@@ -226,8 +256,8 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       print "trackedObjs.shape: ", trackedObjs.shape
       print "trackedObjs: ", trackedObjs 
 
-    draw_tracks = True
-    if draw_tracks and good_old.size:
+    debug_draw_tracks = False
+    if debug_draw_tracks and good_old.size:
       # draw the tracks
       # Create a mask image for drawing purposes
       mask = np.zeros_like(curImage)
@@ -237,16 +267,18 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
         mask = cv2.line(mask, (a,b),(c,d), color[i].tolist(), 2)
         imageForViz = cv2.circle(curImage,(a,b),5,color[i].tolist(),-1)
       imageForViz= cv2.add(imageForViz,mask)
-      cv2.imwrite('./debug/debug_{}.png'.format(str(curFrameNum)),imageForViz)
+      cv2.imwrite('{}_debug_{}.png'.format(opFilenameWOExt,str(curFrameNum)),imageForViz)
   
   # Now update the previous frame
   propagate_obj.old_gray = frame_gray.copy()
   
   return  trackedObjs
 
+# update cur <x,y> position by moving it as per OF of nearest keypoint
+# <x,y> = <x,y> + <OF_nkp_x,OF_nkp_y>
 def updateWithNearestKeypoint(curPosX=0,curPosY=0,tlX=0,
     tlY=0, brX=0, brY=0, p0=[],p1=[],good_old=[],good_new=[]):
-  debug_print = True
+  debug_print = False
   #if L1 dist to nearest keypoint is more than this value consider it as
   #failure
   minErrTh = 50
@@ -281,7 +313,7 @@ def updateWithNearestKeypoint(curPosX=0,curPosY=0,tlX=0,
       print "minErr: ", minErr 
   return [result, curPosX,curPosY]
 
-def shouldKeepObjAlive(params=[], detObj=[], labelmap=[], hash_key_based=False):    
+def shouldKeepObjAlive(params=[], detObj=[], labelmap=[], lblMapHashBased=False):    
   AGE_BASED = True
   reduceScoreTh  =0.05
   AGE_IDX = 6
@@ -298,7 +330,7 @@ def shouldKeepObjAlive(params=[], detObj=[], labelmap=[], hash_key_based=False):
     detObj[SCORE_IDX] = max(0.0, float(detObj[SCORE_IDX]-reduceScoreTh))
     if type(params.confTh) is dict:                                
       label = int(detObj[LBL_IDX]) 
-      label_name = str(get_labelname(labelmap,label,hash_key_based=hash_key_based)[0])
+      label_name = str(get_labelname(labelmap,label,lblMapHashBased=lblMapHashBased)[0])
       keep_obj_alive = detObj[SCORE_IDX] > params.confTh[label_name]
     else:    
       keep_obj_alive = detObj[SCORE_IDX] > params.confTh
@@ -366,9 +398,11 @@ def findBestOverlap(trackedBox=[], top_conf=[], top_label_indices=[], top_xmin=[
 
       if overlap > max_overlap:
         max_overlap = overlap
+        bestMatchedBox = [cand_x1,cand_y1,cand_x2,cand_y2]
 
   if debug_print:
     print "max_overlap: ", max_overlap
     print "=================="
-  return max_overlap    
+    print bestMatchedBox 
+  return max_overlap   
 

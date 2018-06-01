@@ -1,5 +1,5 @@
-def get_labelname(labelmap, labels, hash_key_based=False):
-  if hash_key_based == False:
+def get_labelname(labelmap, labels, lblMapHashBased=False):
+  if lblMapHashBased == False:
     num_labels = len(labelmap.item)
     labelnames = []
     if type(labels) is not list:
