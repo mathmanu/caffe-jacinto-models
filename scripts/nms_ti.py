@@ -43,8 +43,8 @@ def findOverlap(boxes, oIdx, iIdx, olMode='area_box_under_sup', verbose=0):
     print "iou, ", iou
   return iou
 
-def nms_core(boxes, olTh, selected, age_based_check=False, testMode=False):
-  verbose = 0
+def nms_core(boxes, olTh, selected, age_based_check=False, testMode=False,
+    enObjPropExp=False, verbose=0):
   if age_based_check:
     sorted_indices = np.argsort(boxes[:,5]-boxes[:,6])   
   else:
@@ -75,12 +75,19 @@ def nms_core(boxes, olTh, selected, age_based_check=False, testMode=False):
       for iIdx in range(oIdx+1,len(boxes)):
         #let oIdx suppress only if it has same label as iIdx
         if boxes[iIdx,4] == boxes[oIdx,4]:
-          if (verbose > 0):
-            print "========================"
-            print "oIdx,iIdx", oIdx, iIdx
           ol = findOverlap(boxes, oIdx, iIdx, olMode='area_box_under_sup', verbose=False)
           suppress[iIdx] = suppress[iIdx] or (ol>olTh)
-          if (verbose > 0) and suppress[iIdx]:
+          if (verbose > 0) and (ol>olTh):
+            print "========================"
+            print "oIdx is suppressing iIdx", oIdx, iIdx
+            print(boxes[oIdx,5], "is suppressing", boxes[iIdx,5])
+
+          #if oBox is suppressing iBox then take age from iBox
+          #FIX_ME: Make it conditional on flag from config file
+          if (ol>olTh) and enObjPropExp:
+            boxes[oIdx,6] =  boxes[iIdx,6]
+
+          if (verbose > 1) and suppress[iIdx]:
             print "oIdx,iIdx", oIdx, iIdx
             print "boxes[oIdx]"
             print boxes[oIdx]

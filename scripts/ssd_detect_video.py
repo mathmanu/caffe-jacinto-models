@@ -23,7 +23,8 @@ import csv
 
 #dflt:False
 write_boxes_afr_nms = True
-
+#0,1
+nms_verbose=0
 
 ###################################################################################################
 def visualize_weights(net, layer_name, padding=4, filename=''):
@@ -87,7 +88,7 @@ class ARType(IntEnum):
   AR_W_SAME_AS_DESC_W = 1
   AR_PRESERVE = 2
 
-REC_WIDTH = 1 #2
+REC_WIDTH = 2 #1
 #######################################################################################################
 
 
@@ -161,6 +162,9 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
 
   #indiates age of the tracked obj. In the frame it gets detected (born) set it to 0
   age=0.0
+  #indicates whether current object is part of strog track or not. Gets used
+  #by ObjProp
+  strng_trk=0
   
   if type(confTh) is dict:
     confThList = [None] * len(det_label_list)
@@ -201,7 +205,8 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
     #print "scaleX:scaleY ", scaleX, " , ",  scaleY
     #print "offsetX:Y ", offsetX, " , ",  offsetY
     bbox = (int(round(xmin*scaleX))+offsetX, int(round(ymin*scaleY))+offsetY,
-        int(round(xmax*scaleX))+offsetX, int(round(ymax*scaleY))+offsetY, label, score, age)
+        int(round(xmax*scaleX))+offsetX, int(round(ymax*scaleY))+offsetY,
+        label, score, age, strng_trk)
     #print "bbox : ", bbox  
     # store box co-ordinates along with label and score
     detBBoxesCurFrame.append(bbox)
@@ -209,7 +214,8 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
   return [drawHandle,detections]
 
 ##################################################################################################
-def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='', writeBboxMap=[]):
+def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='',
+    writeBboxMap=[], age=0):
   if enable:
     # KITTI benchmarking format
     #map to category specified in writeBboxMap
@@ -220,25 +226,33 @@ def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='', w
       if label_name == xlation[0]:
         label_name = xlation[1]
 
-    newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} \n'.format(label_name,
-      bbox[0],bbox[1],bbox[2], bbox[3], score)
+    newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} {} \n'.format(label_name,
+      bbox[0],bbox[1],bbox[2], bbox[3], score, age)
     #print "newLine: ", newLine
     fileHndl.write(newLine)
 
 ##################################################################################################
 def drawBoxes(params=[], detObjs=[], drawHandle=[], writeBboxMap=[],
     labelmap=[], lblMapHashBased=False):
-
+  #FIX_ME:SN. Propage_obj.py also defines. Unify.
+  STRNG_TRK_IDX = 7
   colors = plt.cm.hsv(np.linspace(0, 1, 255)).tolist()
   for idx in range(detObjs.shape[0]): 
     label = int(detObjs[idx][4]) 
     score = detObjs[idx][5] 
+    age = detObjs[idx][6]
+    strng_trk= detObjs[idx][STRNG_TRK_IDX]
     label_name = str(get_labelname(labelmap,label,lblMapHashBased=lblMapHashBased)[0])
                                                                    
     if type(params.confTh) is dict:                                
       draw_cur_reg = score > params.confTh[label_name]
     else:    
       draw_cur_reg = score > params.confTh
+
+    #FIX_ME: Take it from config file
+    #if age is young then choose only if score is high
+    if (age <= 3) and params.enObjPropExp: 
+      draw_cur_reg = (strng_trk==1)
 
     if draw_cur_reg: 
       display_txt = '%.3s: %.2f'%(label_name[:4], score)
@@ -272,10 +286,20 @@ def writeBoxes(params=[], detObjs=[], detObjFileHndl='', writeBboxMap=[],
   for i in range(detObjs.shape[0]): 
     label = int(detObjs[i][4])
     score = detObjs[i][5] 
+    age = detObjs[i][6] 
+    strng_trk = detObjs[i][7] 
     label_name = str(get_labelname(labelmap,label, lblMapHashBased=lblMapHashBased)[0])
-   
-    writeOneBox(enable=params.writeBbox, bbox=detObjs[i], label_name=label_name, 
-      score=score, fileHndl=detObjFileHndl, writeBboxMap=writeBboxMap)
+
+    writeThisBox = True
+    #FIX_ME: Take it from config file
+    #if age is young then choose only if score is high
+    if (age <= 3) and (strng_trk == False) and params.enObjPropExp:
+      writeThisBox = False
+    
+    if writeThisBox:
+      writeOneBox(enable=params.writeBbox, bbox=detObjs[i], label_name=label_name, 
+        score=score, fileHndl=detObjFileHndl, writeBboxMap=writeBboxMap,
+        age=age)
    
   return
 
@@ -361,7 +385,9 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0,
   if(params.enNMS):
     nmsTh = 0.45 #0.5
     #print detObjRectListNPArray 
-    detObjRectListNPArray = nms_core(detObjRectListNPArray, nmsTh, pick, age_based_check=False, testMode=False)
+    detObjRectListNPArray = nms_core(detObjRectListNPArray, nmsTh, pick,
+        age_based_check=False, testMode=False,
+        enObjPropExp=params.enObjPropExp, verbose=nms_verbose)
     print (len(detObjRectListNPArray )),
     print detObjRectListNPArray,
 
@@ -481,10 +507,12 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
   detObjRectListNPArray = np.array(detBBoxesCurFrame)
   np.set_printoptions(precision=3)
   np.set_printoptions(suppress=True)
+  
   if print_frame_info:
     print "======================================="
     print "curFrameDetObjs:" 
     print detObjRectListNPArray
+  
   if params.enObjProp:
     opFilenameWOExt, fileExt = os.path.splitext(params.opFileName)
     wrapMulScls.gPoolDetObjs = propagate_obj(gPoolDetObjs=wrapMulScls.gPoolDetObjs, 
@@ -492,9 +520,11 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
         scaleY=curScaleY, offsetX=offsetXmin, offsetY=offsetYmin, params=params, labelmap=labelmap,
         raw_dets_cur_frm=raw_dets_cur_frm, lblMapHashBased=params.externalDet,
         opFilenameWOExt=opFilenameWOExt)
+    
     if print_frame_info:
       print "trackedObjs:"
       print wrapMulScls.gPoolDetObjs
+    
     #propogate detected objs from prev frame to current frame
     if len(wrapMulScls.gPoolDetObjs) > 0 and len(detObjRectListNPArray) > 0:
       wrapMulScls.gPoolDetObjs = np.concatenate((detObjRectListNPArray, wrapMulScls.gPoolDetObjs), axis=0)
@@ -522,7 +552,9 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
     print " Objs bef,afr NMS, %d " % (len(wrapMulScls.gPoolDetObjs )),
   if(params.enNMS and len(wrapMulScls.gPoolDetObjs)):
     nmsTh = 0.45 #0.5
-    wrapMulScls.gPoolDetObjs = nms_core(wrapMulScls.gPoolDetObjs, nmsTh, pick, age_based_check=True, testMode=False)    
+    wrapMulScls.gPoolDetObjs = nms_core(wrapMulScls.gPoolDetObjs, nmsTh, pick,
+        age_based_check=True, testMode=False,
+        enObjPropExp=params.enObjPropExp, verbose=nms_verbose)    
     wrapMulScls.gPoolDetObjs = np.array(wrapMulScls.gPoolDetObjs)
     if print_frame_info:
       print "type(wrapMulScls.gPoolDetObjs): ", type(wrapMulScls.gPoolDetObjs)
@@ -562,7 +594,8 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   enCrop=False, cropMinX=0, cropMinY=0,cropMaxX=0,cropMaxY=0, writeBbox=False, 
   tileStepX=0, tileStepY=0, meanPixVec=[104.0,117.0,123.0], ipScale=1.0,
   writeBboxMap=[], decFreq=1, enObjProp=False, start_frame_num=0,
-  maxAgeTh=8, caffe_root='', externalDet=False, externalDetPath=''):    
+  maxAgeTh=8, caffe_root='', externalDet=False, externalDetPath='',
+  enObjPropExp=False):    
   ###################################################################################  
   enum_multipleTiles = 0
   enum_multipleScales = 1
@@ -599,6 +632,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
       print "meanPixVec" , self.meanPixVec
       print "ipScale" , self.ipScale
       print "enObjProp" , self.enObjProp
+      print "enObjPropExp" , self.enObjPropExp
       print "maxAgeTh" , self.maxAgeTh
       print "caffe_root" , self.caffe_root
       print "externalDet", externalDet
@@ -643,6 +677,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   params.meanPixVec = meanPixVec
   params.ipScale = ipScale
   params.enObjProp = enObjProp
+  params.enObjPropExp = enObjPropExp
   params.maxAgeTh = maxAgeTh
   params.caffe_root = caffe_root
   params.externalDet = externalDet

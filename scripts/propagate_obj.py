@@ -2,7 +2,6 @@
 # This file contains all the functions for Obejct Propagation functionality
 ##################################################################################################
 import numpy as np
-from nms_ti import nms_core
 from array import array 
 from enum import IntEnum
 from copy import deepcopy
@@ -12,20 +11,19 @@ import sys, getopt
 import os
 import cv2
 
-# main funtion for object propagation
-def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
-    1.0, scaleY=1.0, offsetX=0, offsetY=0, params=[], labelmap=[],
-    raw_dets_cur_frm=[], lblMapHashBased=False, opFilenameWOExt=''):
-  debug_print = False
-  #if overlap of tracked obj is at least have this much overlap with moderate
-  #confidence detections then keep it alive
-  maxOverLapTh = 0.4
-  AGE_IDX = 6
-  SCORE_IDX = 5
-  LBL_IDX = 4
-  curImage = curImageFloat.astype('uint8')
-  frame_gray = cv2.cvtColor(curImage, cv2.COLOR_BGR2GRAY)
+debugPrintObjProp = False
+debugPrintKeyPoints = False
+debugDrawTracks =  False
+debugPrintFindOL = False
 
+
+AGE_IDX = 6
+SCORE_IDX = 5
+LBL_IDX = 4
+STRNG_TRK_IDX = 7
+
+def getObjsAboveScore(modConfTh=0.12, labelmap='', lblMapHashBased=False,
+    raw_dets_cur_frm='', W=0, H=0):
   ##prune low score detections
   #print "local detection.shape ", raw_dets_cur_frm.shape
   ## Parse the outputs.
@@ -36,7 +34,6 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
   det_xmax = raw_dets_cur_frm[0,0,:,5]
   det_ymax = raw_dets_cur_frm[0,0,:,6]
 
-  modConfTh = 0.12
   if type(modConfTh) is dict:
     confThList = [None] * len(det_label_list)
     for i, det_label_cur_obj in enumerate(det_label_list): 
@@ -57,18 +54,38 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
   top_xmax = det_xmax[top_indices]
   top_ymax = det_ymax[top_indices]
 
-  #exprimental. Doesn't help
-  if False:
-    top_xmin = np.clip(top_xmin,0,1.0)
-    top_ymin = np.clip(top_ymin,0,1.0)
-    top_xmax = np.clip(top_xmax,0,1.0)
-    top_ymax = np.clip(top_ymax,0,1.0)
-
   #print "cur scale image size: W: ", frame_gray.shape[1], "H:", frame_gray.shape[0]
-  top_xmin = top_xmin * frame_gray.shape[1]
-  top_ymin = top_ymin * frame_gray.shape[0]
-  top_xmax = top_xmax * frame_gray.shape[1]
-  top_ymax = top_ymax * frame_gray.shape[0]
+  top_xmin = top_xmin * W
+  top_ymin = top_ymin * H
+  top_xmax = top_xmax * W
+  top_ymax = top_ymax * H
+
+  return [top_conf, top_label_indices, top_xmin, top_ymin, top_xmax, top_ymax] 
+
+# main funtion for object propagation
+def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
+    1.0, scaleY=1.0, offsetX=0, offsetY=0, params=[], labelmap=[],
+    raw_dets_cur_frm=[], lblMapHashBased=False, opFilenameWOExt=''):
+  #if overlap of tracked obj is at least have this much overlap with moderate
+  #confidence detections then keep it alive
+  maxOverLapTh = 0.4
+  curImage = curImageFloat.astype('uint8')
+  frame_gray = cv2.cvtColor(curImage, cv2.COLOR_BGR2GRAY)
+
+  if params.enObjPropExp:
+    modConfTh = 0.15
+    #for strong tracks, continue trackign if it find match with 0.12
+    modConfThForStrngTrk = 0.12
+  else:  
+    modConfTh = 0.12
+
+  top_conf, top_label_indices, top_xmin, top_ymin, top_xmax, top_ymax = getObjsAboveScore(modConfTh=modConfTh,
+      labelmap=labelmap, lblMapHashBased=lblMapHashBased,
+      raw_dets_cur_frm=raw_dets_cur_frm, W=frame_gray.shape[1],
+      H=frame_gray.shape[0])
+
+  top_conf_strngTrk, top_label_indices_strngTrk, top_xmin_strngTrk, top_ymin_strngTrk, top_xmax_strngTrk, top_ymax_strngTrk = getObjsAboveScore(modConfTh=modConfThForStrngTrk, labelmap=labelmap, lblMapHashBased=lblMapHashBased, raw_dets_cur_frm=raw_dets_cur_frm,
+      W=frame_gray.shape[1], H=frame_gray.shape[0])
 
   #det_cur_mod_conf= np.array(det_cur_mod_conf)
   #print "after pruning with moderate score",  det_cur_mod_conf.shape
@@ -100,7 +117,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
     #bbox = (int(xmin*scaleX)+offsetX, int(ymin*scaleY)+offsetY, int(xmax*scaleX)+offsetX, int(ymax*scaleY)+offsetY, label, score)
     #Get det objs from full image to current scale by reversing the above
     #process
-    if debug_print:
+    if debugPrintObjProp:
       print "gPoolDetObjs: "  
       print gPoolDetObjs
     objPoolInCurScale = gPoolDetObjs.copy()
@@ -109,15 +126,17 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       objPoolInCurScale[idx][1] = (objPoolInCurScale[idx][1] - offsetY) / scaleY
       objPoolInCurScale[idx][2] = (objPoolInCurScale[idx][2] - offsetX) / scaleX
       objPoolInCurScale[idx][3] = (objPoolInCurScale[idx][3] - offsetY) / scaleY
+      if(detObj[SCORE_IDX] > 0.55) and params.enObjPropExp: 
+        detObj[STRNG_TRK_IDX] = 1
 
-    if debug_print:
+    if debugPrintObjProp:
       print "objPoolInCurScale: "  
       print objPoolInCurScale
 
     p0_init_done = False
     p0 = None
     for idx, detObj in enumerate(objPoolInCurScale ):
-      if debug_print: 
+      if debugPrintObjProp: 
         print "XLeft-XRight: ", int(detObj[0]), ":", int(detObj[2]),
         print "YTop-YBot   : ", int(detObj[1]),":", int(detObj[3]),
       
@@ -133,7 +152,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
 
       mask_detObjs[int(detObj[1]):int(detObj[3]),int(detObj[0]):int(detObj[2])] = 1
       areaCurObj = (detObj[2]-detObj[0]) *  (detObj[3]-detObj[1])
-      if debug_print: 
+      if debugPrintObjProp: 
         print "areaCurObj: ", areaCurObj
 
       # params for ShiTomasi corner detection
@@ -154,12 +173,12 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       minDistThMax = 8
       minDisanceCurObj = int(np.clip(areaCurObj/24,minDistThMin,minDistThMax))
       feature_params = dict( maxCorners = maxCornersCurObj,  #100
-                             qualityLevel = 0.1,             #0.3
+                             qualityLevel = 0.01,            #0.05, 0.1,0.3
                              minDistance = minDisanceCurObj, #7
                              blockSize = 7 )
       p0_curObj = cv2.goodFeaturesToTrack(propagate_obj.old_gray, mask = mask_detObjs, **feature_params)
       if p0_curObj is None:
-        if debug_print: 
+        if debugPrintObjProp: 
           print "no key point found on det objs"
       elif p0_init_done:
         p0 = np.concatenate((p0, p0_curObj), axis=0)
@@ -167,7 +186,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
         p0_init_done = True
         p0 = p0_curObj
 
-    if debug_print:
+    if debugPrintObjProp:
       print "gPoolDetObjs.dtype: ", gPoolDetObjs.dtype
       print "gPoolDetObjs.shape: ", gPoolDetObjs.shape
       print "gPoolDetObjs: ", gPoolDetObjs
@@ -177,7 +196,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
     if p0 is not None:
       p1, st, err = cv2.calcOpticalFlowPyrLK(propagate_obj.old_gray, frame_gray, p0, None, **lk_params)
     
-      if debug_print:
+      if debugPrintObjProp:
         #print "p1.dtype: ", p1.dtype
         #print "p1.shape: ", p1.shape
         print "p1: ", p1
@@ -188,7 +207,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       good_new = p1[st==1]
       good_old = p0[st==1]
 
-      if debug_print:
+      if debugPrintObjProp:
         print "good_old ", good_old
 
     trackedObjsList = []
@@ -207,7 +226,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       tlY = (tlY - offsetY) / scaleY
       brY = (brY - offsetY) / scaleY
 
-      if debug_print:
+      if debugPrintObjProp:
         print "=========="
         print "obj in cur scale coordinate : ", tlX, ":", tlY, ":", brX, ":", brY
       
@@ -218,15 +237,19 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       
       #if both TL and BR points are having good match
       if resultTLx and resultBRy: 
-        if debug_print:
+        if debugPrintObjProp:
           print "obj propogation successfull!"
           print "propogated obj in cur scale coordicates: ", tlX, ":", tlY, ":", brX, ":", brY
 
         trackedBoxCurScale = [tlX, tlY, brX, brY, float(detObj[LBL_IDX]), detObj[SCORE_IDX], detObj[AGE_IDX]]
-        maxOverLap = findBestOverlap(trackedBox=trackedBoxCurScale, top_conf=top_conf, top_label_indices=top_label_indices, 
+        if detObj[STRNG_TRK_IDX] == 1:
+          maxOverLap = findBestOverlap(trackedBox=trackedBoxCurScale, top_conf=top_conf_strngTrk, top_label_indices=top_label_indices_strngTrk, 
+            top_xmin=top_xmin_strngTrk, top_ymin=top_ymin_strngTrk, top_xmax=top_xmax_strngTrk, top_ymax=top_ymax_strngTrk)
+        else:  
+          maxOverLap = findBestOverlap(trackedBox=trackedBoxCurScale, top_conf=top_conf, top_label_indices=top_label_indices, 
             top_xmin=top_xmin, top_ymin=top_ymin, top_xmax=top_xmax, top_ymax=top_ymax)
 
-        if (maxOverLap < maxOverLapTh) and debug_print:
+        if (maxOverLap < maxOverLapTh) and debugPrintObjProp:
           print "maxOverLap: ", maxOverLap 
           print "But object removed due to less overlap with moderate detectios in frame num: ", curFrameNum
       
@@ -239,25 +262,24 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
 
         keep_obj_alive = shouldKeepObjAlive(params=params, detObj=detObj, labelmap=labelmap)    
         if keep_obj_alive and (maxOverLap>=maxOverLapTh):
-          trackedBox = [tlX, tlY, brX, brY, float(detObj[LBL_IDX]), detObj[SCORE_IDX], detObj[AGE_IDX]]
+          trackedBox = [tlX, tlY, brX, brY, float(detObj[LBL_IDX]), detObj[SCORE_IDX], detObj[AGE_IDX], detObj[STRNG_TRK_IDX]]
           trackedObjsList.append(trackedBox) 
       else:  
-        if debug_print:
+        if debugPrintObjProp:
           print "obj propogation failed!!"
           print "resultTLx", resultTLx
           print "resultBRy", resultBRy
-      if debug_print:  
+      if debugPrintObjProp:  
         print "=========="
 
     trackedObjs = np.asarray(trackedObjsList)
     
-    if debug_print:
+    if debugPrintObjProp:
       print "trackedObjs.dtype: ", trackedObjs.dtype
       print "trackedObjs.shape: ", trackedObjs.shape
       print "trackedObjs: ", trackedObjs 
 
-    debug_draw_tracks = False
-    if debug_draw_tracks and good_old.size:
+    if debugDrawTracks and good_old.size:
       # draw the tracks
       # Create a mask image for drawing purposes
       mask = np.zeros_like(curImage)
@@ -278,7 +300,6 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
 # <x,y> = <x,y> + <OF_nkp_x,OF_nkp_y>
 def updateWithNearestKeypoint(curPosX=0,curPosY=0,tlX=0,
     tlY=0, brX=0, brY=0, p0=[],p1=[],good_old=[],good_new=[]):
-  debug_print = False
   #if L1 dist to nearest keypoint is more than this value consider it as
   #failure
   minErrTh = 50
@@ -301,7 +322,7 @@ def updateWithNearestKeypoint(curPosX=0,curPosY=0,tlX=0,
 
   if matchFoundTL and (minErr < minErrTh):      
     #adjust TL with OF of best match   
-    if debug_print:
+    if debugPrintKeyPoints:
       print "OF_x:", nearest_old[0] - nearest_old_match[0]  
       print "OF_y:", nearest_old[1] - nearest_old_match[1]  
 
@@ -309,16 +330,13 @@ def updateWithNearestKeypoint(curPosX=0,curPosY=0,tlX=0,
     curPosY += nearest_old_match[1] - nearest_old[1] 
     result = True
   else: 
-    if debug_print:
+    if debugPrintKeyPoints:
       print "minErr: ", minErr 
   return [result, curPosX,curPosY]
 
 def shouldKeepObjAlive(params=[], detObj=[], labelmap=[], lblMapHashBased=False):    
   AGE_BASED = True
-  reduceScoreTh  =0.05
-  AGE_IDX = 6
-  SCORE_IDX = 5
-  LBL_IDX = 4
+  reduceScoreTh  = 0.05
 
   if AGE_BASED:
     #increase age for each year(frame)
@@ -327,6 +345,7 @@ def shouldKeepObjAlive(params=[], detObj=[], labelmap=[], lblMapHashBased=False)
   else: #score based.score gets reduced with each passing year (frame)
     #reduce score of tracked objects to give more preference to objs in
     #the currnt frame also it will make sure objs will die after few frames
+    #didn't work better than AGE_BASED
     detObj[SCORE_IDX] = max(0.0, float(detObj[SCORE_IDX]-reduceScoreTh))
     if type(params.confTh) is dict:                                
       label = int(detObj[LBL_IDX]) 
@@ -337,7 +356,6 @@ def shouldKeepObjAlive(params=[], detObj=[], labelmap=[], lblMapHashBased=False)
   return keep_obj_alive     
 
 def findBestOverlap(trackedBox=[], top_conf=[], top_label_indices=[], top_xmin=[], top_ymin=[], top_xmax=[], top_ymax=[]):
-  debug_print = False
   x1 = trackedBox[0]
   y1 = trackedBox[1]
   x2 = trackedBox[2]
@@ -353,7 +371,7 @@ def findBestOverlap(trackedBox=[], top_conf=[], top_label_indices=[], top_xmin=[
   # boxes by the bottom-right y-coordinate of the bounding box
   area = (x2 - x1 + 1) * (y2 - y1 + 1)
 
-  if debug_print:
+  if debugPrintFindOL:
     print "=================="
     print "x1:", x1,
     print "y1:", y1,
@@ -366,7 +384,7 @@ def findBestOverlap(trackedBox=[], top_conf=[], top_label_indices=[], top_xmin=[
   max_overlap = 0.0
   for cand_x1, cand_x2, cand_y1, cand_y2, cand_label, cand_score in zip(top_xmin, top_xmax, top_ymin,top_ymax, top_label_indices, top_conf):
     if cand_label == label:
-      if debug_print:
+      if debugPrintFindOL:
         print "cand_x1:", cand_x1,
         print "cand_y1:", cand_y1,
         print "cand_x2:", cand_x2,
@@ -386,21 +404,21 @@ def findBestOverlap(trackedBox=[], top_conf=[], top_label_indices=[], top_xmin=[
       w = np.maximum(0, xx2 - xx1 + 1)
       h = np.maximum(0, yy2 - yy1 + 1)
 
-      if debug_print:
+      if debugPrintFindOL:
         print "overlap w: " , w,
         print "overlap h: " , h,
 
       # compute the ratio of overlap
       overlap = (w * h) / area
 
-      if debug_print:
+      if debugPrintFindOL:
         print "overlap: ", overlap,
 
       if overlap > max_overlap:
         max_overlap = overlap
         bestMatchedBox = [cand_x1,cand_y1,cand_x2,cand_y2]
 
-  if debug_print:
+  if debugPrintFindOL:
     print "max_overlap: ", max_overlap
     print "=================="
     print bestMatchedBox 

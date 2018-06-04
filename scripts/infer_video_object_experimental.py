@@ -185,8 +185,8 @@ def execute_test(params):
   #datasets = [V008_LMDB]
   #datasets = [V008_720p]
   #datasets = [VIRB0003_720p, V008_720p, VIRB0002_720p]
-  datasets = [ti_hagl_201803_videos_partial]
-  #datasets = [VIRB0002_720p]
+  #datasets = [ti_hagl_201803_videos_partial]
+  datasets = [VIRB0003_720p]
   #datasets = [ti_psd_fish_20180410]
 
   for dataset in datasets:
@@ -218,7 +218,9 @@ def execute_test(params):
           cropMaxX=params.cropMaxX, cropMaxY=params.cropMaxY, decFreq = params.decFreq, 
           enObjProp=params.enObjProp, start_frame_num=params.start_frame_num, 
           maxAgeTh=params.maxAgeTh, caffe_root=params.caffe_root,
-          externalDet=params.externalDet, externalDetPath=params.externalDetPath)
+          externalDet=params.externalDet,
+          externalDetPath=params.externalDetPath,
+          enObjPropExp=params.enObjPropExp)
       
       if params.EVAL_OBJ:
         filename, file_extension = os.path.splitext(fileName)
@@ -257,7 +259,7 @@ def set_common_params(params):
     params.cropMaxX=params.cropMinX+crop_w
     params.cropMaxY=params.cropMinY+crop_h
     
-  params.NumFrames=5000
+  params.NumFrames=50
   params.start_frame_num=0
   # ResizeW and ResizeH are not used when multiple sclales are used
   # When these options are non zero first crop (if enabled) then resizing will be done before anything else
@@ -273,11 +275,16 @@ def set_common_params(params):
   #params.TILE_STEP_X=192
   params.WRITE_BBOX = True
   params.decFreq = 1
-  params.enObjProp=False
-  params.NMS_FLAG=0
-  params.maxAgeTh=30
+  params.enObjProp=True
+  params.enObjPropExp=True
+  params.NMS_FLAG=1
+  if params.enObjPropExp:
+    params.maxAgeTh=300000
+  else:
+    params.maxAgeTh=30
+
   #read detections from external file, instead of calling Caffe
-  params.externalDet=True
+  params.externalDet=False
   params.externalDetPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180601_JDetNet_haglMixed_512x256_1Gmac_66.18_smallObj0_nh5_th0.2_haglVideo/kalman/"
   return
 
@@ -1637,25 +1644,25 @@ class Params:
 #execute_test(params)
 
 #SET123: JDETNET_720x368, accu_53.77, sparse_0.5:  20180213_
-#params = Params()
-#Params.ModelWeights="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti-vgg-720x368-v2/JDetNet/20180211_01-20_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/sparse_fac0.5_54.31/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_2000_fac0.5_53.77.caffemodel"
-#Params.Deploy="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti-vgg-720x368-v2/JDetNet/20180211_01-20_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/sparse_fac0.5_54.31/deploy_wo_nms.prototxt"
-#Params.LabelMap="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_720x368_V1/labelmap.prototxt"
-#params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180530_JDetNet_720x368_1Gmac_53.77_wo_nms_th0.2_720p/"
-#
-##dir containing GT annotations in KITTI format
-##gtDIR = '/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/data/tempdata_TI201708/data/train/Videos/'
-###if BN is placed at the beginning then mean should not be explictly subtracted. Set to 0 in that case.
-#params.MEAN_PIX_VEC =[0,0,0]
-#params.IP_SCALE  = 1.0
-#params.TileSizeW=720
-#params.TileSizeH=368
-##params.CONF_TH = {'person':0.3,'car':0.6,'trafficsign':0.4,'bicycle':0.2,'train':0.6,'bus':0.6,'motorbike':0.2,} # pick all det obj at least with this score (def=0.6)
-##params.CONF_TH = {'person':0.4,'vehicle':0.5,'trafficsign':0.4} # pick all det obj at least with this score (def=0.6)
-#params.CONF_TH=0.2
-#params.EVAL_OBJ = False
-#set_common_params(params)
-#execute_test(params)
+params = Params()
+Params.ModelWeights="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti-vgg-720x368-v2/JDetNet/20180211_01-20_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/sparse_fac0.5_54.31/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_2000_fac0.5_53.77.caffemodel"
+Params.Deploy="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti-vgg-720x368-v2/JDetNet/20180211_01-20_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/sparse_fac0.5_54.31/deploy.prototxt"
+Params.LabelMap="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_720x368_V1/labelmap.prototxt"
+params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180602_JDetNet_720x368_1Gmac_53.77_objPropExpV4_0.12_0.2_0.55_VIRB0003_debug/"
+
+#dir containing GT annotations in KITTI format
+#gtDIR = '/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/data/tempdata_TI201708/data/train/Videos/'
+##if BN is placed at the beginning then mean should not be explictly subtracted. Set to 0 in that case.
+params.MEAN_PIX_VEC =[0,0,0]
+params.IP_SCALE  = 1.0
+params.TileSizeW=720
+params.TileSizeH=368
+#params.CONF_TH = {'person':0.3,'car':0.6,'trafficsign':0.4,'bicycle':0.2,'train':0.6,'bus':0.6,'motorbike':0.2,} # pick all det obj at least with this score (def=0.6)
+#params.CONF_TH = {'person':0.4,'vehicle':0.5,'trafficsign':0.4} # pick all det obj at least with this score (def=0.6)
+params.CONF_TH=0.2
+params.EVAL_OBJ = False
+set_common_params(params)
+execute_test(params)
 
 #SET124: JDETNET_720x368, accu_53.34, sparse_0.75: 
 #params = Params()
@@ -1862,27 +1869,27 @@ class Params:
 #execute_test(params)
 
 #SET133: JDETNET_640x384_HAGL_MIXED,accu_66.18 ignoreGT_0,smallobj_0: 
-params = Params()
-params.ModelWeights="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/HAGL_MIXED_DIFF_FIXED/JDetNet/ssd512x256_ds_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_0_68.12/sparse_66.18/HAGL_MIXED_DIFF_FIXED_ssdJacintoNetV2_iter_24000_66.18.caffemodel"
-params.Deploy="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/hagl_mixed_diff_fixed_512x256/JDetNet/20180331_23-29_ds_PSP_dsFac_32_hdDS8_1_kerMbox_1_chop1_nhd5/sparse/deploy.prototxt"
-params.LabelMap="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/HAGL_MIXED_DIFF_FIXED/labelmap.prototxt"
-params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180601_JDetNet_haglMixed_512x256_1Gmac_66.18_smallObj0_nh5_th0.2_haglVideo/kalman/op/"
-#dir containing GT annotations in KITTI format
-#gtDIR = '/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/data/tempdata_TI201708/data/train/Videos/'
-##if BN is placed at the beginning then mean should not be explictly subtracted. Set to 0 in that case.
-params.MEAN_PIX_VEC =[0,0,0]
-params.IP_SCALE  = 1.0
-params.TileSizeW=512
-params.TileSizeH=256
-#params.CONF_TH = {'person':0.3,'car':0.6,'trafficsign':0.4,'bicycle':0.2,'train':0.6,'bus':0.6,'motorbike':0.2,} # pick all det obj at least with this score (def=0.6)
-#params.CONF_TH = {'person':0.3,'vehicle':0.4} # pick all det obj at least with this score (def=0.6)
-params.CONF_TH=0.2
-params.EVAL_OBJ = False
-params.gt_path = "/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/data/tempdata_hagl_mixed_512x256/data/train/Videos"
-params.gt_prefix = '' 
-params.gt_suffix = '_0' 
-set_common_params(params)
-execute_test(params)
+#params = Params()
+#params.ModelWeights="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/HAGL_MIXED_DIFF_FIXED/JDetNet/ssd512x256_ds_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_0_68.12/sparse_66.18/HAGL_MIXED_DIFF_FIXED_ssdJacintoNetV2_iter_24000_66.18.caffemodel"
+#params.Deploy="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/hagl_mixed_diff_fixed_512x256/JDetNet/20180331_23-29_ds_PSP_dsFac_32_hdDS8_1_kerMbox_1_chop1_nhd5/sparse/deploy.prototxt"
+#params.LabelMap="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/HAGL_MIXED_DIFF_FIXED/labelmap.prototxt"
+#params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180601_JDetNet_haglMixed_512x256_1Gmac_66.18_smallObj0_nh5_th0.2_haglVideo/kalman/op/"
+##dir containing GT annotations in KITTI format
+##gtDIR = '/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/data/tempdata_TI201708/data/train/Videos/'
+###if BN is placed at the beginning then mean should not be explictly subtracted. Set to 0 in that case.
+#params.MEAN_PIX_VEC =[0,0,0]
+#params.IP_SCALE  = 1.0
+#params.TileSizeW=512
+#params.TileSizeH=256
+##params.CONF_TH = {'person':0.3,'car':0.6,'trafficsign':0.4,'bicycle':0.2,'train':0.6,'bus':0.6,'motorbike':0.2,} # pick all det obj at least with this score (def=0.6)
+##params.CONF_TH = {'person':0.3,'vehicle':0.4} # pick all det obj at least with this score (def=0.6)
+#params.CONF_TH=0.2
+#params.EVAL_OBJ = False
+#params.gt_path = "/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/data/tempdata_hagl_mixed_512x256/data/train/Videos"
+#params.gt_prefix = '' 
+#params.gt_suffix = '_0' 
+#set_common_params(params)
+#execute_test(params)
 
 #SET134: JDETNET_768x320, accu_50.51, sparse_0.80: 
 #params = Params()
