@@ -3,6 +3,9 @@ import caffe
 from models.model_libs import *
 import copy
 
+#set to 'fused' to use NVIDIA/caffe style fused batch norm that incorporates scale_bias (faster)
+BN_TYPE_TO_USE = 'bvlc' #'bvlc' #'fused'
+
 def ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu=True, num_output=0,
     kernel_size=3, pad=0, stride=1, dilation=1, group=1, bn_type='bvlc',
     bn_in_place=True):
@@ -15,7 +18,7 @@ def ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu=True, num_output
   out_layer = conv_name
   kwargs_conv = {'weight_filler': {'type': 'msra'}}
   net[out_layer] = L.Convolution(net[from_layer], num_output=num_output,
-      kernel_size=kernel_size, pad=pad*dilation, stride=stride, group=group, dilation=dilation, **kwargs_conv)
+      kernel_size=kernel_size, pad=pad*dilation, stride=stride, group=group, dilation=dilation, bias_term=False, **kwargs_conv)
   from_layer = out_layer
       
   if bn_type == 'bvlc':
@@ -24,9 +27,9 @@ def ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu=True, num_output
       from_layer = out_layer
       
       out_layer = scale_name
-      net[out_layer] = L.Scale(net[from_layer], in_place=True)
+      net[out_layer] = L.Scale(net[from_layer], bias_term=True, in_place=True)
       from_layer = out_layer
-  else: #nvidia/caffe bn
+  else: #fused nvidia/caffe bn
       out_layer = bn_name
       net[out_layer] = L.BatchNorm(net[from_layer], scale_bias=True, in_place=bn_in_place)
       from_layer = out_layer
@@ -136,14 +139,14 @@ def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, nu
 
 
 ###############################################################
-def mobilenetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type='bvlc',
+def mobilenetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, expansion_t=6):
   return MobileNetV2Body(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
 
         
-def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type='bvlc',
+def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, use_batchnorm=True, use_relu=True, num_intermediate=512, expansion_t=6):
   
   out_layer = MobileNetV2Body(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
@@ -175,11 +178,11 @@ def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_
   
   #from_layer = 'relu4_1/sep'
   #out_layer = 'ctx_output????'
-  #out_layer = ConvBNLayerMobileNetV2(net, from_layer, out_layer, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type) 
+  #out_layer = ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type) 
   
   from_layer = 'relu5_5/sep'
   out_layer = 'ctx_output1'
-  out_layer = ConvBNLayerMobileNetV2(net, from_layer, out_layer, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type)  
+  out_layer = ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type)  
   out_layer_names += [out_layer]
   
   from_layer = 'relu6/sep'
@@ -206,7 +209,7 @@ def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_
  
 
 def mobilesegnetv2(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
-   upsample=True): 
+   upsample=True, bn_type=BN_TYPE_TO_USE): 
 
    out_layer = MobileNetV2Body(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=False, output_stride=16, bn_type=bn_type,
