@@ -218,9 +218,9 @@ def execute_test(params):
           cropMaxX=params.cropMaxX, cropMaxY=params.cropMaxY, decFreq = params.decFreq, 
           enObjProp=params.enObjProp, start_frame_num=params.start_frame_num, 
           maxAgeTh=params.maxAgeTh, caffe_root=params.caffe_root,
-          externalDet=params.externalDet,
-          externalDetPath=params.externalDetPath,
-          enObjPropExp=params.enObjPropExp)
+          externalDet=params.externalDet, externalDetPath=params.externalDetPath,
+          enObjPropExp=params.enObjPropExp, confThM=params.CONF_TH_M,
+          confThMStrngTrk=params.CONF_TH_M_STRNG_TRK, confThH=params.CONF_TH_H)
       
       if params.EVAL_OBJ:
         filename, file_extension = os.path.splitext(fileName)
@@ -259,7 +259,7 @@ def set_common_params(params):
     params.cropMaxX=params.cropMinX+crop_w
     params.cropMaxY=params.cropMinY+crop_h
     
-  params.NumFrames=50
+  params.NumFrames=5000
   params.start_frame_num=0
   # ResizeW and ResizeH are not used when multiple sclales are used
   # When these options are non zero first crop (if enabled) then resizing will be done before anything else
@@ -275,11 +275,16 @@ def set_common_params(params):
   #params.TILE_STEP_X=192
   params.WRITE_BBOX = True
   params.decFreq = 1
+
   params.enObjProp=True
   params.enObjPropExp=True
   params.NMS_FLAG=1
+  params.CONF_TH_M = 0.12
   if params.enObjPropExp:
     params.maxAgeTh=300000
+    params.CONF_TH_M = 0.15
+    params.CONF_TH_M_STRNG_TRK = 0.12
+    params.CONF_TH_H = 0.4
   else:
     params.maxAgeTh=30
 
@@ -1648,7 +1653,7 @@ params = Params()
 Params.ModelWeights="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti-vgg-720x368-v2/JDetNet/20180211_01-20_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/sparse_fac0.5_54.31/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_2000_fac0.5_53.77.caffemodel"
 Params.Deploy="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti-vgg-720x368-v2/JDetNet/20180211_01-20_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/sparse_fac0.5_54.31/deploy.prototxt"
 Params.LabelMap="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_720x368_V1/labelmap.prototxt"
-params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180602_JDetNet_720x368_1Gmac_53.77_objPropExpV4_0.12_0.2_0.55_VIRB0003_debug/"
+params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180602_JDetNet_720x368_1Gmac_53.77_objPropExpV4_0.12_0.15_0.2_0.4_VIRB0003_Debug/"
 
 #dir containing GT annotations in KITTI format
 #gtDIR = '/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/data/tempdata_TI201708/data/train/Videos/'

@@ -16,7 +16,6 @@ debugPrintKeyPoints = False
 debugDrawTracks =  False
 debugPrintFindOL = False
 
-
 AGE_IDX = 6
 SCORE_IDX = 5
 LBL_IDX = 4
@@ -72,20 +71,31 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
   curImage = curImageFloat.astype('uint8')
   frame_gray = cv2.cvtColor(curImage, cv2.COLOR_BGR2GRAY)
 
-  if params.enObjPropExp:
-    modConfTh = 0.15
-    #for strong tracks, continue trackign if it find match with 0.12
-    modConfThForStrngTrk = 0.12
-  else:  
-    modConfTh = 0.12
-
-  top_conf, top_label_indices, top_xmin, top_ymin, top_xmax, top_ymax = getObjsAboveScore(modConfTh=modConfTh,
+  r1, r2, r3, r4, r5, r6 = getObjsAboveScore(modConfTh=params.confThM,
       labelmap=labelmap, lblMapHashBased=lblMapHashBased,
       raw_dets_cur_frm=raw_dets_cur_frm, W=frame_gray.shape[1],
       H=frame_gray.shape[0])
 
-  top_conf_strngTrk, top_label_indices_strngTrk, top_xmin_strngTrk, top_ymin_strngTrk, top_xmax_strngTrk, top_ymax_strngTrk = getObjsAboveScore(modConfTh=modConfThForStrngTrk, labelmap=labelmap, lblMapHashBased=lblMapHashBased, raw_dets_cur_frm=raw_dets_cur_frm,
-      W=frame_gray.shape[1], H=frame_gray.shape[0])
+  top_conf=r1
+  top_label_indices=r2
+  top_xmin=r3
+  top_ymin=r4
+  top_xmax=r5
+  top_ymax=r6
+
+
+  #for strong tracks, continue trackign if it find match with confThMStrngTrk
+  r1, r2, r3, r4, r5, r6 = getObjsAboveScore(modConfTh=params.confThMStrngTrk, 
+      labelmap=labelmap, lblMapHashBased=lblMapHashBased, 
+      raw_dets_cur_frm=raw_dets_cur_frm,W=frame_gray.shape[1], H=frame_gray.shape[0])
+
+  top_conf_strngTrk=r1
+  top_label_indices_strngTrk=r2
+  top_xmin_strngTrk=r3
+  top_ymin_strngTrk=r4
+  top_xmax_strngTrk=r5
+  top_ymax_strngTrk=r6
+
 
   #det_cur_mod_conf= np.array(det_cur_mod_conf)
   #print "after pruning with moderate score",  det_cur_mod_conf.shape
@@ -126,8 +136,13 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       objPoolInCurScale[idx][1] = (objPoolInCurScale[idx][1] - offsetY) / scaleY
       objPoolInCurScale[idx][2] = (objPoolInCurScale[idx][2] - offsetX) / scaleX
       objPoolInCurScale[idx][3] = (objPoolInCurScale[idx][3] - offsetY) / scaleY
-      if(detObj[SCORE_IDX] > 0.55) and params.enObjPropExp: 
+      if(detObj[SCORE_IDX] > params.confThH) and params.enObjPropExp: 
         detObj[STRNG_TRK_IDX] = 1
+        gPoolDetObjs[idx][STRNG_TRK_IDX] = 1
+    
+    if debugPrintObjProp:
+      print "gPoolDetObjs after strong track check: "  
+      print gPoolDetObjs
 
     if debugPrintObjProp:
       print "objPoolInCurScale: "  
@@ -211,6 +226,11 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
         print "good_old ", good_old
 
     trackedObjsList = []
+
+    if debugPrintObjProp:
+      print "gPoolDetObjs before using strong track info: "  
+      print gPoolDetObjs
+
     #find the nearset corner point to TL and BR and adjust tracked window
     for idx, detObj in enumerate(gPoolDetObjs):
       tlX = detObj[0] 

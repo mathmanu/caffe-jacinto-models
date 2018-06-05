@@ -25,6 +25,7 @@ import csv
 write_boxes_afr_nms = True
 #0,1
 nms_verbose=0
+print_frame_info = True
 
 ###################################################################################################
 def visualize_weights(net, layer_name, padding=4, filename=''):
@@ -215,7 +216,7 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
 
 ##################################################################################################
 def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='',
-    writeBboxMap=[], age=0):
+    writeBboxMap=[], age=0, strng_trk=0):
   if enable:
     # KITTI benchmarking format
     #map to category specified in writeBboxMap
@@ -226,8 +227,8 @@ def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='',
       if label_name == xlation[0]:
         label_name = xlation[1]
 
-    newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} {} \n'.format(label_name,
-      bbox[0],bbox[1],bbox[2], bbox[3], score, age)
+    newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} {} {} \n'.format(label_name,
+      bbox[0],bbox[1],bbox[2], bbox[3], score, age, strng_trk)
     #print "newLine: ", newLine
     fileHndl.write(newLine)
 
@@ -299,7 +300,7 @@ def writeBoxes(params=[], detObjs=[], detObjFileHndl='', writeBboxMap=[],
     if writeThisBox:
       writeOneBox(enable=params.writeBbox, bbox=detObjs[i], label_name=label_name, 
         score=score, fileHndl=detObjFileHndl, writeBboxMap=writeBboxMap,
-        age=age)
+        age=age, strng_trk=strng_trk)
    
   return
 
@@ -409,7 +410,6 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0,
 def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNum=0, 
     detObjsFile='', writeBboxMap=[], labelmap=''):
 
-  print_frame_info= False
   
   if(curFrameNum == 0):
     wrapMulScls.gPoolDetObjs = np.asarray([])
@@ -514,6 +514,12 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
     print detObjRectListNPArray
   
   if params.enObjProp:
+    if params.enObjPropExp:
+      for idx,detObj in enumerate(detObjRectListNPArray):
+        #FIX_ME:SN
+        detObjRectListNPArray[idx][7] = (detObjRectListNPArray[idx][5] >
+            params.confThH)
+
     opFilenameWOExt, fileExt = os.path.splitext(params.opFileName)
     wrapMulScls.gPoolDetObjs = propagate_obj(gPoolDetObjs=wrapMulScls.gPoolDetObjs, 
         curImageFloat=imageCoreIpCurScale*255.0, curFrameNum=curFrameNum, scaleX=curScaleX, 
@@ -573,6 +579,14 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
       detObjFileHndl.close()
 
   if(len(detObjRectListNPArray)):
+    if print_frame_info:
+      print "type(wrapMulScls.gPoolDetObjs): ", type(wrapMulScls.gPoolDetObjs)
+      print "Global pool Before draeBoxes"
+      print "gPoolDetObjs.dtype: ", wrapMulScls.gPoolDetObjs.dtype
+      print "gPoolDetObjs.shape: ", wrapMulScls.gPoolDetObjs.shape
+      print "gPoolDetObjs: "
+      print wrapMulScls.gPoolDetObjs
+
     drawBoxes(params=params,detObjs=wrapMulScls.gPoolDetObjs, drawHandle=curFrameDrawHandle, 
         writeBboxMap=writeBboxMap, labelmap=labelmap, lblMapHashBased=params.externalDet)
 
@@ -595,7 +609,8 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   tileStepX=0, tileStepY=0, meanPixVec=[104.0,117.0,123.0], ipScale=1.0,
   writeBboxMap=[], decFreq=1, enObjProp=False, start_frame_num=0,
   maxAgeTh=8, caffe_root='', externalDet=False, externalDetPath='',
-  enObjPropExp=False):    
+  enObjPropExp=False, confThM=0.12, confThMStrngTrk=0.12, confThH=0.4):    
+
   ###################################################################################  
   enum_multipleTiles = 0
   enum_multipleScales = 1
@@ -624,6 +639,9 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
       print "numScales " , self.numScales
       print "arType " , self.arType
       print "confTh " , self.confTh
+      print "confThM " , self.confThM
+      print "confThMStrngTrk " , self.confThMStrngTrk
+      print "confThH " , self.confThH
       print "writeBbox" , self.writeBbox
       print "decFreq" , self.decFreq
       print "writeBboxMap" , self.writeBboxMap
@@ -669,6 +687,9 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   params.numScales = numScales 
   params.arType = arType 
   params.confTh = confTh 
+  params.confThM = confThM 
+  params.confThMStrngTrk = confThMStrngTrk 
+  params.confThH = confThH 
   params.writeBbox = writeBbox 
   params.decFreq = decFreq 
   params.writeBboxMap = writeBboxMap 

@@ -82,10 +82,13 @@ def nms_core(boxes, olTh, selected, age_based_check=False, testMode=False,
             print "oIdx is suppressing iIdx", oIdx, iIdx
             print(boxes[oIdx,5], "is suppressing", boxes[iIdx,5])
 
-          #if oBox is suppressing iBox then take age from iBox
+          #if oBox is suppressing iBox then take age info from iBox
+          #if oBox is suppressing iBox then keep strng_trk True if either of the
+          #boxes was strng
           #FIX_ME: Make it conditional on flag from config file
           if (ol>olTh) and enObjPropExp:
             boxes[oIdx,6] =  boxes[iIdx,6]
+            boxes[oIdx,7] =  boxes[oIdx,7] or boxes[iIdx,7]
 
           if (verbose > 1) and suppress[iIdx]:
             print "oIdx,iIdx", oIdx, iIdx
