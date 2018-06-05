@@ -102,8 +102,6 @@ use_image_list=0
 #Note shuffle is used only in training
 shuffle=0        
 
-#sparsity will be induced gradually starting from this value
-sparsity_start_factor=0.5
 #-------------------------------------------------------
 if [ $dataset = "voc0712" ]
 then
@@ -134,8 +132,6 @@ then
   
   #use batch norm ofr mbox layer1:enable,0:disable
   use_batchnorm_mbox=1
-
-  sparsity_start_factor=0.25 
 
 elif [ $dataset = "ti-custom-cfg1" ]
 then
@@ -257,8 +253,7 @@ stage="test"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
-'regularization_type':'L1','weight_decay':1e-5,\
-'sparse_mode':1,'display_sparsity':1000}"
+'regularization_type':'L2','weight_decay':$weight_decay_L2}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
@@ -280,8 +275,7 @@ stage="test_quantize"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'$lr_policy','power':$power,'stepvalue':[$stepvalue1,$stepvalue2,$stepvalue3],\
-'regularization_type':'L1','weight_decay':1e-5,\
-'sparse_mode':1,'display_sparsity':1000}"
+'regularization_type':'L2','weight_decay':$weight_decay_L2}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
