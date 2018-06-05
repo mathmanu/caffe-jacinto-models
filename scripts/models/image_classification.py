@@ -5,7 +5,7 @@ import ast
 from models.model_libs import *
 import models.jacintonet_v2
 import models.mobilenet
-import models.mobileresnet
+import models.mobilenetv2
 
 import math
 import os
@@ -230,20 +230,17 @@ def main():
             }       
         net['data/bias'] = L.Bias(net[out_layer], in_place=False, **bias_kwargs)
         out_layer = 'data/bias'
-                            
+                        
         if config_param.model_name == 'jacintonet11v2':
             out_layer = models.jacintonet_v2.jacintonet11(net, from_layer=out_layer,\
-            num_output=config_param.num_output,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-            freeze_layers=config_param.freeze_layers)
+                num_output=config_param.num_output,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
+                freeze_layers=config_param.freeze_layers)
+        elif 'mobilenetv2' in config_param.model_name:
+            wide_factor = float(config_param.model_name.split('-')[1])
+            out_layer = models.mobilenetv2.mobilenetv2(net, from_layer=out_layer, wide_factor=wide_factor)                
         elif 'mobilenet' in config_param.model_name:
             wide_factor = float(config_param.model_name.split('-')[1])
             out_layer = models.mobilenet.mobilenet(net, from_layer=out_layer, wide_factor=wide_factor)
-        elif 'mobilenetv2' in config_param.model_name:
-            wide_factor = float(config_param.model_name.split('-')[1])
-            out_layer = models.mobilenetv2.mobilenetv2(net, from_layer=out_layer, wide_factor=wide_factor)
-        elif 'mobileresnet' in config_param.model_name:
-            wide_factor = float(config_param.model_name.split('-')[1])     
-            out_layer = models.mobileresnet.mobileresnet(net, from_layer=out_layer, wide_factor=wide_factor)
         else:
             ValueError("Invalid model name")
 

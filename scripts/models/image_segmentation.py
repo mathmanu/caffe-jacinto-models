@@ -4,6 +4,7 @@ from google.protobuf import text_format
 import ast
 from models.model_libs import *
 import models.jacintonet_v2
+import models.mobilenetv2
 
 import math
 import os
@@ -254,6 +255,9 @@ def main():
             out_layer = models.jacintonet_v2.jsegnet21(net, from_layer=out_layer,\
             num_output=config_param.num_output,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
             freeze_layers=config_param.freeze_layers)
+        elif 'mobilesegnetv2' in config_param.model_name:            
+            wide_factor = float(config_param.model_name.split('-')[1])
+            out_layer, out_layer_names = models.mobilenetv2.mobilesegnetv2(net, from_layer=from_layer, wide_factor=wide_factor)                
         else:
             ValueError("Invalid model name")
 

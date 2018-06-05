@@ -5,6 +5,7 @@ import ast
 from models.model_libs import *
 import models.jacintonet_v2
 import models.mobilenet
+import models.mobilenetv2
 import numpy as np
 import math
 import os
@@ -265,10 +266,10 @@ def CoreNetwork(config_param, net, from_layer):
           base_nw_3_head=config_param.base_nw_3_head, first_hd_same_op_ch=config_param.first_hd_same_op_ch,
           num_intermediate=config_param.num_intermediate, rhead_name_non_linear=config_param.rhead_name_non_linear,
           chop_num_heads=config_param.chop_num_heads)
+    elif 'mobiledetnetv2' in config_param.model_name:
+        wide_factor = float(config_param.model_name.split('-')[1])
+        out_layer, out_layer_names = models.mobilenetv2.mobiledetnetv2(net, from_layer=from_layer, wide_factor=wide_factor, num_intermediate=config_param.num_intermediate)
     elif 'mobiledetnet' in config_param.model_name:
-        #out_layer = models.mobilenet.mobiledetnet(net, from_layer=from_layer,\
-        #  num_output=config_param.num_feature,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
-        #  freeze_layers=config_param.freeze_layers, output_stride=config_param.feature_stride, wide_factor=wide_factor)
         wide_factor = float(config_param.model_name.split('-')[1])
         out_layer, out_layer_names = models.mobilenet.mobiledetnet(net, from_layer=from_layer, wide_factor=wide_factor, num_intermediate=config_param.num_intermediate)
     else:
