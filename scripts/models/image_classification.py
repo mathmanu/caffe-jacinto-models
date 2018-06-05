@@ -238,6 +238,9 @@ def main():
         elif 'mobilenet' in config_param.model_name:
             wide_factor = float(config_param.model_name.split('-')[1])
             out_layer = models.mobilenet.mobilenet(net, from_layer=out_layer, wide_factor=wide_factor)
+        elif 'mobilenetv2' in config_param.model_name:
+            wide_factor = float(config_param.model_name.split('-')[1])
+            out_layer = models.mobilenetv2.mobilenetv2(net, from_layer=out_layer, wide_factor=wide_factor)
         elif 'mobileresnet' in config_param.model_name:
             wide_factor = float(config_param.model_name.split('-')[1])     
             out_layer = models.mobileresnet.mobileresnet(net, from_layer=out_layer, wide_factor=wide_factor)
