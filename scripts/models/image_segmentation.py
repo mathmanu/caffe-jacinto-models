@@ -256,8 +256,9 @@ def main():
             num_output=config_param.num_output,stride_list=config_param.stride_list,dilation_list=config_param.dilation_list,\
             freeze_layers=config_param.freeze_layers)
         elif 'mobilesegnetv2' in config_param.model_name:            
-            wide_factor = float(config_param.model_name.split('-')[1])
-            out_layer, out_layer_names = models.mobilenetv2.mobilesegnetv2(net, from_layer=from_layer, wide_factor=wide_factor)                
+            expansion_t = float(config_param.model_name.split('netv2t')[1].split('-')[0]) if 'v2t' in config_param.model_name else 6
+            wide_factor = float(config_param.model_name.split('-')[1]) if '-' in config_param.model_name else 1.0
+            out_layer, out_layer_names = models.mobilenetv2.mobilesegnetv2(net, from_layer=from_layer, expansion_t=expansion_t, wide_factor=wide_factor)                
         else:
             ValueError("Invalid model name")
 

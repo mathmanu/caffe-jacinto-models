@@ -2,10 +2,25 @@ from __future__ import print_function
 import caffe
 from models.model_libs import *
 import copy
+import math
 
+###############################################################
 #set to 'fused' to use NVIDIA/caffe style fused batch norm that incorporates scale_bias (faster)
-BN_TYPE_TO_USE = 'bvlc' #'bvlc' #'fused'
+BN_TYPE_TO_USE = 'fused' #'bvlc' #'fused'
 
+
+###############################################################
+def width_multiplier(value, base, min_val):
+  value = int(math.floor(float(value) / base + 0.5) * base)
+  value = max(value, min_val)
+  return value
+  
+  
+def width_multiplier8(value):
+  return width_multiplier(value, 8, 8)
+  
+  
+###############################################################
 def ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu=True, num_output=0,
     kernel_size=3, pad=0, stride=1, dilation=1, group=1, bn_type='bvlc',
     bn_in_place=True):
@@ -42,6 +57,7 @@ def ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu=True, num_output
   return out_layer
   
 
+###############################################################
 def InvertedResidualLinearBottleNeckBlock(net, from_layer, out_name, use_relu=True, num_input=0, num_output=0,
     stride=1, dilation=1, group=1, expansion_t=6, bn_type='bvlc'):
   
@@ -67,8 +83,8 @@ def InvertedResidualLinearBottleNeckBlock(net, from_layer, out_name, use_relu=Tr
     net[out_layer] = L.Eltwise(net[from_layer], net[input_layer])
   
   return out_layer
-
-
+    
+    
 ###############################################################
 def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, num_output=1000,
   wide_factor = 1.0, enable_fc=True, bn_type='bvlc', output_stride=32, expansion_t=6):
@@ -86,13 +102,12 @@ def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, nu
     assert(output_stride==32 or output_stride==16)
 
   channels = [32, 16, 24, 32, 64, 96, 160, 320, 1280]
-  channels_c = map(lambda x: int(round(x * wide_factor)), channels)
+  channels_c = map(lambda x: width_multiplier8(x * wide_factor), channels)
   #for the last conv layer, do not reduce below 1280
   channels_c[-1] = max(channels[-1], channels_c[-1])
 
   repeats_n = [1, 1, 2, 3, 4, 3, 3, 1, 1]
 
-  ##################
   block_name = 'conv{}'.format(1)
   dilation = 1
   out_layer = ConvBNLayerMobileNetV2(net, from_layer, block_name,
@@ -100,9 +115,7 @@ def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, nu
   num_input = channels_c[0]
   from_layer = out_layer
 
-  ##################
   num_stages = len(channels_c)  
-  
   for stg_idx in range(1,num_stages-1):
       for n in range(repeats_n[stg_idx]):
           xt = 1 if stg_idx < 2 else expansion_t
@@ -128,7 +141,7 @@ def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, nu
 
     if dropout:
       out_layer = 'drop{}'.format(num_stages)
-      net[out_layer] = L.Dropout(net[from_layer], dropout_ratio=0.2)
+      net[out_layer] = L.Dropout(net[from_layer], dropout_ratio=0.5)
       from_layer = out_layer
       
     out_layer = 'fc{}'.format(num_stages)
@@ -145,7 +158,8 @@ def mobilenetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_typ
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
 
-        
+
+###############################################################        
 def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, use_batchnorm=True, use_relu=True, num_intermediate=512, expansion_t=6):
   
@@ -155,17 +169,17 @@ def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_
   
   #---------------------------     
   #PSP style pool down
-  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
+  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}
   from_layer = out_layer
   out_layer = 'pool6'
-  net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param) 
+  net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)
   #--
-  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':2, 'pad':1}      
+  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}
   from_layer = out_layer
   out_layer = 'pool7'
-  net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
+  net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)
   #--
-  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':3, 'stride':1, 'pad':1}      
+  pooling_param = {'pool':P.Pooling.MAX, 'kernel_size':2, 'stride':2, 'pad':0}
   from_layer = out_layer
   out_layer = 'pool8'
   net[out_layer] = L.Pooling(net[from_layer], pooling_param=pooling_param)  
@@ -208,6 +222,7 @@ def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_
   return out_layer, out_layer_names
  
 
+###############################################################
 def mobilesegnetv2(net, from_layer=None, use_batchnorm=True, use_relu=True, num_output=20, stride_list=None, dilation_list=None, freeze_layers=None, 
    upsample=True, bn_type=BN_TYPE_TO_USE): 
 

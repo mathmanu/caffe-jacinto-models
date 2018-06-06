@@ -8,7 +8,7 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 gpus="0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
 
 #-------------------------------------------------------
-model_name=mobilenet-1.0 #mobilenet-1.0 #mobileresnet-1.0 #jacintonet11v2
+model_name=mobilenet-1.0 #mobilenet-1.0 #mobilenetv2-1.0 #jacintonet11v2
 dataset=cifar10
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
@@ -29,8 +29,6 @@ stride_list="[1,1,2,1,2]"
 #-------------------------------------------------------
 solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'test_interval':1000}"
 
-train_transform_param="{'mirror':1,'mean_value':[103.94,116.78,123.68],'crop_size':32,'scale':0.017}"
-test_transform_param="{'mirror':0,'mean_value':[103.94,116.78,123.68],'crop_size':32,'scale':0.017}"
 
 #-------------------------------------------------------
 #initial training from scratch
@@ -38,7 +36,6 @@ stage="initial"
 config_name=$folder_name/$stage;mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
 'stride_list':$stride_list,'pretrain_model':None,\
-'mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param,\
 'num_output':10,'image_width':32,'image_height':32,'crop_size':32,\
 'accum_batch_size':$batch_size,'batch_size':$batch_size,\
 'train_data':'./data/cifar10_train_lmdb','test_data':'./data/cifar10_test_lmdb',\

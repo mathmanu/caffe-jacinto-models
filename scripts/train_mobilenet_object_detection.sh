@@ -5,7 +5,7 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0" #"0,1" #"0,1,2"         #IMPORTANT: change this to "0" if you have only one GPU. Adjust batch_size (below) if the GPU memory is not sufficient.
+gpus="0,1,2,3" #"0,1" #"0,1,2"         #IMPORTANT: change this to "0" if you have only one GPU. Adjust batch_size (below) if the GPU memory is not sufficient.
 
 #-------------------------------------------------------
 model_name=mobiledetnet-0.5      #ssdJacintoNetV2  #mobiledetnet-0.5  #mobiledetnet-1.0 
@@ -53,7 +53,7 @@ lr_policy="multistep"
 force_color=0
 stepvalue3=300000 
 
-#num op ch for mbox layers = num_intermediate/2
+#num op ch for creating mbox heads
 num_intermediate=512
 rhead_name_non_linear=0
 
@@ -122,7 +122,7 @@ then
   resize_height=256 
   crop_width=512    
   crop_height=256   
-  batch_size=16      #can increase this if more gpus are available
+  batch_size=32      #16      #can increase this if more gpus are available
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
   max_iter=120000    #120000  #64000   #32000
@@ -241,7 +241,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'fully_conv_at_end':$fully_conv_at_end,'first_hd_same_op_ch':$first_hd_same_op_ch,'ker_mbox_loc_conf':$ker_mbox_loc_conf,\
 'base_nw_3_head':$base_nw_3_head,'reg_head_at_ds8':$reg_head_at_ds8,'ds_fac':$ds_fac,'ds_type':'$ds_type',\
 'rhead_name_non_linear':$rhead_name_non_linear,'force_color':$force_color,'num_intermediate':$num_intermediate,\
-'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}" 
+'use_batchnorm_mbox':$use_batchnorm_mbox,'chop_num_heads':$chop_num_heads}"
 
 python ./models/image_object_detection.py --config_param="$config_param" --solver_param=$solver_param
 config_name_prev=$config_name
