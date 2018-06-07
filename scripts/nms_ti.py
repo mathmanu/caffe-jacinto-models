@@ -44,7 +44,7 @@ def findOverlap(boxes, oIdx, iIdx, olMode='area_box_under_sup', verbose=0):
   return iou
 
 def nms_core(boxes, olTh, selected, age_based_check=False, testMode=False,
-    enObjPropExp=False, verbose=0):
+    enObjPropExp=False, verbose=0, confThH=0.4):
   if age_based_check:
     sorted_indices = np.argsort(boxes[:,5]-boxes[:,6])   
   else:
@@ -82,12 +82,17 @@ def nms_core(boxes, olTh, selected, age_based_check=False, testMode=False,
             print "oIdx is suppressing iIdx", oIdx, iIdx
             print(boxes[oIdx,5], "is suppressing", boxes[iIdx,5])
 
-          #if oBox is suppressing iBox then take age info from iBox
-          #if oBox is suppressing iBox then keep strng_trk True if either of the
-          #boxes was strng
-          #FIX_ME: Make it conditional on flag from config file
+          # age and strongness update for the suppressed box 
           if (ol>olTh) and enObjPropExp:
-            boxes[oIdx,6] =  boxes[iIdx,6]
+            #if high conf det is suppressing then reset the age of the track
+            #else take age info from iBox
+            if boxes[oIdx,5] > confThH:
+              boxes[oIdx,6] =  0
+            else:
+              boxes[oIdx,6] =  boxes[iIdx,6]
+            
+            #if oBox is suppressing iBox then keep strng_trk True if either of the
+            #boxes was strng
             boxes[oIdx,7] =  boxes[oIdx,7] or boxes[iIdx,7]
 
           if (verbose > 1) and suppress[iIdx]:

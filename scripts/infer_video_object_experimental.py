@@ -185,8 +185,9 @@ def execute_test(params):
   #datasets = [V008_LMDB]
   #datasets = [V008_720p]
   #datasets = [VIRB0003_720p, V008_720p, VIRB0002_720p]
+  datasets = [VIRB0002_720p]
   #datasets = [ti_hagl_201803_videos_partial]
-  datasets = [VIRB0003_720p]
+  #datasets = [VIRB0003_720p]
   #datasets = [ti_psd_fish_20180410]
 
   for dataset in datasets:
@@ -259,7 +260,7 @@ def set_common_params(params):
     params.cropMaxX=params.cropMinX+crop_w
     params.cropMaxY=params.cropMinY+crop_h
     
-  params.NumFrames=5000
+  params.NumFrames=3000
   params.start_frame_num=0
   # ResizeW and ResizeH are not used when multiple sclales are used
   # When these options are non zero first crop (if enabled) then resizing will be done before anything else
@@ -280,13 +281,13 @@ def set_common_params(params):
   params.enObjPropExp=True
   params.NMS_FLAG=1
   params.CONF_TH_M = 0.12
+  params.maxAgeTh=30
   if params.enObjPropExp:
-    params.maxAgeTh=300000
     params.CONF_TH_M = 0.15
-    params.CONF_TH_M_STRNG_TRK = 0.12
+    params.CONF_TH_M_STRNG_TRK = 0.15 #0.12
     params.CONF_TH_H = 0.4
-  else:
-    params.maxAgeTh=30
+  else:  
+    params.CONF_TH_M = params.CONF_TH_M_STRNG_TRK = params.CONF_TH_H = params.CONF_TH
 
   #read detections from external file, instead of calling Caffe
   params.externalDet=False
@@ -1653,7 +1654,7 @@ params = Params()
 Params.ModelWeights="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti-vgg-720x368-v2/JDetNet/20180211_01-20_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/sparse_fac0.5_54.31/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_2000_fac0.5_53.77.caffemodel"
 Params.Deploy="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/scripts/training/ti-vgg-720x368-v2/JDetNet/20180211_01-20_ds_PSP_dsFac_32_fc_0_hdDS8_1_cnctHD_0_baseNW3hd_0_kerMbox_1_1stHdSameOpCh_1/sparse_fac0.5_54.31/deploy.prototxt"
 Params.LabelMap="/user/a0875091/files/work/github/weiliu89/caffe-ssd/data/TI_201712_720x368_V1/labelmap.prototxt"
-params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180602_JDetNet_720x368_1Gmac_53.77_objPropExpV4_0.12_0.15_0.2_0.4_VIRB0003_Debug/"
+params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180606_JDetNet_720x368_1Gmac_53.77_objPropExpV5_0.14_0.15_0.2_0.4_bs5_VIRB0002_debug/"
 
 #dir containing GT annotations in KITTI format
 #gtDIR = '/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/data/tempdata_TI201708/data/train/Videos/'

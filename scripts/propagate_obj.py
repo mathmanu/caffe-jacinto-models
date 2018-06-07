@@ -139,10 +139,7 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       if(detObj[SCORE_IDX] > params.confThH) and params.enObjPropExp: 
         detObj[STRNG_TRK_IDX] = 1
         gPoolDetObjs[idx][STRNG_TRK_IDX] = 1
-    
-    if debugPrintObjProp:
-      print "gPoolDetObjs after strong track check: "  
-      print gPoolDetObjs
+
 
     if debugPrintObjProp:
       print "objPoolInCurScale: "  
@@ -185,10 +182,10 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
       #keep min distance between  minDistTnMin and minDistTnMax.
       #also make it depend on area
       minDistThMin = 4
-      minDistThMax = 8
+      minDistThMax = 8 #16
       minDisanceCurObj = int(np.clip(areaCurObj/24,minDistThMin,minDistThMax))
       feature_params = dict( maxCorners = maxCornersCurObj,  #100
-                             qualityLevel = 0.01,            #0.05, 0.1,0.3
+                             qualityLevel = 0.01,            #0.1,0.3
                              minDistance = minDisanceCurObj, #7
                              blockSize = 7 )
       p0_curObj = cv2.goodFeaturesToTrack(propagate_obj.old_gray, mask = mask_detObjs, **feature_params)
@@ -226,11 +223,6 @@ def propagate_obj(gPoolDetObjs=[], curImageFloat=[], curFrameNum=0, scaleX =
         print "good_old ", good_old
 
     trackedObjsList = []
-
-    if debugPrintObjProp:
-      print "gPoolDetObjs before using strong track info: "  
-      print gPoolDetObjs
-
     #find the nearset corner point to TL and BR and adjust tracked window
     for idx, detObj in enumerate(gPoolDetObjs):
       tlX = detObj[0] 
@@ -365,7 +357,7 @@ def shouldKeepObjAlive(params=[], detObj=[], labelmap=[], lblMapHashBased=False)
   else: #score based.score gets reduced with each passing year (frame)
     #reduce score of tracked objects to give more preference to objs in
     #the currnt frame also it will make sure objs will die after few frames
-    #didn't work better than AGE_BASED
+    #don't use this as it didn't work better than AGE_BASED
     detObj[SCORE_IDX] = max(0.0, float(detObj[SCORE_IDX]-reduceScoreTh))
     if type(params.confTh) is dict:                                
       label = int(detObj[LBL_IDX]) 

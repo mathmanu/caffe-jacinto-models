@@ -25,7 +25,7 @@ import csv
 write_boxes_afr_nms = True
 #0,1
 nms_verbose=0
-print_frame_info = True
+print_frame_info = False
 
 ###################################################################################################
 def visualize_weights(net, layer_name, padding=4, filename=''):
@@ -216,7 +216,7 @@ def processOneCrop(curScaleImage, transformer, net, drawHandle, detBBoxesCurFram
 
 ##################################################################################################
 def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='',
-    writeBboxMap=[], age=0, strng_trk=0):
+    writeBboxMap=[], age=0, strng_trk=0, writeAgeAndStrng=False):
   if enable:
     # KITTI benchmarking format
     #map to category specified in writeBboxMap
@@ -227,15 +227,21 @@ def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='',
       if label_name == xlation[0]:
         label_name = xlation[1]
 
-    newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} {} {} \n'.format(label_name,
-      bbox[0],bbox[1],bbox[2], bbox[3], score, age, strng_trk)
+    if writeAgeAndStrng:
+      #write out age and strongness flag too
+      newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} {} {} \n'.format(label_name,
+        bbox[0],bbox[1],bbox[2], bbox[3], score, age, strng_trk)
+    else:  
+      newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} {} {} \n'.format(label_name,
+        bbox[0],bbox[1],bbox[2], bbox[3], score)
+
     #print "newLine: ", newLine
     fileHndl.write(newLine)
 
 ##################################################################################################
 def drawBoxes(params=[], detObjs=[], drawHandle=[], writeBboxMap=[],
     labelmap=[], lblMapHashBased=False):
-  #FIX_ME:SN. Propage_obj.py also defines. Unify.
+  #FIX_ME:SN. Propagate_obj.py also defines. Unify.
   STRNG_TRK_IDX = 7
   colors = plt.cm.hsv(np.linspace(0, 1, 255)).tolist()
   for idx in range(detObjs.shape[0]): 
@@ -250,7 +256,6 @@ def drawBoxes(params=[], detObjs=[], drawHandle=[], writeBboxMap=[],
     else:    
       draw_cur_reg = score > params.confTh
 
-    #FIX_ME: Take it from config file
     #if age is young then choose only if score is high
     if (age <= 3) and params.enObjPropExp: 
       draw_cur_reg = (strng_trk==1)
@@ -292,7 +297,6 @@ def writeBoxes(params=[], detObjs=[], detObjFileHndl='', writeBboxMap=[],
     label_name = str(get_labelname(labelmap,label, lblMapHashBased=lblMapHashBased)[0])
 
     writeThisBox = True
-    #FIX_ME: Take it from config file
     #if age is young then choose only if score is high
     if (age <= 3) and (strng_trk == False) and params.enObjPropExp:
       writeThisBox = False
@@ -388,7 +392,8 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0,
     #print detObjRectListNPArray 
     detObjRectListNPArray = nms_core(detObjRectListNPArray, nmsTh, pick,
         age_based_check=False, testMode=False,
-        enObjPropExp=params.enObjPropExp, verbose=nms_verbose)
+        enObjPropExp=params.enObjPropExp, verbose=nms_verbose,
+        confThH=params.confThH)
     print (len(detObjRectListNPArray )),
     print detObjRectListNPArray,
 
@@ -516,7 +521,6 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
   if params.enObjProp:
     if params.enObjPropExp:
       for idx,detObj in enumerate(detObjRectListNPArray):
-        #FIX_ME:SN
         detObjRectListNPArray[idx][7] = (detObjRectListNPArray[idx][5] >
             params.confThH)
 
@@ -579,14 +583,6 @@ def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNu
       detObjFileHndl.close()
 
   if(len(detObjRectListNPArray)):
-    if print_frame_info:
-      print "type(wrapMulScls.gPoolDetObjs): ", type(wrapMulScls.gPoolDetObjs)
-      print "Global pool Before draeBoxes"
-      print "gPoolDetObjs.dtype: ", wrapMulScls.gPoolDetObjs.dtype
-      print "gPoolDetObjs.shape: ", wrapMulScls.gPoolDetObjs.shape
-      print "gPoolDetObjs: "
-      print wrapMulScls.gPoolDetObjs
-
     drawBoxes(params=params,detObjs=wrapMulScls.gPoolDetObjs, drawHandle=curFrameDrawHandle, 
         writeBboxMap=writeBboxMap, labelmap=labelmap, lblMapHashBased=params.externalDet)
 
@@ -767,7 +763,6 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   else:   
     #should match with label map file
     #FIX_ME:SN, make it read form label map file
-    #labelmap = {'none_of_the_above': 0, 'person': 1, 'trafficsign': 2, 'vehicle': 3}
     labelmap = ['none_of_the_above', 'person', 'trafficsign', 'vehicle']
 
     transformer = ''
