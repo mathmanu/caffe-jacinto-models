@@ -6,7 +6,8 @@ import math
 
 ###############################################################
 #set to 'fused' to use NVIDIA/caffe style fused batch norm that incorporates scale_bias (faster)
-BN_TYPE_TO_USE = 'fused' #'bvlc' #'fused'
+#using 'bvlc' for now to be able to finetune from previously trained models.
+BN_TYPE_TO_USE = 'bvlc' #'bvlc' #'fused'
 
 
 ###############################################################

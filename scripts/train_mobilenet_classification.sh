@@ -6,11 +6,11 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 
 #-------------------------------------------------------
 #IMPORTANT: change gpus and batch_size depending on the number of GPUs available.
-gpus="0,1,2,3"      #"0,1,2,3"  #"0,1"   #"0"
-batch_size=256      #256        #128     #64
+gpus="0"           #"0,1,2,3"  #"0,1"   #"0"
+batch_size=64      #256        #128     #64
 
 #-------------------------------------------------------
-model_name=mobilenet-0.5 #mobilenetv2-1.0 #mobilenetv2t3-1.0 #mobilenet-0.5 #mobilenet-1.0
+model_name=mobilenet-0.5  #mobilenet-1.0 #mobilenet-0.5  #mobilenetv2-1.0 #mobilenetv2t3-1.0
 dataset=imagenet
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
@@ -22,8 +22,8 @@ echo Logging output to "$LOG"
 #------------------------------------------------
 caffe="../../caffe-jacinto/build/tools/caffe.bin"
 
-max_iter=320000    #1000000
-base_lr=0.1        #0.045 
+max_iter=320000        #320000    #1000000
+base_lr=0.1            #0.1        #0.045
 type=SGD
 weight_decay=1e-4  #4e-5
 solver_param="{'type':'SGD','base_lr':$base_lr,'max_iter':$max_iter,'weight_decay':$weight_decay,'ignore_shape_mismatch':1}"
@@ -32,7 +32,7 @@ train_transform_param="{'mirror':1,'mean_value':[103.94,116.78,123.68],'crop_siz
 test_transform_param="{'mirror':0,'mean_value':[103.94,116.78,123.68],'crop_size':224,'scale':0.017}"
 
 #------------------------------------------------
-#Download the pretrained weights and place in this location
+#Download the pretrained weights and place in this location, if you want to finetune
 weights_src="training/"$model_name".caffemodel"
 
 #-------------------------------------------------------
