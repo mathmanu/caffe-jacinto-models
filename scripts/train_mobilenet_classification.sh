@@ -25,9 +25,11 @@ max_iter=160000    #320000    #1000000
 base_lr=0.1        #0.045 
 type=SGD
 batch_size=256     #128
-weight_decay=1e-4  #4e-5
+weight_decay=4e-5  #4e-5 #1e-4
 solver_param="{'type':'SGD','base_lr':$base_lr,'max_iter':$max_iter,'weight_decay':$weight_decay,'ignore_shape_mismatch':1}"
 
+train_transform_param="{'mirror':1,'mean_value':[103.94,116.78,123.68],'crop_size':224,'scale':0.017}"
+test_transform_param="{'mirror':0,'mean_value':[103.94,116.78,123.68],'crop_size':224,'scale':0.017}"
 
 #------------------------------------------------
 #Download the pretrained weights and place in this location
@@ -40,7 +42,8 @@ config_name=$folder_name/$stage;mkdir $config_name
 #config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 #'pretrain_model':'$weights','mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param}" 
 
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size}" 
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
+'mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param="$solver_param"
 
@@ -60,7 +63,8 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
-'pretrain_model':'$weights','num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
+'pretrain_model':'$weights','mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param,\
+'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
 'caffe':'$caffe test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
@@ -78,8 +82,10 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
-'pretrain_model':'$weights','num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
-'caffe':'$caffe test'}" 
+'pretrain_model':'$weights','mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param,\
+'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
+'caffe':'$caffe test'}"
+
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
 

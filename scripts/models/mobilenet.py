@@ -31,9 +31,13 @@ def ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=True, num_output=0
   relu_name = out_layer.replace('conv','relu')
 
   out_layer = conv_name
+  
   #lower the decay of dw layer as per MobilenetV1 paper (seems not needed for MobilenetV2)
-  decay_mult =  0.01 if group == num_output else 1
-  kwargs_conv = {'param':{'lr_mult':1, 'decay_mult':decay_mult}, 'weight_filler': {'type': 'msra'}}
+  #may not be working - harder to train
+  #decay_mult =  0.01 if group == num_output else 1
+  #kwargs_conv = {'param':{'lr_mult':1, 'decay_mult':decay_mult}, 'weight_filler': {'type': 'msra'}}
+  kwargs_conv = {'weight_filler': {'type': 'msra'}}
+    
   net[out_layer] = L.Convolution(net[from_layer], num_output=num_output,
       kernel_size=kernel_size, pad=pad*dilation, stride=stride, group=group, dilation=dilation, bias_term=False, **kwargs_conv)
   from_layer = out_layer

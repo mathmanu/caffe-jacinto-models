@@ -6,7 +6,7 @@ import math
 
 ###############################################################
 #set to 'fused' to use NVIDIA/caffe style fused batch norm that incorporates scale_bias (faster)
-BN_TYPE_TO_USE = 'fused' #'bvlc' #'fused'
+BN_TYPE_TO_USE = 'bvlc' #'bvlc' #'fused'
 
 
 ###############################################################
@@ -28,7 +28,7 @@ def ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu=True, num_output
   conv_name = '{}'.format(out_layer)
   bn_name = '{}/bn'.format(out_layer)
   scale_name = '{}/scale'.format(out_layer)
-  relu_name = '{}/relu'.format(out_layer)
+  relu_name = out_layer.replace('conv', 'relu') #'{}/relu'.format(out_layer)
 
   out_layer = conv_name
   kwargs_conv = {'weight_filler': {'type': 'msra'}}
@@ -38,7 +38,7 @@ def ConvBNLayerMobileNetV2(net, from_layer, out_layer, use_relu=True, num_output
       
   if bn_type == 'bvlc':
       out_layer = bn_name
-      net[out_layer] = L.BatchNorm(net[from_layer], in_place=bn_in_place)
+      net[out_layer] = L.BatchNorm(net[from_layer], in_place=False) #bn_in_place)
       from_layer = out_layer
       
       out_layer = scale_name
@@ -79,29 +79,27 @@ def InvertedResidualLinearBottleNeckBlock(net, from_layer, out_name, use_relu=Tr
   from_layer = out_layer
 
   if stride == 1 and num_input == num_output:
-    out_layer = '{}/eltwise'.format(out_name)
-    net[out_layer] = L.Eltwise(net[from_layer], net[input_layer])
+    out_layer = out_name.replace('conv', 'block_') #'{}/eltwise'.format(out_name)
+    net[out_layer] = L.Eltwise(net[input_layer], net[from_layer])
   
   return out_layer
     
     
 ###############################################################
-def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, num_output=1000,
-  wide_factor = 1.0, enable_fc=True, bn_type='bvlc', output_stride=32, default_strides=True, expansion_t=6):
+def MobileNetV2Body(net, from_layer='data', dropout=False, freeze_layers=None, num_output=1000,
+  wide_factor = 1.0, enable_fc=True, bn_type='bvlc', output_stride=32, expansion_t=6):
 
   num_output_fc = num_output
 
   if freeze_layers is None:
     freeze_layers = []
 
+  block_labels = ['1', '2_1', '2_2', '3_1', '3_2', '4_1', '4_2', '4_3', '4_4', '4_5', '4_6', '4_7',
+                  '5_1', '5_2', '5_3', '6_1', '6_2', '6_3', '6_4']
+
+  # note: this is different from mobilenetv2 paper
   assert(output_stride==32 or output_stride==16)
-  if default_strides:
-      strides_s = [2, 1, 2, 2, 2, 1, 2, 1, 1] if output_stride == 32 else [2, 1, 2, 2, 2, 1, 1, 1, 1]
-  else:
-      #note: this is different from mobilenetv2 paper
-      #shicai strides. more complex (438 MMACS)
-      #https://github.com/shicai/MobileNet-Caffe
-      strides_s = [2, 1, 2, 2, 1, 2, 2, 1, 1] if output_stride == 32 else [2, 1, 2, 2, 1, 2, 1, 1, 1]
+  strides_s = [2, 1, 2, 2, 1, 2, 2, 1, 1] if output_stride == 32 else [2, 1, 2, 2, 1, 2, 1, 1, 1]
 
   channels = [32, 16, 24, 32, 64, 96, 160, 320, 1280]
   channels_c = map(lambda x: width_multiplier8(x * wide_factor), channels)
@@ -117,19 +115,21 @@ def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, nu
   num_input = channels_c[0]
   from_layer = out_layer
 
-  num_stages = len(channels_c)  
+  num_stages = len(channels_c)
+  block_idx = 1
   for stg_idx in range(1,num_stages-1):
       for n in range(repeats_n[stg_idx]):
           xt = 1 if stg_idx < 2 else expansion_t
-          out_layer = 'conv{}_{}'.format(stg_idx+1, n+1)
+          out_layer = 'conv'+block_labels[block_idx] #'conv{}_{}'.format(stg_idx+1, n+1)
           dilation = 2 if output_stride == 16 and stg_idx > 5 else 1
           stride = strides_s[stg_idx] if n == 0 else 1
           out_layer = InvertedResidualLinearBottleNeckBlock(net, from_layer, out_layer,
               num_input=num_input, num_output=channels_c[stg_idx], stride=stride, dilation=dilation, bn_type=bn_type, expansion_t=xt)
           num_input = channels_c[stg_idx]
           from_layer = out_layer
+          block_idx += 1
   
-  out_layer = 'conv{}_{}'.format(num_stages-1+1, 1)
+  out_layer = 'conv'+block_labels[-1] #'conv{}_{}'.format(num_stages-1+1, 1)
   out_layer = ConvBNLayerMobileNetV2(net, from_layer, out_layer,
       num_output=channels_c[-1], kernel_size=1, pad=0, stride=strides_s[-1],
       dilation=dilation, bn_type=bn_type)
@@ -137,16 +137,16 @@ def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, nu
 
   if enable_fc:
     # Add global pooling layer.
-    out_layer = 'pool{}'.format(num_stages)
+    out_layer = 'pool{}'.format(6)
     net[out_layer] = L.Pooling(net[from_layer], pool=P.Pooling.AVE, global_pooling=True)
     from_layer = out_layer
 
     if dropout:
-      out_layer = 'drop{}'.format(num_stages)
+      out_layer = 'drop{}'.format(6)
       net[out_layer] = L.Dropout(net[from_layer], dropout_ratio=0.5)
       from_layer = out_layer
       
-    out_layer = 'fc{}'.format(num_stages+1)
+    out_layer = 'fc{}'.format(6+1)
     kwargs_conv = {'weight_filler': {'type': 'msra'}}
     net[out_layer] = L.Convolution(net[from_layer], kernel_size=1, pad=0, num_output=num_output_fc, **kwargs_conv)
   
@@ -154,7 +154,7 @@ def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, nu
 
 
 ###############################################################
-def mobilenetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
+def mobilenetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, expansion_t=6):
   return MobileNetV2Body(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
@@ -162,7 +162,7 @@ def mobilenetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_typ
 
 
 ###############################################################        
-def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
+def mobiledetnetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, use_batchnorm=True, use_relu=True, num_intermediate=512, expansion_t=6):
   
   out_layer = MobileNetV2Body(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,

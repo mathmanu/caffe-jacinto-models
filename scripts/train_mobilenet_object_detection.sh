@@ -74,7 +74,7 @@ power=1.0
 
 #0.0005 (orignal SSD), 0.0001
 #wd of dw layers may be lowered even furter inside the script using decay_mult
-weight_decay_L2=1e-4  
+weight_decay_L2=4e-5 #1e-4  
 
 #0:linear,1:log,2:like original SSD (min/max ratio will be recomputed)
 log_space_steps=0

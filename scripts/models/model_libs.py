@@ -93,11 +93,11 @@ def ConvBNLayer(net, from_layer, out_name, use_bn, use_relu, num_output,
   [pad_h, pad_w] = UnpackVariable(pad, 2)
   [stride_h, stride_w] = UnpackVariable(stride, 2)
   
-  #lower wd for dw layers as per mobilenet paper - not working - harder to train
   kwargs_conv = copy.deepcopy(kwargs)
-  decay_mult = 0.01 if group == num_output else 1
-  param = {'decay_mult': decay_mult}
-  kwargs_conv['param'][0]['decay_mult'] = decay_mult
+  #lower wd for dw layers as per mobilenet paper - not working - harder to train
+  #decay_mult = 0.01 if group == num_output else 1
+  #param = {'decay_mult': decay_mult}
+  #kwargs_conv['param'][0]['decay_mult'] = decay_mult
   
   if kernel_h == kernel_w:
     net[conv_name] = L.Convolution(net[from_layer], num_output=num_output,

@@ -23,12 +23,18 @@ caffe="../../caffe-jacinto/build/tools/caffe.bin"
 #-------------------------------------------------------
 max_iter=64000
 base_lr=0.1
+weight_decay=4e-5 #1e-4
 type=SGD
 batch_size=64
 stride_list="[1,1,2,1,2]"
-#-------------------------------------------------------
-solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'test_interval':1000}"
 
+
+#-------------------------------------------------------
+solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'test_interval':1000,\
+'regularization_type':'L2','weight_decay':$weight_decay}"
+
+train_transform_param="{'mirror':1,'mean_value':[103.94,116.78,123.68],'crop_size':224,'scale':0.017}"
+test_transform_param="{'mirror':0,'mean_value':[103.94,116.78,123.68],'crop_size':224,'scale':0.017}"
 
 #-------------------------------------------------------
 #initial training from scratch
@@ -39,7 +45,9 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'num_output':10,'image_width':32,'image_height':32,'crop_size':32,\
 'accum_batch_size':$batch_size,'batch_size':$batch_size,\
 'train_data':'./data/cifar10_train_lmdb','test_data':'./data/cifar10_test_lmdb',\
-'num_test_image':10000,'test_batch_size':50}" 
+'num_test_image':10000,'test_batch_size':50,\
+'mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param}"
+ 
 python ./models/image_classification.py --config_param="$config_param" --solver_param="$solver_param"
 config_name_prev=$config_name
 
@@ -49,7 +57,7 @@ stage="test"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'test_interval':1000,\
-'regularization_type':'L1','weight_decay':1e-5,\
+'regularization_type':'L2','weight_decay':$weight_decay,\
 'sparse_mode':1,'display_sparsity':1000}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
@@ -59,6 +67,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'accum_batch_size':$batch_size,'batch_size':$batch_size,\
 'train_data':'./data/cifar10_train_lmdb','test_data':'./data/cifar10_test_lmdb',\
 'num_test_image':10000,'test_batch_size':50,\
+'mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param,\
 'caffe':'$caffe test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
@@ -71,7 +80,7 @@ stage="test_quantize"
 weights=$config_name_prev/"$dataset"_"$model_name"_iter_$max_iter.caffemodel
 
 test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'test_interval':1000,\
-'regularization_type':'L1','weight_decay':1e-5,\
+'regularization_type':'L2','weight_decay':$weight_decay,\
 'sparse_mode':1,'display_sparsity':1000}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
@@ -81,6 +90,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'accum_batch_size':$batch_size,'batch_size':$batch_size,\
 'train_data':'./data/cifar10_train_lmdb','test_data':'./data/cifar10_test_lmdb',\
 'num_test_image':10000,'test_batch_size':50,\
+'mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param,\
 'caffe':'$caffe test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param

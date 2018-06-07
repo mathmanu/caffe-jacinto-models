@@ -9,9 +9,16 @@ import matplotlib.pyplot as plt
 import ntpath
 
 #sys.path.insert(0, '/user/a0393754/work/caffe/caffe-jacinto/python')
-model_path = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/object_detection/mobiledetnet-0.5/test_quantize/output/deploy_quantize_deploy.prototxt'
-pretrained_path = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/object_detection/mobiledetnet-0.5/test_quantize/output/deploy_quantize.caffemodel'
+
+#model_path = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/image_classification/imagenet_mobilenet_v2_shicai/test_quantize/deploy.prototxt'
+#pretrained_path = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/image_classification/imagenet_mobilenet_v2_shicai/test_quantize/mobilenet_v2.caffemodel'
+
+model_path = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/image_classification/imagenet_mobilenet_v2_newnames/test_quantize/deploy.prototxt'
+pretrained_path = '/data/mmcodec_video2_tier3/users/debu/net_surgery/imagenet_mobilenetv2-1.0_2018-06-06_17-18-39_bvlcbn/initial/MobileNetV2_new_names.caffemodel'
+
 input_name = '/data/mmcodec_video2_tier3/users/manu/shared/inputs/VID_20141005_182635.JPG'
+input_mean_values = [103.94,116.78,123.68] #[0, 0, 0]
+input_size = (224,224) #(512,256)
 
 import caffe
 caffe.set_mode_cpu()
@@ -37,7 +44,7 @@ def writeNPAryAsRaw(ipFrame, fileName, opDataType=np.float32, opScale=1):
     fileHandle.close()
        
 def predict(model_path, pretrained_path, image, frameNum, blobs=None):
-    net = caffe.Net(model_path, pretrained_path, caffe.TEST)
+    net = caffe.Net(model_path, weights=pretrained_path, phase=caffe.TEST)
     #model = type('', (), {})()
     #model.net = net
 
@@ -64,7 +71,7 @@ def getLayerByName(net_proto, layer_name):
     
 def infer():
     caffe.set_mode_cpu()
-    mean_pixel = [0, 0, 0]
+    mean_pixel = input_mean_values
     num = 0
 
     net_proto = caffe_pb2.NetParameter()
@@ -72,7 +79,7 @@ def infer():
     
     # moved image reading out from predict()
     image = cv2.imread(input_name, 1).astype(np.float32) - mean_pixel
-    image = cv2.resize(image, (512,256))
+    image = cv2.resize(image, input_size)
 
     out_blobs, net = predict(model_path, pretrained_path, image, num, blobs=[])
     
@@ -102,7 +109,9 @@ def infer():
               
        cur_blob_name_out = cur_blob_name.replace('/','.')       
        print(layer_name, " : ", cur_blob_name, " : ", cur_blob_name_out)
-           
+       if cur_blob_name == 'conv4_1/expand':
+           print(layer_name, ' ', cur_blob_name, ' ', cur_data)
+                  
        layer_param =  getLayerByName(net_proto, layer_name)             
        if layer_param is not None and len(layer_param.quantization_param.qparam_out)>0:       
            opScale = layer_param.quantization_param.qparam_out[0].scale
@@ -112,7 +121,15 @@ def infer():
                writeNPAryAsRaw(cur_data, cur_blob_name_out+'_int8'+'.bin', opDataType=np.int8, opScale=opScale)       
        else:
            writeNPAryAsRaw(cur_data, cur_blob_name_out+'_float32'+'.bin', opDataType=np.float32)  
-           
+       
+    for layer_name in list(net.params.keys()):
+       if True: #layer_name in net.params: #layer_name == 'conv2_2/linear/scale':
+           #print(layer_name, ':', cur_blob_name, '=\n', cur_data)
+           #print(layer_name, ':', 'num weight blobs:', len(net.params[layer_name]))
+           for p in range(len(net.params[layer_name])):
+              #print(layer_name, ':', 'params:', p, '=\n',net.params[layer_name][p].data)
+              writeNPAryAsRaw(net.params[layer_name][p].data, layer_name.replace('/','.')+'_weight'+str(p)+'_float32'+'.bin', opDataType=np.float32) 
+                     
 def main():
     infer()
 
