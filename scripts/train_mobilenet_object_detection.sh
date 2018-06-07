@@ -5,7 +5,9 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0,1,2,3" #"0,1" #"0,1,2"         #IMPORTANT: change this to "0" if you have only one GPU. Adjust batch_size (below) if the GPU memory is not sufficient.
+#IMPORTANT: change gpus and batch_size depending on the number of GPUs available.
+gpus="0,1,2,3"     #"0,1,2,3" #"0,1" #"0"
+batch_size=32      #32        #16    #"8"
 
 #-------------------------------------------------------
 model_name=mobiledetnet-0.5      #ssdJacintoNetV2  #mobiledetnet-0.5  #mobiledetnet-1.0 
@@ -121,8 +123,7 @@ then
   resize_width=512  
   resize_height=256 
   crop_width=512    
-  crop_height=256   
-  batch_size=32      #16      #can increase this if more gpus are available
+  crop_height=256
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
   max_iter=120000    #120000  #64000   #32000
@@ -155,7 +156,6 @@ then
   use_difficult_gt=0
   small_objs=1
   ker_mbox_loc_conf=1
-  batch_size=16      #32    #16
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
   max_iter=120000    #120000  #64000   #32000
@@ -189,7 +189,6 @@ then
   crop_height=256
   small_objs=0
   ker_mbox_loc_conf=1
-  batch_size=16      #32    #16
 
   #ignore lables are marked as diff in TI dataset 
   use_difficult_gt=1

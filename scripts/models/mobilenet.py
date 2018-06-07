@@ -87,7 +87,7 @@ def ConvDWBlockMobileNet(net, from_layer, out_name, use_relu=True, num_input=0, 
   
   
 ###############################################################
-def MobileNetBody(net, from_layer='data', dropout=True, freeze_layers=None, num_output=1000,
+def MobileNetBody(net, from_layer='data', dropout=False, freeze_layers=None, num_output=1000,
   wide_factor = 1.0, enable_fc=True, bn_type='bvlc', output_stride=32, expansion_t=1):
 
   num_output_fc = num_output
@@ -106,8 +106,9 @@ def MobileNetBody(net, from_layer='data', dropout=True, freeze_layers=None, num_
 
   channels = [32, 64, 128, 128, 256, 256, 512, 512, 512, 512, 512, 512, 1024,1024]
   channels_c = map(lambda x: width_multiplier8(x * wide_factor), channels)
-  #for the last conv layer, do not reduce below 1024
-  channels_c[-1] = max(channels[-1], channels_c[-1])
+
+  #for the last conv layer, do not reduce below 1024 (this is done in mobilenetv2)
+  #channels_c[-1] = max(channels[-1], channels_c[-1])
 
   repeats_n = [1] * len(channels_c)
 
@@ -151,7 +152,7 @@ def MobileNetBody(net, from_layer='data', dropout=True, freeze_layers=None, num_
 
 
 ###############################################################
-def mobilenet(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
+def mobilenet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, expansion_t=1):
   return MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
@@ -159,7 +160,7 @@ def mobilenet(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=
 
 
 ###############################################################
-def mobiledetnet(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
+def mobiledetnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, use_batchnorm=True, use_relu=True, num_intermediate=512, expansion_t=1):
   
   out_layer = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,

@@ -86,7 +86,7 @@ def InvertedResidualLinearBottleNeckBlock(net, from_layer, out_name, use_relu=Tr
     
     
 ###############################################################
-def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, num_output=1000,
+def MobileNetV2Body(net, from_layer='data', dropout=False, freeze_layers=None, num_output=1000,
   wide_factor = 1.0, enable_fc=True, bn_type='bvlc', output_stride=32, default_strides=True, expansion_t=6):
 
   num_output_fc = num_output
@@ -154,7 +154,7 @@ def MobileNetV2Body(net, from_layer='data', dropout=True, freeze_layers=None, nu
 
 
 ###############################################################
-def mobilenetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
+def mobilenetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, expansion_t=6):
   return MobileNetV2Body(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
@@ -162,7 +162,7 @@ def mobilenetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_typ
 
 
 ###############################################################        
-def mobiledetnetv2(net, from_layer='data', dropout=True, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
+def mobiledetnetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, use_batchnorm=True, use_relu=True, num_intermediate=512, expansion_t=6):
   
   out_layer = MobileNetV2Body(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
