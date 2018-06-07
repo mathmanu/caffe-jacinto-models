@@ -1,0 +1,25 @@
+train_net: "training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/test_quantize/train.prototxt"
+test_net: "training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/test_quantize/test.prototxt"
+test_iter: 1000
+test_interval: 2000
+base_lr: 0.1
+display: 100
+max_iter: 320000
+lr_policy: "poly"
+gamma: 0.1
+power: 1
+momentum: 0.9
+weight_decay: 0.0001
+snapshot: 10000
+snapshot_prefix: "training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/test_quantize/imagenet_mobilenet-0.5"
+solver_mode: GPU
+device_id: 0
+random_seed: 33
+debug_info: false
+snapshot_after_train: true
+regularization_type: "L2"
+test_initialization: true
+iter_size: 4
+type: "SGD"
+display_sparsity: 1000
+

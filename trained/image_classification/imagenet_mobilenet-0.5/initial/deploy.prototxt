@@ -27,10 +27,6 @@ layer {
   type: "Convolution"
   bottom: "data/bias"
   top: "conv1"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 16
     bias_term: false
@@ -41,6 +37,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -48,14 +45,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv1"
   top: "conv1"
-}
-layer {
-  name: "conv1/scale"
-  type: "Scale"
-  bottom: "conv1"
-  top: "conv1"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -69,10 +60,6 @@ layer {
   type: "Convolution"
   bottom: "conv1"
   top: "conv2_1/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 16
     bias_term: false
@@ -83,6 +70,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -90,14 +78,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv2_1/dw"
   top: "conv2_1/dw"
-}
-layer {
-  name: "conv2_1/dw/scale"
-  type: "Scale"
-  bottom: "conv2_1/dw"
-  top: "conv2_1/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -111,10 +93,6 @@ layer {
   type: "Convolution"
   bottom: "conv2_1/dw"
   top: "conv2_1/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 32
     bias_term: false
@@ -125,6 +103,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -132,14 +111,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv2_1/sep"
   top: "conv2_1/sep"
-}
-layer {
-  name: "conv2_1/sep/scale"
-  type: "Scale"
-  bottom: "conv2_1/sep"
-  top: "conv2_1/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -153,10 +126,6 @@ layer {
   type: "Convolution"
   bottom: "conv2_1/sep"
   top: "conv2_2/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 32
     bias_term: false
@@ -167,6 +136,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -174,14 +144,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv2_2/dw"
   top: "conv2_2/dw"
-}
-layer {
-  name: "conv2_2/dw/scale"
-  type: "Scale"
-  bottom: "conv2_2/dw"
-  top: "conv2_2/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -195,10 +159,6 @@ layer {
   type: "Convolution"
   bottom: "conv2_2/dw"
   top: "conv2_2/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 64
     bias_term: false
@@ -209,6 +169,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -216,14 +177,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv2_2/sep"
   top: "conv2_2/sep"
-}
-layer {
-  name: "conv2_2/sep/scale"
-  type: "Scale"
-  bottom: "conv2_2/sep"
-  top: "conv2_2/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -237,10 +192,6 @@ layer {
   type: "Convolution"
   bottom: "conv2_2/sep"
   top: "conv3_1/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 64
     bias_term: false
@@ -251,6 +202,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -258,14 +210,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv3_1/dw"
   top: "conv3_1/dw"
-}
-layer {
-  name: "conv3_1/dw/scale"
-  type: "Scale"
-  bottom: "conv3_1/dw"
-  top: "conv3_1/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -279,10 +225,6 @@ layer {
   type: "Convolution"
   bottom: "conv3_1/dw"
   top: "conv3_1/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 64
     bias_term: false
@@ -293,6 +235,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -300,14 +243,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv3_1/sep"
   top: "conv3_1/sep"
-}
-layer {
-  name: "conv3_1/sep/scale"
-  type: "Scale"
-  bottom: "conv3_1/sep"
-  top: "conv3_1/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -321,10 +258,6 @@ layer {
   type: "Convolution"
   bottom: "conv3_1/sep"
   top: "conv3_2/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 64
     bias_term: false
@@ -335,6 +268,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -342,14 +276,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv3_2/dw"
   top: "conv3_2/dw"
-}
-layer {
-  name: "conv3_2/dw/scale"
-  type: "Scale"
-  bottom: "conv3_2/dw"
-  top: "conv3_2/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -363,10 +291,6 @@ layer {
   type: "Convolution"
   bottom: "conv3_2/dw"
   top: "conv3_2/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 128
     bias_term: false
@@ -377,6 +301,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -384,14 +309,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv3_2/sep"
   top: "conv3_2/sep"
-}
-layer {
-  name: "conv3_2/sep/scale"
-  type: "Scale"
-  bottom: "conv3_2/sep"
-  top: "conv3_2/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -405,10 +324,6 @@ layer {
   type: "Convolution"
   bottom: "conv3_2/sep"
   top: "conv4_1/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 128
     bias_term: false
@@ -419,6 +334,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -426,14 +342,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv4_1/dw"
   top: "conv4_1/dw"
-}
-layer {
-  name: "conv4_1/dw/scale"
-  type: "Scale"
-  bottom: "conv4_1/dw"
-  top: "conv4_1/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -447,10 +357,6 @@ layer {
   type: "Convolution"
   bottom: "conv4_1/dw"
   top: "conv4_1/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 128
     bias_term: false
@@ -461,6 +367,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -468,14 +375,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv4_1/sep"
   top: "conv4_1/sep"
-}
-layer {
-  name: "conv4_1/sep/scale"
-  type: "Scale"
-  bottom: "conv4_1/sep"
-  top: "conv4_1/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -489,10 +390,6 @@ layer {
   type: "Convolution"
   bottom: "conv4_1/sep"
   top: "conv4_2/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 128
     bias_term: false
@@ -503,6 +400,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -510,14 +408,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv4_2/dw"
   top: "conv4_2/dw"
-}
-layer {
-  name: "conv4_2/dw/scale"
-  type: "Scale"
-  bottom: "conv4_2/dw"
-  top: "conv4_2/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -531,10 +423,6 @@ layer {
   type: "Convolution"
   bottom: "conv4_2/dw"
   top: "conv4_2/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -545,6 +433,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -552,14 +441,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv4_2/sep"
   top: "conv4_2/sep"
-}
-layer {
-  name: "conv4_2/sep/scale"
-  type: "Scale"
-  bottom: "conv4_2/sep"
-  top: "conv4_2/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -573,10 +456,6 @@ layer {
   type: "Convolution"
   bottom: "conv4_2/sep"
   top: "conv5_1/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -587,6 +466,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -594,14 +474,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_1/dw"
   top: "conv5_1/dw"
-}
-layer {
-  name: "conv5_1/dw/scale"
-  type: "Scale"
-  bottom: "conv5_1/dw"
-  top: "conv5_1/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -615,10 +489,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_1/dw"
   top: "conv5_1/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -629,6 +499,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -636,14 +507,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_1/sep"
   top: "conv5_1/sep"
-}
-layer {
-  name: "conv5_1/sep/scale"
-  type: "Scale"
-  bottom: "conv5_1/sep"
-  top: "conv5_1/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -657,10 +522,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_1/sep"
   top: "conv5_2/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -671,6 +532,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -678,14 +540,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_2/dw"
   top: "conv5_2/dw"
-}
-layer {
-  name: "conv5_2/dw/scale"
-  type: "Scale"
-  bottom: "conv5_2/dw"
-  top: "conv5_2/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -699,10 +555,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_2/dw"
   top: "conv5_2/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -713,6 +565,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -720,14 +573,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_2/sep"
   top: "conv5_2/sep"
-}
-layer {
-  name: "conv5_2/sep/scale"
-  type: "Scale"
-  bottom: "conv5_2/sep"
-  top: "conv5_2/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -741,10 +588,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_2/sep"
   top: "conv5_3/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -755,6 +598,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -762,14 +606,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_3/dw"
   top: "conv5_3/dw"
-}
-layer {
-  name: "conv5_3/dw/scale"
-  type: "Scale"
-  bottom: "conv5_3/dw"
-  top: "conv5_3/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -783,10 +621,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_3/dw"
   top: "conv5_3/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -797,6 +631,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -804,14 +639,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_3/sep"
   top: "conv5_3/sep"
-}
-layer {
-  name: "conv5_3/sep/scale"
-  type: "Scale"
-  bottom: "conv5_3/sep"
-  top: "conv5_3/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -825,10 +654,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_3/sep"
   top: "conv5_4/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -839,6 +664,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -846,14 +672,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_4/dw"
   top: "conv5_4/dw"
-}
-layer {
-  name: "conv5_4/dw/scale"
-  type: "Scale"
-  bottom: "conv5_4/dw"
-  top: "conv5_4/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -867,10 +687,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_4/dw"
   top: "conv5_4/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -881,6 +697,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -888,14 +705,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_4/sep"
   top: "conv5_4/sep"
-}
-layer {
-  name: "conv5_4/sep/scale"
-  type: "Scale"
-  bottom: "conv5_4/sep"
-  top: "conv5_4/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -909,10 +720,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_4/sep"
   top: "conv5_5/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -923,6 +730,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -930,14 +738,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_5/dw"
   top: "conv5_5/dw"
-}
-layer {
-  name: "conv5_5/dw/scale"
-  type: "Scale"
-  bottom: "conv5_5/dw"
-  top: "conv5_5/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -951,10 +753,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_5/dw"
   top: "conv5_5/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -965,6 +763,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -972,14 +771,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_5/sep"
   top: "conv5_5/sep"
-}
-layer {
-  name: "conv5_5/sep/scale"
-  type: "Scale"
-  bottom: "conv5_5/sep"
-  top: "conv5_5/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -993,10 +786,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_5/sep"
   top: "conv5_6/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 256
     bias_term: false
@@ -1007,6 +796,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -1014,14 +804,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_6/dw"
   top: "conv5_6/dw"
-}
-layer {
-  name: "conv5_6/dw/scale"
-  type: "Scale"
-  bottom: "conv5_6/dw"
-  top: "conv5_6/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -1035,10 +819,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_6/dw"
   top: "conv5_6/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 512
     bias_term: false
@@ -1049,6 +829,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -1056,14 +837,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv5_6/sep"
   top: "conv5_6/sep"
-}
-layer {
-  name: "conv5_6/sep/scale"
-  type: "Scale"
-  bottom: "conv5_6/sep"
-  top: "conv5_6/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -1077,10 +852,6 @@ layer {
   type: "Convolution"
   bottom: "conv5_6/sep"
   top: "conv6/dw"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 512
     bias_term: false
@@ -1091,6 +862,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -1098,14 +870,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv6/dw"
   top: "conv6/dw"
-}
-layer {
-  name: "conv6/dw/scale"
-  type: "Scale"
-  bottom: "conv6/dw"
-  top: "conv6/dw"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -1119,10 +885,6 @@ layer {
   type: "Convolution"
   bottom: "conv6/dw"
   top: "conv6/sep"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
   convolution_param {
     num_output: 512
     bias_term: false
@@ -1133,6 +895,7 @@ layer {
     weight_filler {
       type: "msra"
     }
+    dilation: 1
   }
 }
 layer {
@@ -1140,14 +903,8 @@ layer {
   type: "BatchNorm"
   bottom: "conv6/sep"
   top: "conv6/sep"
-}
-layer {
-  name: "conv6/sep/scale"
-  type: "Scale"
-  bottom: "conv6/sep"
-  top: "conv6/sep"
-  scale_param {
-    bias_term: true
+  batch_norm_param {
+    scale_bias: true
   }
 }
 layer {
@@ -1171,16 +928,9 @@ layer {
   type: "Convolution"
   bottom: "pool6"
   top: "fc7"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
   convolution_param {
     num_output: 1000
+    pad: 0
     kernel_size: 1
     weight_filler {
       type: "msra"

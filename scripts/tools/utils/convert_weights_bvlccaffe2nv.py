@@ -16,17 +16,16 @@ import caffe
 caffe.set_mode_cpu()
 print ("Afr setting cpu mode for caffe-bvlc")
 
-#nvidia-cafe (0.16) fused bn style model
-model_nv = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/image_classification/imagenet_mobilenet_v2_fusedbn/test_quantize/deploy.prototxt'
-weights_nv = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/image_classification/imagenet_mobilenet_v2_fusedbn/test_quantize/MobileNetV2_new_NV_fused_bn.caffemodel'
-
+################################################################
 #bvlc bn style (scale seperate) model
-model_bvlc = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/image_classification/imagenet_mobilenet_v2_newnames/test_quantize/deploy.prototxt'
-weights_bvlc = '/user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto-quantization/trained/image_classification/imagenet_mobilenet_v2_newnames/test_quantize/MobileNetV2_new_names.caffemodel'
+model_bvlc = '../trained/image_classification/imagenet_mobilenet-0.5_bn+scale/initial/deploy.prototxt'
+weights_bvlc = '../trained/image_classification/imagenet_mobilenet-0.5_bn+scale/initial/imagenet_mobilenet-0.5_iter_320000.caffemodel'
 
+#nvidia-cafe (0.16 or later) fused bn style model
+model_nv = '../trained/image_classification/imagenet_mobilenet-0.5/initial/deploy.prototxt'
+weights_nv = '../trained/image_classification/imagenet_mobilenet-0.5/initial/imagenet_mobilenet-0.5_iter_320000.caffemodel'
 
 ################################################################
-
 #load nvidia train model (weigths for all layers except BN will be loaded)
 net_nv = caffe.Net(model_nv, weights = None, phase = caffe.TEST)
 #print("net_nv: blobs {}\nparams {}".format(net.blobs.keys()[0:20], net.params.keys()[0:10]))

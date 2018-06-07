@@ -1,0 +1,3483 @@
+Logging output to training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/train-log_2018-06-07_22-55-32.txt
+python cmd completed
+training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/test
+training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/test_quantize
+I0607 22:55:47.362260 41590 caffe.cpp:902] This is NVCaffe 0.17.0 started at Thu Jun  7 22:55:47 2018
+I0607 22:55:47.362447 41590 caffe.cpp:904] CuDNN version: 7003
+I0607 22:55:47.362457 41590 caffe.cpp:905] CuBLAS version: 9000
+I0607 22:55:47.362470 41590 caffe.cpp:906] CUDA version: 9000
+I0607 22:55:47.362498 41590 caffe.cpp:907] CUDA driver version: 9000
+I0607 22:55:47.362515 41590 caffe.cpp:908] Arguments: 
+[0]: /user/a0393608/files/work/code/vision/ti/bitbucket/algoref/caffe-jacinto/build/tools/caffe.bin
+[1]: train
+[2]: --solver=training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/initial/solver.prototxt
+[3]: --gpu
+[4]: 0
+I0607 22:55:47.390794 41590 gpu_memory.cpp:105] GPUMemory::Manager initialized
+I0607 22:55:47.392046 41590 gpu_memory.cpp:107] Total memory: 11715084288, Free: 11508514816, dev_info[0]: total=11715084288 free=11508514816
+I0607 22:55:47.392058 41590 caffe.cpp:226] Using GPUs 0
+I0607 22:55:47.393169 41590 caffe.cpp:230] GPU 0: GeForce GTX 1080 Ti
+I0607 22:55:47.393241 41590 solver.cpp:41] Solver data type: FLOAT
+I0607 22:55:47.405019 41590 solver.cpp:44] Initializing solver from parameters: 
+train_net: "training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/initial/train.prototxt"
+test_net: "training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/initial/test.prototxt"
+test_iter: 1000
+test_interval: 2000
+base_lr: 0.1
+display: 100
+max_iter: 320000
+lr_policy: "poly"
+gamma: 0.1
+power: 1
+momentum: 0.9
+weight_decay: 0.0001
+snapshot: 10000
+snapshot_prefix: "training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/initial/imagenet_mobilenet-0.5"
+solver_mode: GPU
+device_id: 0
+random_seed: 33
+debug_info: false
+train_state {
+  level: 0
+  stage: ""
+}
+snapshot_after_train: true
+test_initialization: true
+iter_size: 4
+type: "SGD"
+ignore_shape_mismatch: true
+I0607 22:55:47.405130 41590 solver.cpp:76] Creating training net from train_net file: training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/initial/train.prototxt
+I0607 22:55:47.405812 41590 net.cpp:457] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy/top1
+I0607 22:55:47.405838 41590 net.cpp:457] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy/top5
+I0607 22:55:47.406057 41590 net.cpp:80] Initializing net from parameters: 
+name: "mobilenet-0.5_train"
+state {
+  phase: TRAIN
+  level: 0
+  stage: ""
+}
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  transform_param {
+    scale: 0.017
+    mirror: true
+    crop_size: 224
+    mean_value: 103.94
+    mean_value: 116.78
+    mean_value: 123.68
+  }
+  data_param {
+    source: "/data/hdd/datasets/object-detect/other/ilsvrc/2012/lmdb/size256/ilsvrc12_train_lmdb"
+    batch_size: 64
+    backend: LMDB
+    threads: 1
+    parser_threads: 1
+  }
+}
+layer {
+  name: "data/bias"
+  type: "Bias"
+  bottom: "data"
+  top: "data/bias"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  bias_param {
+    filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data/bias"
+  top: "conv1"
+  convolution_param {
+    num_output: 16
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 1
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv1/bn"
+  type: "BatchNorm"
+  bottom: "conv1"
+  top: "conv1"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "conv2_1/dw"
+  type: "Convolution"
+  bottom: "conv1"
+  top: "conv2_1/dw"
+  convolution_param {
+    num_output: 16
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 16
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv2_1/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv2_1/dw"
+  top: "conv2_1/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu2_1/dw"
+  type: "ReLU"
+  bottom: "conv2_1/dw"
+  top: "conv2_1/dw"
+}
+layer {
+  name: "conv2_1/sep"
+  type: "Convolution"
+  bottom: "conv2_1/dw"
+  top: "conv2_1/sep"
+  convolution_param {
+    num_output: 32
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv2_1/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv2_1/sep"
+  top: "conv2_1/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu2_1/sep"
+  type: "ReLU"
+  bottom: "conv2_1/sep"
+  top: "conv2_1/sep"
+}
+layer {
+  name: "conv2_2/dw"
+  type: "Convolution"
+  bottom: "conv2_1/sep"
+  top: "conv2_2/dw"
+  convolution_param {
+    num_output: 32
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 32
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv2_2/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv2_2/dw"
+  top: "conv2_2/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu2_2/dw"
+  type: "ReLU"
+  bottom: "conv2_2/dw"
+  top: "conv2_2/dw"
+}
+layer {
+  name: "conv2_2/sep"
+  type: "Convolution"
+  bottom: "conv2_2/dw"
+  top: "conv2_2/sep"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv2_2/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv2_2/sep"
+  top: "conv2_2/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu2_2/sep"
+  type: "ReLU"
+  bottom: "conv2_2/sep"
+  top: "conv2_2/sep"
+}
+layer {
+  name: "conv3_1/dw"
+  type: "Convolution"
+  bottom: "conv2_2/sep"
+  top: "conv3_1/dw"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 64
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv3_1/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv3_1/dw"
+  top: "conv3_1/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu3_1/dw"
+  type: "ReLU"
+  bottom: "conv3_1/dw"
+  top: "conv3_1/dw"
+}
+layer {
+  name: "conv3_1/sep"
+  type: "Convolution"
+  bottom: "conv3_1/dw"
+  top: "conv3_1/sep"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv3_1/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv3_1/sep"
+  top: "conv3_1/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu3_1/sep"
+  type: "ReLU"
+  bottom: "conv3_1/sep"
+  top: "conv3_1/sep"
+}
+layer {
+  name: "conv3_2/dw"
+  type: "Convolution"
+  bottom: "conv3_1/sep"
+  top: "conv3_2/dw"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 64
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv3_2/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv3_2/dw"
+  top: "conv3_2/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu3_2/dw"
+  type: "ReLU"
+  bottom: "conv3_2/dw"
+  top: "conv3_2/dw"
+}
+layer {
+  name: "conv3_2/sep"
+  type: "Convolution"
+  bottom: "conv3_2/dw"
+  top: "conv3_2/sep"
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv3_2/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv3_2/sep"
+  top: "conv3_2/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu3_2/sep"
+  type: "ReLU"
+  bottom: "conv3_2/sep"
+  top: "conv3_2/sep"
+}
+layer {
+  name: "conv4_1/dw"
+  type: "Convolution"
+  bottom: "conv3_2/sep"
+  top: "conv4_1/dw"
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 128
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv4_1/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv4_1/dw"
+  top: "conv4_1/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu4_1/dw"
+  type: "ReLU"
+  bottom: "conv4_1/dw"
+  top: "conv4_1/dw"
+}
+layer {
+  name: "conv4_1/sep"
+  type: "Convolution"
+  bottom: "conv4_1/dw"
+  top: "conv4_1/sep"
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv4_1/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv4_1/sep"
+  top: "conv4_1/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu4_1/sep"
+  type: "ReLU"
+  bottom: "conv4_1/sep"
+  top: "conv4_1/sep"
+}
+layer {
+  name: "conv4_2/dw"
+  type: "Convolution"
+  bottom: "conv4_1/sep"
+  top: "conv4_2/dw"
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 128
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv4_2/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv4_2/dw"
+  top: "conv4_2/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu4_2/dw"
+  type: "ReLU"
+  bottom: "conv4_2/dw"
+  top: "conv4_2/dw"
+}
+layer {
+  name: "conv4_2/sep"
+  type: "Convolution"
+  bottom: "conv4_2/dw"
+  top: "conv4_2/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv4_2/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv4_2/sep"
+  top: "conv4_2/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu4_2/sep"
+  type: "ReLU"
+  bottom: "conv4_2/sep"
+  top: "conv4_2/sep"
+}
+layer {
+  name: "conv5_1/dw"
+  type: "Convolution"
+  bottom: "conv4_2/sep"
+  top: "conv5_1/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_1/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_1/dw"
+  top: "conv5_1/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_1/dw"
+  type: "ReLU"
+  bottom: "conv5_1/dw"
+  top: "conv5_1/dw"
+}
+layer {
+  name: "conv5_1/sep"
+  type: "Convolution"
+  bottom: "conv5_1/dw"
+  top: "conv5_1/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_1/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_1/sep"
+  top: "conv5_1/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_1/sep"
+  type: "ReLU"
+  bottom: "conv5_1/sep"
+  top: "conv5_1/sep"
+}
+layer {
+  name: "conv5_2/dw"
+  type: "Convolution"
+  bottom: "conv5_1/sep"
+  top: "conv5_2/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_2/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_2/dw"
+  top: "conv5_2/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_2/dw"
+  type: "ReLU"
+  bottom: "conv5_2/dw"
+  top: "conv5_2/dw"
+}
+layer {
+  name: "conv5_2/sep"
+  type: "Convolution"
+  bottom: "conv5_2/dw"
+  top: "conv5_2/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_2/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_2/sep"
+  top: "conv5_2/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_2/sep"
+  type: "ReLU"
+  bottom: "conv5_2/sep"
+  top: "conv5_2/sep"
+}
+layer {
+  name: "conv5_3/dw"
+  type: "Convolution"
+  bottom: "conv5_2/sep"
+  top: "conv5_3/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_3/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_3/dw"
+  top: "conv5_3/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_3/dw"
+  type: "ReLU"
+  bottom: "conv5_3/dw"
+  top: "conv5_3/dw"
+}
+layer {
+  name: "conv5_3/sep"
+  type: "Convolution"
+  bottom: "conv5_3/dw"
+  top: "conv5_3/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_3/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_3/sep"
+  top: "conv5_3/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_3/sep"
+  type: "ReLU"
+  bottom: "conv5_3/sep"
+  top: "conv5_3/sep"
+}
+layer {
+  name: "conv5_4/dw"
+  type: "Convolution"
+  bottom: "conv5_3/sep"
+  top: "conv5_4/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_4/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_4/dw"
+  top: "conv5_4/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_4/dw"
+  type: "ReLU"
+  bottom: "conv5_4/dw"
+  top: "conv5_4/dw"
+}
+layer {
+  name: "conv5_4/sep"
+  type: "Convolution"
+  bottom: "conv5_4/dw"
+  top: "conv5_4/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_4/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_4/sep"
+  top: "conv5_4/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_4/sep"
+  type: "ReLU"
+  bottom: "conv5_4/sep"
+  top: "conv5_4/sep"
+}
+layer {
+  name: "conv5_5/dw"
+  type: "Convolution"
+  bottom: "conv5_4/sep"
+  top: "conv5_5/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_5/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_5/dw"
+  top: "conv5_5/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_5/dw"
+  type: "ReLU"
+  bottom: "conv5_5/dw"
+  top: "conv5_5/dw"
+}
+layer {
+  name: "conv5_5/sep"
+  type: "Convolution"
+  bottom: "conv5_5/dw"
+  top: "conv5_5/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_5/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_5/sep"
+  top: "conv5_5/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_5/sep"
+  type: "ReLU"
+  bottom: "conv5_5/sep"
+  top: "conv5_5/sep"
+}
+layer {
+  name: "conv5_6/dw"
+  type: "Convolution"
+  bottom: "conv5_5/sep"
+  top: "conv5_6/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_6/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_6/dw"
+  top: "conv5_6/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_6/dw"
+  type: "ReLU"
+  bottom: "conv5_6/dw"
+  top: "conv5_6/dw"
+}
+layer {
+  name: "conv5_6/sep"
+  type: "Convolution"
+  bottom: "conv5_6/dw"
+  top: "conv5_6/sep"
+  convolution_param {
+    num_output: 512
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_6/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_6/sep"
+  top: "conv5_6/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_6/sep"
+  type: "ReLU"
+  bottom: "conv5_6/sep"
+  top: "conv5_6/sep"
+}
+layer {
+  name: "conv6/dw"
+  type: "Convolution"
+  bottom: "conv5_6/sep"
+  top: "conv6/dw"
+  convolution_param {
+    num_output: 512
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 512
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv6/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv6/dw"
+  top: "conv6/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu6/dw"
+  type: "ReLU"
+  bottom: "conv6/dw"
+  top: "conv6/dw"
+}
+layer {
+  name: "conv6/sep"
+  type: "Convolution"
+  bottom: "conv6/dw"
+  top: "conv6/sep"
+  convolution_param {
+    num_output: 512
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv6/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv6/sep"
+  top: "conv6/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu6/sep"
+  type: "ReLU"
+  bottom: "conv6/sep"
+  top: "conv6/sep"
+}
+layer {
+  name: "pool6"
+  type: "Pooling"
+  bottom: "conv6/sep"
+  top: "pool6"
+  pooling_param {
+    pool: AVE
+    global_pooling: true
+  }
+}
+layer {
+  name: "fc7"
+  type: "Convolution"
+  bottom: "pool6"
+  top: "fc7"
+  convolution_param {
+    num_output: 1000
+    pad: 0
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc7"
+  bottom: "label"
+  top: "loss"
+  propagate_down: true
+  propagate_down: false
+}
+I0607 22:55:47.406255 41590 net.cpp:110] Using FLOAT as default forward math type
+I0607 22:55:47.406276 41590 net.cpp:116] Using FLOAT as default backward math type
+I0607 22:55:47.406286 41590 layer_factory.hpp:172] Creating layer 'data' of type 'Data'
+I0607 22:55:47.406332 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.406409 41590 internal_thread.cpp:19] Starting 1 internal thread(s) on device 0
+I0607 22:55:47.406513 41590 net.cpp:200] Created Layer data (0)
+I0607 22:55:47.406540 41590 net.cpp:542] data -> data
+I0607 22:55:47.408555 41590 net.cpp:542] data -> label
+I0607 22:55:47.408569 41691 blocking_queue.cpp:40] Data layer prefetch queue empty
+I0607 22:55:47.408592 41590 data_reader.cpp:58] Data Reader threads: 1, out queues: 1, depth: 64
+I0607 22:55:47.408664 41590 internal_thread.cpp:19] Starting 1 internal thread(s) on device 0
+I0607 22:55:47.410862 41692 db_lmdb.cpp:36] Opened lmdb /data/hdd/datasets/object-detect/other/ilsvrc/2012/lmdb/size256/ilsvrc12_train_lmdb
+I0607 22:55:47.441993 41590 data_layer.cpp:199] [0] Output data size: 64, 3, 224, 224
+I0607 22:55:47.442044 41590 internal_thread.cpp:19] Starting 1 internal thread(s) on device 0
+I0607 22:55:47.442107 41590 net.cpp:260] Setting up data
+I0607 22:55:47.442139 41590 net.cpp:267] TRAIN Top shape for layer 0 'data' 64 3 224 224 (9633792)
+I0607 22:55:47.442170 41590 net.cpp:267] TRAIN Top shape for layer 0 'data' 64 (64)
+I0607 22:55:47.442239 41590 layer_factory.hpp:172] Creating layer 'data/bias' of type 'Bias'
+I0607 22:55:47.442270 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.444422 41693 data_layer.cpp:105] [0] Parser threads: 1
+I0607 22:55:47.444463 41693 data_layer.cpp:107] [0] Transformer threads: 1
+I0607 22:55:47.444427 41590 net.cpp:200] Created Layer data/bias (1)
+I0607 22:55:47.444516 41590 net.cpp:572] data/bias <- data
+I0607 22:55:47.444552 41590 net.cpp:542] data/bias -> data/bias
+I0607 22:55:47.446318 41590 net.cpp:260] Setting up data/bias
+I0607 22:55:47.446350 41590 net.cpp:267] TRAIN Top shape for layer 1 'data/bias' 64 3 224 224 (9633792)
+I0607 22:55:47.446380 41590 layer_factory.hpp:172] Creating layer 'conv1' of type 'Convolution'
+I0607 22:55:47.446398 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.446431 41590 net.cpp:200] Created Layer conv1 (2)
+I0607 22:55:47.446460 41590 net.cpp:572] conv1 <- data/bias
+I0607 22:55:47.446487 41590 net.cpp:542] conv1 -> conv1
+I0607 22:55:47.929270 41590 net.cpp:260] Setting up conv1
+I0607 22:55:47.929306 41590 net.cpp:267] TRAIN Top shape for layer 2 'conv1' 64 16 112 112 (12845056)
+I0607 22:55:47.929332 41590 layer_factory.hpp:172] Creating layer 'conv1/bn' of type 'BatchNorm'
+I0607 22:55:47.929350 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.929375 41590 net.cpp:200] Created Layer conv1/bn (3)
+I0607 22:55:47.929386 41590 net.cpp:572] conv1/bn <- conv1
+I0607 22:55:47.929399 41590 net.cpp:527] conv1/bn -> conv1 (in-place)
+I0607 22:55:47.934629 41590 net.cpp:260] Setting up conv1/bn
+I0607 22:55:47.934656 41590 net.cpp:267] TRAIN Top shape for layer 3 'conv1/bn' 64 16 112 112 (12845056)
+I0607 22:55:47.934701 41590 layer_factory.hpp:172] Creating layer 'relu1' of type 'ReLU'
+I0607 22:55:47.934733 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.934756 41590 net.cpp:200] Created Layer relu1 (4)
+I0607 22:55:47.934773 41590 net.cpp:572] relu1 <- conv1
+I0607 22:55:47.934818 41590 net.cpp:527] relu1 -> conv1 (in-place)
+I0607 22:55:47.934886 41590 net.cpp:260] Setting up relu1
+I0607 22:55:47.934908 41590 net.cpp:267] TRAIN Top shape for layer 4 'relu1' 64 16 112 112 (12845056)
+I0607 22:55:47.934953 41590 layer_factory.hpp:172] Creating layer 'conv2_1/dw' of type 'Convolution'
+I0607 22:55:47.934972 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.935012 41590 net.cpp:200] Created Layer conv2_1/dw (5)
+I0607 22:55:47.935039 41590 net.cpp:572] conv2_1/dw <- conv1
+I0607 22:55:47.935106 41590 net.cpp:542] conv2_1/dw -> conv2_1/dw
+I0607 22:55:47.937321 41590 net.cpp:260] Setting up conv2_1/dw
+I0607 22:55:47.937345 41590 net.cpp:267] TRAIN Top shape for layer 5 'conv2_1/dw' 64 16 112 112 (12845056)
+I0607 22:55:47.937363 41590 layer_factory.hpp:172] Creating layer 'conv2_1/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.937373 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.937386 41590 net.cpp:200] Created Layer conv2_1/dw/bn (6)
+I0607 22:55:47.937402 41590 net.cpp:572] conv2_1/dw/bn <- conv2_1/dw
+I0607 22:55:47.937446 41590 net.cpp:527] conv2_1/dw/bn -> conv2_1/dw (in-place)
+I0607 22:55:47.937721 41590 net.cpp:260] Setting up conv2_1/dw/bn
+I0607 22:55:47.937736 41590 net.cpp:267] TRAIN Top shape for layer 6 'conv2_1/dw/bn' 64 16 112 112 (12845056)
+I0607 22:55:47.937759 41590 layer_factory.hpp:172] Creating layer 'relu2_1/dw' of type 'ReLU'
+I0607 22:55:47.937772 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.937790 41590 net.cpp:200] Created Layer relu2_1/dw (7)
+I0607 22:55:47.937804 41590 net.cpp:572] relu2_1/dw <- conv2_1/dw
+I0607 22:55:47.937835 41590 net.cpp:527] relu2_1/dw -> conv2_1/dw (in-place)
+I0607 22:55:47.937862 41590 net.cpp:260] Setting up relu2_1/dw
+I0607 22:55:47.937880 41590 net.cpp:267] TRAIN Top shape for layer 7 'relu2_1/dw' 64 16 112 112 (12845056)
+I0607 22:55:47.937912 41590 layer_factory.hpp:172] Creating layer 'conv2_1/sep' of type 'Convolution'
+I0607 22:55:47.937975 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.938042 41590 net.cpp:200] Created Layer conv2_1/sep (8)
+I0607 22:55:47.938069 41590 net.cpp:572] conv2_1/sep <- conv2_1/dw
+I0607 22:55:47.938123 41590 net.cpp:542] conv2_1/sep -> conv2_1/sep
+I0607 22:55:47.938294 41590 net.cpp:260] Setting up conv2_1/sep
+I0607 22:55:47.938330 41590 net.cpp:267] TRAIN Top shape for layer 8 'conv2_1/sep' 64 32 112 112 (25690112)
+I0607 22:55:47.938362 41590 layer_factory.hpp:172] Creating layer 'conv2_1/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.938380 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.938465 41590 net.cpp:200] Created Layer conv2_1/sep/bn (9)
+I0607 22:55:47.938498 41590 net.cpp:572] conv2_1/sep/bn <- conv2_1/sep
+I0607 22:55:47.938542 41590 net.cpp:527] conv2_1/sep/bn -> conv2_1/sep (in-place)
+I0607 22:55:47.939612 41590 net.cpp:260] Setting up conv2_1/sep/bn
+I0607 22:55:47.939630 41590 net.cpp:267] TRAIN Top shape for layer 9 'conv2_1/sep/bn' 64 32 112 112 (25690112)
+I0607 22:55:47.939646 41590 layer_factory.hpp:172] Creating layer 'relu2_1/sep' of type 'ReLU'
+I0607 22:55:47.939656 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.939673 41590 net.cpp:200] Created Layer relu2_1/sep (10)
+I0607 22:55:47.939687 41590 net.cpp:572] relu2_1/sep <- conv2_1/sep
+I0607 22:55:47.939697 41590 net.cpp:527] relu2_1/sep -> conv2_1/sep (in-place)
+I0607 22:55:47.939718 41590 net.cpp:260] Setting up relu2_1/sep
+I0607 22:55:47.939740 41590 net.cpp:267] TRAIN Top shape for layer 10 'relu2_1/sep' 64 32 112 112 (25690112)
+I0607 22:55:47.939767 41590 layer_factory.hpp:172] Creating layer 'conv2_2/dw' of type 'Convolution'
+I0607 22:55:47.939795 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.939816 41590 net.cpp:200] Created Layer conv2_2/dw (11)
+I0607 22:55:47.939843 41590 net.cpp:572] conv2_2/dw <- conv2_1/sep
+I0607 22:55:47.939867 41590 net.cpp:542] conv2_2/dw -> conv2_2/dw
+I0607 22:55:47.940022 41590 net.cpp:260] Setting up conv2_2/dw
+I0607 22:55:47.940037 41590 net.cpp:267] TRAIN Top shape for layer 11 'conv2_2/dw' 64 32 56 56 (6422528)
+I0607 22:55:47.940055 41590 layer_factory.hpp:172] Creating layer 'conv2_2/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.940083 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.940109 41590 net.cpp:200] Created Layer conv2_2/dw/bn (12)
+I0607 22:55:47.940136 41590 net.cpp:572] conv2_2/dw/bn <- conv2_2/dw
+I0607 22:55:47.940163 41590 net.cpp:527] conv2_2/dw/bn -> conv2_2/dw (in-place)
+I0607 22:55:47.940520 41590 net.cpp:260] Setting up conv2_2/dw/bn
+I0607 22:55:47.940534 41590 net.cpp:267] TRAIN Top shape for layer 12 'conv2_2/dw/bn' 64 32 56 56 (6422528)
+I0607 22:55:47.940552 41590 layer_factory.hpp:172] Creating layer 'relu2_2/dw' of type 'ReLU'
+I0607 22:55:47.940579 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.940606 41590 net.cpp:200] Created Layer relu2_2/dw (13)
+I0607 22:55:47.940655 41590 net.cpp:572] relu2_2/dw <- conv2_2/dw
+I0607 22:55:47.940706 41590 net.cpp:527] relu2_2/dw -> conv2_2/dw (in-place)
+I0607 22:55:47.940732 41590 net.cpp:260] Setting up relu2_2/dw
+I0607 22:55:47.940781 41590 net.cpp:267] TRAIN Top shape for layer 13 'relu2_2/dw' 64 32 56 56 (6422528)
+I0607 22:55:47.940809 41590 layer_factory.hpp:172] Creating layer 'conv2_2/sep' of type 'Convolution'
+I0607 22:55:47.940830 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.940862 41590 net.cpp:200] Created Layer conv2_2/sep (14)
+I0607 22:55:47.940881 41590 net.cpp:572] conv2_2/sep <- conv2_2/dw
+I0607 22:55:47.940898 41590 net.cpp:542] conv2_2/sep -> conv2_2/sep
+I0607 22:55:47.941082 41590 net.cpp:260] Setting up conv2_2/sep
+I0607 22:55:47.941097 41590 net.cpp:267] TRAIN Top shape for layer 14 'conv2_2/sep' 64 64 56 56 (12845056)
+I0607 22:55:47.941115 41590 layer_factory.hpp:172] Creating layer 'conv2_2/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.941146 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.941174 41590 net.cpp:200] Created Layer conv2_2/sep/bn (15)
+I0607 22:55:47.941205 41590 net.cpp:572] conv2_2/sep/bn <- conv2_2/sep
+I0607 22:55:47.941236 41590 net.cpp:527] conv2_2/sep/bn -> conv2_2/sep (in-place)
+I0607 22:55:47.941496 41590 net.cpp:260] Setting up conv2_2/sep/bn
+I0607 22:55:47.941510 41590 net.cpp:267] TRAIN Top shape for layer 15 'conv2_2/sep/bn' 64 64 56 56 (12845056)
+I0607 22:55:47.941529 41590 layer_factory.hpp:172] Creating layer 'relu2_2/sep' of type 'ReLU'
+I0607 22:55:47.941546 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.941565 41590 net.cpp:200] Created Layer relu2_2/sep (16)
+I0607 22:55:47.941606 41590 net.cpp:572] relu2_2/sep <- conv2_2/sep
+I0607 22:55:47.941632 41590 net.cpp:527] relu2_2/sep -> conv2_2/sep (in-place)
+I0607 22:55:47.941654 41590 net.cpp:260] Setting up relu2_2/sep
+I0607 22:55:47.941681 41590 net.cpp:267] TRAIN Top shape for layer 16 'relu2_2/sep' 64 64 56 56 (12845056)
+I0607 22:55:47.941704 41590 layer_factory.hpp:172] Creating layer 'conv3_1/dw' of type 'Convolution'
+I0607 22:55:47.941722 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.941753 41590 net.cpp:200] Created Layer conv3_1/dw (17)
+I0607 22:55:47.941789 41590 net.cpp:572] conv3_1/dw <- conv2_2/sep
+I0607 22:55:47.941861 41590 net.cpp:542] conv3_1/dw -> conv3_1/dw
+I0607 22:55:47.943593 41590 net.cpp:260] Setting up conv3_1/dw
+I0607 22:55:47.943605 41590 net.cpp:267] TRAIN Top shape for layer 17 'conv3_1/dw' 64 64 56 56 (12845056)
+I0607 22:55:47.943615 41590 layer_factory.hpp:172] Creating layer 'conv3_1/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.943624 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.943635 41590 net.cpp:200] Created Layer conv3_1/dw/bn (18)
+I0607 22:55:47.943653 41590 net.cpp:572] conv3_1/dw/bn <- conv3_1/dw
+I0607 22:55:47.943667 41590 net.cpp:527] conv3_1/dw/bn -> conv3_1/dw (in-place)
+I0607 22:55:47.943915 41590 net.cpp:260] Setting up conv3_1/dw/bn
+I0607 22:55:47.943929 41590 net.cpp:267] TRAIN Top shape for layer 18 'conv3_1/dw/bn' 64 64 56 56 (12845056)
+I0607 22:55:47.943953 41590 layer_factory.hpp:172] Creating layer 'relu3_1/dw' of type 'ReLU'
+I0607 22:55:47.943974 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.944028 41590 net.cpp:200] Created Layer relu3_1/dw (19)
+I0607 22:55:47.944056 41590 net.cpp:572] relu3_1/dw <- conv3_1/dw
+I0607 22:55:47.944097 41590 net.cpp:527] relu3_1/dw -> conv3_1/dw (in-place)
+I0607 22:55:47.944141 41590 net.cpp:260] Setting up relu3_1/dw
+I0607 22:55:47.944164 41590 net.cpp:267] TRAIN Top shape for layer 19 'relu3_1/dw' 64 64 56 56 (12845056)
+I0607 22:55:47.944357 41590 layer_factory.hpp:172] Creating layer 'conv3_1/sep' of type 'Convolution'
+I0607 22:55:47.944397 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.944474 41590 net.cpp:200] Created Layer conv3_1/sep (20)
+I0607 22:55:47.944555 41590 net.cpp:572] conv3_1/sep <- conv3_1/dw
+I0607 22:55:47.944586 41590 net.cpp:542] conv3_1/sep -> conv3_1/sep
+I0607 22:55:47.944831 41590 net.cpp:260] Setting up conv3_1/sep
+I0607 22:55:47.944850 41590 net.cpp:267] TRAIN Top shape for layer 20 'conv3_1/sep' 64 64 56 56 (12845056)
+I0607 22:55:47.944881 41590 layer_factory.hpp:172] Creating layer 'conv3_1/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.944908 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.944953 41590 net.cpp:200] Created Layer conv3_1/sep/bn (21)
+I0607 22:55:47.944985 41590 net.cpp:572] conv3_1/sep/bn <- conv3_1/sep
+I0607 22:55:47.945021 41590 net.cpp:527] conv3_1/sep/bn -> conv3_1/sep (in-place)
+I0607 22:55:47.945276 41590 net.cpp:260] Setting up conv3_1/sep/bn
+I0607 22:55:47.945296 41590 net.cpp:267] TRAIN Top shape for layer 21 'conv3_1/sep/bn' 64 64 56 56 (12845056)
+I0607 22:55:47.945322 41590 layer_factory.hpp:172] Creating layer 'relu3_1/sep' of type 'ReLU'
+I0607 22:55:47.945348 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.945371 41590 net.cpp:200] Created Layer relu3_1/sep (22)
+I0607 22:55:47.945394 41590 net.cpp:572] relu3_1/sep <- conv3_1/sep
+I0607 22:55:47.945420 41590 net.cpp:527] relu3_1/sep -> conv3_1/sep (in-place)
+I0607 22:55:47.945443 41590 net.cpp:260] Setting up relu3_1/sep
+I0607 22:55:47.945471 41590 net.cpp:267] TRAIN Top shape for layer 22 'relu3_1/sep' 64 64 56 56 (12845056)
+I0607 22:55:47.945497 41590 layer_factory.hpp:172] Creating layer 'conv3_2/dw' of type 'Convolution'
+I0607 22:55:47.945515 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.945538 41590 net.cpp:200] Created Layer conv3_2/dw (23)
+I0607 22:55:47.945596 41590 net.cpp:572] conv3_2/dw <- conv3_1/sep
+I0607 22:55:47.945623 41590 net.cpp:542] conv3_2/dw -> conv3_2/dw
+I0607 22:55:47.945776 41590 net.cpp:260] Setting up conv3_2/dw
+I0607 22:55:47.945791 41590 net.cpp:267] TRAIN Top shape for layer 23 'conv3_2/dw' 64 64 28 28 (3211264)
+I0607 22:55:47.945809 41590 layer_factory.hpp:172] Creating layer 'conv3_2/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.945837 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.945868 41590 net.cpp:200] Created Layer conv3_2/dw/bn (24)
+I0607 22:55:47.945890 41590 net.cpp:572] conv3_2/dw/bn <- conv3_2/dw
+I0607 22:55:47.945948 41590 net.cpp:527] conv3_2/dw/bn -> conv3_2/dw (in-place)
+I0607 22:55:47.946204 41590 net.cpp:260] Setting up conv3_2/dw/bn
+I0607 22:55:47.946218 41590 net.cpp:267] TRAIN Top shape for layer 24 'conv3_2/dw/bn' 64 64 28 28 (3211264)
+I0607 22:55:47.946236 41590 layer_factory.hpp:172] Creating layer 'relu3_2/dw' of type 'ReLU'
+I0607 22:55:47.946264 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.946286 41590 net.cpp:200] Created Layer relu3_2/dw (25)
+I0607 22:55:47.946331 41590 net.cpp:572] relu3_2/dw <- conv3_2/dw
+I0607 22:55:47.946353 41590 net.cpp:527] relu3_2/dw -> conv3_2/dw (in-place)
+I0607 22:55:47.946372 41590 net.cpp:260] Setting up relu3_2/dw
+I0607 22:55:47.946408 41590 net.cpp:267] TRAIN Top shape for layer 25 'relu3_2/dw' 64 64 28 28 (3211264)
+I0607 22:55:47.946425 41590 layer_factory.hpp:172] Creating layer 'conv3_2/sep' of type 'Convolution'
+I0607 22:55:47.946452 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.946538 41590 net.cpp:200] Created Layer conv3_2/sep (26)
+I0607 22:55:47.946574 41590 net.cpp:572] conv3_2/sep <- conv3_2/dw
+I0607 22:55:47.946605 41590 net.cpp:542] conv3_2/sep -> conv3_2/sep
+I0607 22:55:47.946913 41590 net.cpp:260] Setting up conv3_2/sep
+I0607 22:55:47.946928 41590 net.cpp:267] TRAIN Top shape for layer 26 'conv3_2/sep' 64 128 28 28 (6422528)
+I0607 22:55:47.946964 41590 layer_factory.hpp:172] Creating layer 'conv3_2/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.946995 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.947039 41590 net.cpp:200] Created Layer conv3_2/sep/bn (27)
+I0607 22:55:47.947062 41590 net.cpp:572] conv3_2/sep/bn <- conv3_2/sep
+I0607 22:55:47.947098 41590 net.cpp:527] conv3_2/sep/bn -> conv3_2/sep (in-place)
+I0607 22:55:47.947345 41590 net.cpp:260] Setting up conv3_2/sep/bn
+I0607 22:55:47.947358 41590 net.cpp:267] TRAIN Top shape for layer 27 'conv3_2/sep/bn' 64 128 28 28 (6422528)
+I0607 22:55:47.947376 41590 layer_factory.hpp:172] Creating layer 'relu3_2/sep' of type 'ReLU'
+I0607 22:55:47.947399 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.947427 41590 net.cpp:200] Created Layer relu3_2/sep (28)
+I0607 22:55:47.947463 41590 net.cpp:572] relu3_2/sep <- conv3_2/sep
+I0607 22:55:47.947507 41590 net.cpp:527] relu3_2/sep -> conv3_2/sep (in-place)
+I0607 22:55:47.947566 41590 net.cpp:260] Setting up relu3_2/sep
+I0607 22:55:47.947592 41590 net.cpp:267] TRAIN Top shape for layer 28 'relu3_2/sep' 64 128 28 28 (6422528)
+I0607 22:55:47.947624 41590 layer_factory.hpp:172] Creating layer 'conv4_1/dw' of type 'Convolution'
+I0607 22:55:47.947646 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.947664 41590 net.cpp:200] Created Layer conv4_1/dw (29)
+I0607 22:55:47.947687 41590 net.cpp:572] conv4_1/dw <- conv3_2/sep
+I0607 22:55:47.947715 41590 net.cpp:542] conv4_1/dw -> conv4_1/dw
+I0607 22:55:47.947885 41590 net.cpp:260] Setting up conv4_1/dw
+I0607 22:55:47.947904 41590 net.cpp:267] TRAIN Top shape for layer 29 'conv4_1/dw' 64 128 28 28 (6422528)
+I0607 22:55:47.947922 41590 layer_factory.hpp:172] Creating layer 'conv4_1/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.947940 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.947973 41590 net.cpp:200] Created Layer conv4_1/dw/bn (30)
+I0607 22:55:47.947994 41590 net.cpp:572] conv4_1/dw/bn <- conv4_1/dw
+I0607 22:55:47.948012 41590 net.cpp:527] conv4_1/dw/bn -> conv4_1/dw (in-place)
+I0607 22:55:47.948348 41590 net.cpp:260] Setting up conv4_1/dw/bn
+I0607 22:55:47.948362 41590 net.cpp:267] TRAIN Top shape for layer 30 'conv4_1/dw/bn' 64 128 28 28 (6422528)
+I0607 22:55:47.948374 41590 layer_factory.hpp:172] Creating layer 'relu4_1/dw' of type 'ReLU'
+I0607 22:55:47.948390 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.948402 41590 net.cpp:200] Created Layer relu4_1/dw (31)
+I0607 22:55:47.948421 41590 net.cpp:572] relu4_1/dw <- conv4_1/dw
+I0607 22:55:47.948434 41590 net.cpp:527] relu4_1/dw -> conv4_1/dw (in-place)
+I0607 22:55:47.948448 41590 net.cpp:260] Setting up relu4_1/dw
+I0607 22:55:47.948467 41590 net.cpp:267] TRAIN Top shape for layer 31 'relu4_1/dw' 64 128 28 28 (6422528)
+I0607 22:55:47.948498 41590 layer_factory.hpp:172] Creating layer 'conv4_1/sep' of type 'Convolution'
+I0607 22:55:47.948515 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.948556 41590 net.cpp:200] Created Layer conv4_1/sep (32)
+I0607 22:55:47.948575 41590 net.cpp:572] conv4_1/sep <- conv4_1/dw
+I0607 22:55:47.948628 41590 net.cpp:542] conv4_1/sep -> conv4_1/sep
+I0607 22:55:47.949086 41590 net.cpp:260] Setting up conv4_1/sep
+I0607 22:55:47.949098 41590 net.cpp:267] TRAIN Top shape for layer 32 'conv4_1/sep' 64 128 28 28 (6422528)
+I0607 22:55:47.949108 41590 layer_factory.hpp:172] Creating layer 'conv4_1/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.949117 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.949131 41590 net.cpp:200] Created Layer conv4_1/sep/bn (33)
+I0607 22:55:47.949149 41590 net.cpp:572] conv4_1/sep/bn <- conv4_1/sep
+I0607 22:55:47.949163 41590 net.cpp:527] conv4_1/sep/bn -> conv4_1/sep (in-place)
+I0607 22:55:47.949396 41590 net.cpp:260] Setting up conv4_1/sep/bn
+I0607 22:55:47.949411 41590 net.cpp:267] TRAIN Top shape for layer 33 'conv4_1/sep/bn' 64 128 28 28 (6422528)
+I0607 22:55:47.949434 41590 layer_factory.hpp:172] Creating layer 'relu4_1/sep' of type 'ReLU'
+I0607 22:55:47.949456 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.949492 41590 net.cpp:200] Created Layer relu4_1/sep (34)
+I0607 22:55:47.949514 41590 net.cpp:572] relu4_1/sep <- conv4_1/sep
+I0607 22:55:47.949590 41590 net.cpp:527] relu4_1/sep -> conv4_1/sep (in-place)
+I0607 22:55:47.949614 41590 net.cpp:260] Setting up relu4_1/sep
+I0607 22:55:47.949658 41590 net.cpp:267] TRAIN Top shape for layer 34 'relu4_1/sep' 64 128 28 28 (6422528)
+I0607 22:55:47.949681 41590 layer_factory.hpp:172] Creating layer 'conv4_2/dw' of type 'Convolution'
+I0607 22:55:47.949717 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.949748 41590 net.cpp:200] Created Layer conv4_2/dw (35)
+I0607 22:55:47.949770 41590 net.cpp:572] conv4_2/dw <- conv4_1/sep
+I0607 22:55:47.949797 41590 net.cpp:542] conv4_2/dw -> conv4_2/dw
+I0607 22:55:47.949950 41590 net.cpp:260] Setting up conv4_2/dw
+I0607 22:55:47.949965 41590 net.cpp:267] TRAIN Top shape for layer 35 'conv4_2/dw' 64 128 14 14 (1605632)
+I0607 22:55:47.949983 41590 layer_factory.hpp:172] Creating layer 'conv4_2/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.950001 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.950024 41590 net.cpp:200] Created Layer conv4_2/dw/bn (36)
+I0607 22:55:47.950047 41590 net.cpp:572] conv4_2/dw/bn <- conv4_2/dw
+I0607 22:55:47.950064 41590 net.cpp:527] conv4_2/dw/bn -> conv4_2/dw (in-place)
+I0607 22:55:47.950307 41590 net.cpp:260] Setting up conv4_2/dw/bn
+I0607 22:55:47.950325 41590 net.cpp:267] TRAIN Top shape for layer 36 'conv4_2/dw/bn' 64 128 14 14 (1605632)
+I0607 22:55:47.950352 41590 layer_factory.hpp:172] Creating layer 'relu4_2/dw' of type 'ReLU'
+I0607 22:55:47.950371 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.950388 41590 net.cpp:200] Created Layer relu4_2/dw (37)
+I0607 22:55:47.950410 41590 net.cpp:572] relu4_2/dw <- conv4_2/dw
+I0607 22:55:47.950433 41590 net.cpp:527] relu4_2/dw -> conv4_2/dw (in-place)
+I0607 22:55:47.950456 41590 net.cpp:260] Setting up relu4_2/dw
+I0607 22:55:47.950487 41590 net.cpp:267] TRAIN Top shape for layer 37 'relu4_2/dw' 64 128 14 14 (1605632)
+I0607 22:55:47.950515 41590 layer_factory.hpp:172] Creating layer 'conv4_2/sep' of type 'Convolution'
+I0607 22:55:47.950551 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.950595 41590 net.cpp:200] Created Layer conv4_2/sep (38)
+I0607 22:55:47.950613 41590 net.cpp:572] conv4_2/sep <- conv4_2/dw
+I0607 22:55:47.950659 41590 net.cpp:542] conv4_2/sep -> conv4_2/sep
+I0607 22:55:47.951439 41590 net.cpp:260] Setting up conv4_2/sep
+I0607 22:55:47.951452 41590 net.cpp:267] TRAIN Top shape for layer 38 'conv4_2/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.951462 41590 layer_factory.hpp:172] Creating layer 'conv4_2/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.951472 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.951493 41590 net.cpp:200] Created Layer conv4_2/sep/bn (39)
+I0607 22:55:47.951511 41590 net.cpp:572] conv4_2/sep/bn <- conv4_2/sep
+I0607 22:55:47.951542 41590 net.cpp:527] conv4_2/sep/bn -> conv4_2/sep (in-place)
+I0607 22:55:47.951804 41590 net.cpp:260] Setting up conv4_2/sep/bn
+I0607 22:55:47.951819 41590 net.cpp:267] TRAIN Top shape for layer 39 'conv4_2/sep/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.951838 41590 layer_factory.hpp:172] Creating layer 'relu4_2/sep' of type 'ReLU'
+I0607 22:55:47.951855 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.951874 41590 net.cpp:200] Created Layer relu4_2/sep (40)
+I0607 22:55:47.951915 41590 net.cpp:572] relu4_2/sep <- conv4_2/sep
+I0607 22:55:47.951936 41590 net.cpp:527] relu4_2/sep -> conv4_2/sep (in-place)
+I0607 22:55:47.951959 41590 net.cpp:260] Setting up relu4_2/sep
+I0607 22:55:47.952004 41590 net.cpp:267] TRAIN Top shape for layer 40 'relu4_2/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.952040 41590 layer_factory.hpp:172] Creating layer 'conv5_1/dw' of type 'Convolution'
+I0607 22:55:47.952071 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.952152 41590 net.cpp:200] Created Layer conv5_1/dw (41)
+I0607 22:55:47.952318 41590 net.cpp:572] conv5_1/dw <- conv4_2/sep
+I0607 22:55:47.952342 41590 net.cpp:542] conv5_1/dw -> conv5_1/dw
+I0607 22:55:47.952524 41590 net.cpp:260] Setting up conv5_1/dw
+I0607 22:55:47.952539 41590 net.cpp:267] TRAIN Top shape for layer 41 'conv5_1/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.952558 41590 layer_factory.hpp:172] Creating layer 'conv5_1/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.952575 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.952602 41590 net.cpp:200] Created Layer conv5_1/dw/bn (42)
+I0607 22:55:47.952625 41590 net.cpp:572] conv5_1/dw/bn <- conv5_1/dw
+I0607 22:55:47.952642 41590 net.cpp:527] conv5_1/dw/bn -> conv5_1/dw (in-place)
+I0607 22:55:47.952883 41590 net.cpp:260] Setting up conv5_1/dw/bn
+I0607 22:55:47.952898 41590 net.cpp:267] TRAIN Top shape for layer 42 'conv5_1/dw/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.952915 41590 layer_factory.hpp:172] Creating layer 'relu5_1/dw' of type 'ReLU'
+I0607 22:55:47.952934 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.952965 41590 net.cpp:200] Created Layer relu5_1/dw (43)
+I0607 22:55:47.952987 41590 net.cpp:572] relu5_1/dw <- conv5_1/dw
+I0607 22:55:47.953023 41590 net.cpp:527] relu5_1/dw -> conv5_1/dw (in-place)
+I0607 22:55:47.953050 41590 net.cpp:260] Setting up relu5_1/dw
+I0607 22:55:47.953068 41590 net.cpp:267] TRAIN Top shape for layer 43 'relu5_1/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.953109 41590 layer_factory.hpp:172] Creating layer 'conv5_1/sep' of type 'Convolution'
+I0607 22:55:47.953140 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.953167 41590 net.cpp:200] Created Layer conv5_1/sep (44)
+I0607 22:55:47.953207 41590 net.cpp:572] conv5_1/sep <- conv5_1/dw
+I0607 22:55:47.953230 41590 net.cpp:542] conv5_1/sep -> conv5_1/sep
+I0607 22:55:47.954664 41590 net.cpp:260] Setting up conv5_1/sep
+I0607 22:55:47.954679 41590 net.cpp:267] TRAIN Top shape for layer 44 'conv5_1/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.954689 41590 layer_factory.hpp:172] Creating layer 'conv5_1/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.954697 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.954711 41590 net.cpp:200] Created Layer conv5_1/sep/bn (45)
+I0607 22:55:47.954730 41590 net.cpp:572] conv5_1/sep/bn <- conv5_1/sep
+I0607 22:55:47.954743 41590 net.cpp:527] conv5_1/sep/bn -> conv5_1/sep (in-place)
+I0607 22:55:47.954978 41590 net.cpp:260] Setting up conv5_1/sep/bn
+I0607 22:55:47.954993 41590 net.cpp:267] TRAIN Top shape for layer 45 'conv5_1/sep/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.955011 41590 layer_factory.hpp:172] Creating layer 'relu5_1/sep' of type 'ReLU'
+I0607 22:55:47.955029 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.955060 41590 net.cpp:200] Created Layer relu5_1/sep (46)
+I0607 22:55:47.955092 41590 net.cpp:572] relu5_1/sep <- conv5_1/sep
+I0607 22:55:47.955114 41590 net.cpp:527] relu5_1/sep -> conv5_1/sep (in-place)
+I0607 22:55:47.955142 41590 net.cpp:260] Setting up relu5_1/sep
+I0607 22:55:47.955186 41590 net.cpp:267] TRAIN Top shape for layer 46 'relu5_1/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.955209 41590 layer_factory.hpp:172] Creating layer 'conv5_2/dw' of type 'Convolution'
+I0607 22:55:47.955272 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.955303 41590 net.cpp:200] Created Layer conv5_2/dw (47)
+I0607 22:55:47.955330 41590 net.cpp:572] conv5_2/dw <- conv5_1/sep
+I0607 22:55:47.955366 41590 net.cpp:542] conv5_2/dw -> conv5_2/dw
+I0607 22:55:47.955579 41590 net.cpp:260] Setting up conv5_2/dw
+I0607 22:55:47.955605 41590 net.cpp:267] TRAIN Top shape for layer 47 'conv5_2/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.955615 41590 layer_factory.hpp:172] Creating layer 'conv5_2/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.955623 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.955641 41590 net.cpp:200] Created Layer conv5_2/dw/bn (48)
+I0607 22:55:47.955687 41590 net.cpp:572] conv5_2/dw/bn <- conv5_2/dw
+I0607 22:55:47.955709 41590 net.cpp:527] conv5_2/dw/bn -> conv5_2/dw (in-place)
+I0607 22:55:47.956069 41590 net.cpp:260] Setting up conv5_2/dw/bn
+I0607 22:55:47.956096 41590 net.cpp:267] TRAIN Top shape for layer 48 'conv5_2/dw/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.956136 41590 layer_factory.hpp:172] Creating layer 'relu5_2/dw' of type 'ReLU'
+I0607 22:55:47.956172 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.956295 41590 net.cpp:200] Created Layer relu5_2/dw (49)
+I0607 22:55:47.956321 41590 net.cpp:572] relu5_2/dw <- conv5_2/dw
+I0607 22:55:47.956362 41590 net.cpp:527] relu5_2/dw -> conv5_2/dw (in-place)
+I0607 22:55:47.956388 41590 net.cpp:260] Setting up relu5_2/dw
+I0607 22:55:47.956411 41590 net.cpp:267] TRAIN Top shape for layer 49 'relu5_2/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.956442 41590 layer_factory.hpp:172] Creating layer 'conv5_2/sep' of type 'Convolution'
+I0607 22:55:47.956475 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.956514 41590 net.cpp:200] Created Layer conv5_2/sep (50)
+I0607 22:55:47.956564 41590 net.cpp:572] conv5_2/sep <- conv5_2/dw
+I0607 22:55:47.956609 41590 net.cpp:542] conv5_2/sep -> conv5_2/sep
+I0607 22:55:47.958045 41590 net.cpp:260] Setting up conv5_2/sep
+I0607 22:55:47.958072 41590 net.cpp:267] TRAIN Top shape for layer 50 'conv5_2/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.958094 41590 layer_factory.hpp:172] Creating layer 'conv5_2/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.958148 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.958194 41590 net.cpp:200] Created Layer conv5_2/sep/bn (51)
+I0607 22:55:47.958225 41590 net.cpp:572] conv5_2/sep/bn <- conv5_2/sep
+I0607 22:55:47.958261 41590 net.cpp:527] conv5_2/sep/bn -> conv5_2/sep (in-place)
+I0607 22:55:47.958533 41590 net.cpp:260] Setting up conv5_2/sep/bn
+I0607 22:55:47.958547 41590 net.cpp:267] TRAIN Top shape for layer 51 'conv5_2/sep/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.958565 41590 layer_factory.hpp:172] Creating layer 'relu5_2/sep' of type 'ReLU'
+I0607 22:55:47.958583 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.958606 41590 net.cpp:200] Created Layer relu5_2/sep (52)
+I0607 22:55:47.958628 41590 net.cpp:572] relu5_2/sep <- conv5_2/sep
+I0607 22:55:47.958659 41590 net.cpp:527] relu5_2/sep -> conv5_2/sep (in-place)
+I0607 22:55:47.958683 41590 net.cpp:260] Setting up relu5_2/sep
+I0607 22:55:47.958700 41590 net.cpp:267] TRAIN Top shape for layer 52 'relu5_2/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.958722 41590 layer_factory.hpp:172] Creating layer 'conv5_3/dw' of type 'Convolution'
+I0607 22:55:47.958745 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.958791 41590 net.cpp:200] Created Layer conv5_3/dw (53)
+I0607 22:55:47.958812 41590 net.cpp:572] conv5_3/dw <- conv5_2/sep
+I0607 22:55:47.958830 41590 net.cpp:542] conv5_3/dw -> conv5_3/dw
+I0607 22:55:47.959046 41590 net.cpp:260] Setting up conv5_3/dw
+I0607 22:55:47.959082 41590 net.cpp:267] TRAIN Top shape for layer 53 'conv5_3/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.959204 41590 layer_factory.hpp:172] Creating layer 'conv5_3/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.959254 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.959316 41590 net.cpp:200] Created Layer conv5_3/dw/bn (54)
+I0607 22:55:47.959384 41590 net.cpp:572] conv5_3/dw/bn <- conv5_3/dw
+I0607 22:55:47.959411 41590 net.cpp:527] conv5_3/dw/bn -> conv5_3/dw (in-place)
+I0607 22:55:47.959658 41590 net.cpp:260] Setting up conv5_3/dw/bn
+I0607 22:55:47.959681 41590 net.cpp:267] TRAIN Top shape for layer 54 'conv5_3/dw/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.959735 41590 layer_factory.hpp:172] Creating layer 'relu5_3/dw' of type 'ReLU'
+I0607 22:55:47.959753 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.959784 41590 net.cpp:200] Created Layer relu5_3/dw (55)
+I0607 22:55:47.959834 41590 net.cpp:572] relu5_3/dw <- conv5_3/dw
+I0607 22:55:47.959866 41590 net.cpp:527] relu5_3/dw -> conv5_3/dw (in-place)
+I0607 22:55:47.959933 41590 net.cpp:260] Setting up relu5_3/dw
+I0607 22:55:47.959977 41590 net.cpp:267] TRAIN Top shape for layer 55 'relu5_3/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.960077 41590 layer_factory.hpp:172] Creating layer 'conv5_3/sep' of type 'Convolution'
+I0607 22:55:47.960153 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.960364 41590 net.cpp:200] Created Layer conv5_3/sep (56)
+I0607 22:55:47.960400 41590 net.cpp:572] conv5_3/sep <- conv5_3/dw
+I0607 22:55:47.960423 41590 net.cpp:542] conv5_3/sep -> conv5_3/sep
+I0607 22:55:47.961990 41590 net.cpp:260] Setting up conv5_3/sep
+I0607 22:55:47.962007 41590 net.cpp:267] TRAIN Top shape for layer 56 'conv5_3/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.962020 41590 layer_factory.hpp:172] Creating layer 'conv5_3/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.962030 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.962044 41590 net.cpp:200] Created Layer conv5_3/sep/bn (57)
+I0607 22:55:47.962061 41590 net.cpp:572] conv5_3/sep/bn <- conv5_3/sep
+I0607 22:55:47.962076 41590 net.cpp:527] conv5_3/sep/bn -> conv5_3/sep (in-place)
+I0607 22:55:47.962378 41590 net.cpp:260] Setting up conv5_3/sep/bn
+I0607 22:55:47.962393 41590 net.cpp:267] TRAIN Top shape for layer 57 'conv5_3/sep/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.962411 41590 layer_factory.hpp:172] Creating layer 'relu5_3/sep' of type 'ReLU'
+I0607 22:55:47.962466 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.962560 41590 net.cpp:200] Created Layer relu5_3/sep (58)
+I0607 22:55:47.962596 41590 net.cpp:572] relu5_3/sep <- conv5_3/sep
+I0607 22:55:47.962618 41590 net.cpp:527] relu5_3/sep -> conv5_3/sep (in-place)
+I0607 22:55:47.962682 41590 net.cpp:260] Setting up relu5_3/sep
+I0607 22:55:47.962713 41590 net.cpp:267] TRAIN Top shape for layer 58 'relu5_3/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.962857 41590 layer_factory.hpp:172] Creating layer 'conv5_4/dw' of type 'Convolution'
+I0607 22:55:47.962893 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.962951 41590 net.cpp:200] Created Layer conv5_4/dw (59)
+I0607 22:55:47.962978 41590 net.cpp:572] conv5_4/dw <- conv5_3/sep
+I0607 22:55:47.963037 41590 net.cpp:542] conv5_4/dw -> conv5_4/dw
+I0607 22:55:47.963378 41590 net.cpp:260] Setting up conv5_4/dw
+I0607 22:55:47.963394 41590 net.cpp:267] TRAIN Top shape for layer 59 'conv5_4/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.963426 41590 layer_factory.hpp:172] Creating layer 'conv5_4/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.963526 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.963601 41590 net.cpp:200] Created Layer conv5_4/dw/bn (60)
+I0607 22:55:47.963706 41590 net.cpp:572] conv5_4/dw/bn <- conv5_4/dw
+I0607 22:55:47.963732 41590 net.cpp:527] conv5_4/dw/bn -> conv5_4/dw (in-place)
+I0607 22:55:47.964150 41590 net.cpp:260] Setting up conv5_4/dw/bn
+I0607 22:55:47.964174 41590 net.cpp:267] TRAIN Top shape for layer 60 'conv5_4/dw/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.964282 41590 layer_factory.hpp:172] Creating layer 'relu5_4/dw' of type 'ReLU'
+I0607 22:55:47.964330 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.964357 41590 net.cpp:200] Created Layer relu5_4/dw (61)
+I0607 22:55:47.964474 41590 net.cpp:572] relu5_4/dw <- conv5_4/dw
+I0607 22:55:47.964493 41590 net.cpp:527] relu5_4/dw -> conv5_4/dw (in-place)
+I0607 22:55:47.964565 41590 net.cpp:260] Setting up relu5_4/dw
+I0607 22:55:47.964645 41590 net.cpp:267] TRAIN Top shape for layer 61 'relu5_4/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.964668 41590 layer_factory.hpp:172] Creating layer 'conv5_4/sep' of type 'Convolution'
+I0607 22:55:47.964735 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.964825 41590 net.cpp:200] Created Layer conv5_4/sep (62)
+I0607 22:55:47.964853 41590 net.cpp:572] conv5_4/sep <- conv5_4/dw
+I0607 22:55:47.964924 41590 net.cpp:542] conv5_4/sep -> conv5_4/sep
+I0607 22:55:47.966511 41590 net.cpp:260] Setting up conv5_4/sep
+I0607 22:55:47.966526 41590 net.cpp:267] TRAIN Top shape for layer 62 'conv5_4/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.966544 41590 layer_factory.hpp:172] Creating layer 'conv5_4/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.966562 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.966584 41590 net.cpp:200] Created Layer conv5_4/sep/bn (63)
+I0607 22:55:47.966603 41590 net.cpp:572] conv5_4/sep/bn <- conv5_4/sep
+I0607 22:55:47.966612 41590 net.cpp:527] conv5_4/sep/bn -> conv5_4/sep (in-place)
+I0607 22:55:47.966940 41590 net.cpp:260] Setting up conv5_4/sep/bn
+I0607 22:55:47.966955 41590 net.cpp:267] TRAIN Top shape for layer 63 'conv5_4/sep/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.966974 41590 layer_factory.hpp:172] Creating layer 'relu5_4/sep' of type 'ReLU'
+I0607 22:55:47.966996 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.967059 41590 net.cpp:200] Created Layer relu5_4/sep (64)
+I0607 22:55:47.967104 41590 net.cpp:572] relu5_4/sep <- conv5_4/sep
+I0607 22:55:47.967144 41590 net.cpp:527] relu5_4/sep -> conv5_4/sep (in-place)
+I0607 22:55:47.967243 41590 net.cpp:260] Setting up relu5_4/sep
+I0607 22:55:47.967294 41590 net.cpp:267] TRAIN Top shape for layer 64 'relu5_4/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.967447 41590 layer_factory.hpp:172] Creating layer 'conv5_5/dw' of type 'Convolution'
+I0607 22:55:47.967501 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.967664 41590 net.cpp:200] Created Layer conv5_5/dw (65)
+I0607 22:55:47.967691 41590 net.cpp:572] conv5_5/dw <- conv5_4/sep
+I0607 22:55:47.967804 41590 net.cpp:542] conv5_5/dw -> conv5_5/dw
+I0607 22:55:47.968277 41590 net.cpp:260] Setting up conv5_5/dw
+I0607 22:55:47.968299 41590 net.cpp:267] TRAIN Top shape for layer 65 'conv5_5/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.968331 41590 layer_factory.hpp:172] Creating layer 'conv5_5/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.968389 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.968439 41590 net.cpp:200] Created Layer conv5_5/dw/bn (66)
+I0607 22:55:47.968479 41590 net.cpp:572] conv5_5/dw/bn <- conv5_5/dw
+I0607 22:55:47.968575 41590 net.cpp:527] conv5_5/dw/bn -> conv5_5/dw (in-place)
+I0607 22:55:47.968986 41590 net.cpp:260] Setting up conv5_5/dw/bn
+I0607 22:55:47.968998 41590 net.cpp:267] TRAIN Top shape for layer 66 'conv5_5/dw/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.969018 41590 layer_factory.hpp:172] Creating layer 'relu5_5/dw' of type 'ReLU'
+I0607 22:55:47.969027 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.969045 41590 net.cpp:200] Created Layer relu5_5/dw (67)
+I0607 22:55:47.969063 41590 net.cpp:572] relu5_5/dw <- conv5_5/dw
+I0607 22:55:47.969077 41590 net.cpp:527] relu5_5/dw -> conv5_5/dw (in-place)
+I0607 22:55:47.969110 41590 net.cpp:260] Setting up relu5_5/dw
+I0607 22:55:47.969156 41590 net.cpp:267] TRAIN Top shape for layer 67 'relu5_5/dw' 64 256 14 14 (3211264)
+I0607 22:55:47.969209 41590 layer_factory.hpp:172] Creating layer 'conv5_5/sep' of type 'Convolution'
+I0607 22:55:47.969303 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.969367 41590 net.cpp:200] Created Layer conv5_5/sep (68)
+I0607 22:55:47.969420 41590 net.cpp:572] conv5_5/sep <- conv5_5/dw
+I0607 22:55:47.969483 41590 net.cpp:542] conv5_5/sep -> conv5_5/sep
+I0607 22:55:47.971055 41590 net.cpp:260] Setting up conv5_5/sep
+I0607 22:55:47.971077 41590 net.cpp:267] TRAIN Top shape for layer 68 'conv5_5/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.971096 41590 layer_factory.hpp:172] Creating layer 'conv5_5/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.971113 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.971180 41590 net.cpp:200] Created Layer conv5_5/sep/bn (69)
+I0607 22:55:47.971221 41590 net.cpp:572] conv5_5/sep/bn <- conv5_5/sep
+I0607 22:55:47.971276 41590 net.cpp:527] conv5_5/sep/bn -> conv5_5/sep (in-place)
+I0607 22:55:47.971662 41590 net.cpp:260] Setting up conv5_5/sep/bn
+I0607 22:55:47.971673 41590 net.cpp:267] TRAIN Top shape for layer 69 'conv5_5/sep/bn' 64 256 14 14 (3211264)
+I0607 22:55:47.971684 41590 layer_factory.hpp:172] Creating layer 'relu5_5/sep' of type 'ReLU'
+I0607 22:55:47.971693 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.971704 41590 net.cpp:200] Created Layer relu5_5/sep (70)
+I0607 22:55:47.971712 41590 net.cpp:572] relu5_5/sep <- conv5_5/sep
+I0607 22:55:47.971725 41590 net.cpp:527] relu5_5/sep -> conv5_5/sep (in-place)
+I0607 22:55:47.971743 41590 net.cpp:260] Setting up relu5_5/sep
+I0607 22:55:47.971761 41590 net.cpp:267] TRAIN Top shape for layer 70 'relu5_5/sep' 64 256 14 14 (3211264)
+I0607 22:55:47.971771 41590 layer_factory.hpp:172] Creating layer 'conv5_6/dw' of type 'Convolution'
+I0607 22:55:47.971807 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.971843 41590 net.cpp:200] Created Layer conv5_6/dw (71)
+I0607 22:55:47.971923 41590 net.cpp:572] conv5_6/dw <- conv5_5/sep
+I0607 22:55:47.971992 41590 net.cpp:542] conv5_6/dw -> conv5_6/dw
+I0607 22:55:47.972388 41590 net.cpp:260] Setting up conv5_6/dw
+I0607 22:55:47.972414 41590 net.cpp:267] TRAIN Top shape for layer 71 'conv5_6/dw' 64 256 7 7 (802816)
+I0607 22:55:47.972432 41590 layer_factory.hpp:172] Creating layer 'conv5_6/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.972455 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.972477 41590 net.cpp:200] Created Layer conv5_6/dw/bn (72)
+I0607 22:55:47.972504 41590 net.cpp:572] conv5_6/dw/bn <- conv5_6/dw
+I0607 22:55:47.972523 41590 net.cpp:527] conv5_6/dw/bn -> conv5_6/dw (in-place)
+I0607 22:55:47.972924 41590 net.cpp:260] Setting up conv5_6/dw/bn
+I0607 22:55:47.972937 41590 net.cpp:267] TRAIN Top shape for layer 72 'conv5_6/dw/bn' 64 256 7 7 (802816)
+I0607 22:55:47.972949 41590 layer_factory.hpp:172] Creating layer 'relu5_6/dw' of type 'ReLU'
+I0607 22:55:47.972959 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.972972 41590 net.cpp:200] Created Layer relu5_6/dw (73)
+I0607 22:55:47.972990 41590 net.cpp:572] relu5_6/dw <- conv5_6/dw
+I0607 22:55:47.973000 41590 net.cpp:527] relu5_6/dw -> conv5_6/dw (in-place)
+I0607 22:55:47.973049 41590 net.cpp:260] Setting up relu5_6/dw
+I0607 22:55:47.973076 41590 net.cpp:267] TRAIN Top shape for layer 73 'relu5_6/dw' 64 256 7 7 (802816)
+I0607 22:55:47.973161 41590 layer_factory.hpp:172] Creating layer 'conv5_6/sep' of type 'Convolution'
+I0607 22:55:47.973238 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.973320 41590 net.cpp:200] Created Layer conv5_6/sep (74)
+I0607 22:55:47.973341 41590 net.cpp:572] conv5_6/sep <- conv5_6/dw
+I0607 22:55:47.973409 41590 net.cpp:542] conv5_6/sep -> conv5_6/sep
+I0607 22:55:47.977219 41590 net.cpp:260] Setting up conv5_6/sep
+I0607 22:55:47.977241 41590 net.cpp:267] TRAIN Top shape for layer 74 'conv5_6/sep' 64 512 7 7 (1605632)
+I0607 22:55:47.977252 41590 layer_factory.hpp:172] Creating layer 'conv5_6/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.977262 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.977275 41590 net.cpp:200] Created Layer conv5_6/sep/bn (75)
+I0607 22:55:47.977293 41590 net.cpp:572] conv5_6/sep/bn <- conv5_6/sep
+I0607 22:55:47.977303 41590 net.cpp:527] conv5_6/sep/bn -> conv5_6/sep (in-place)
+I0607 22:55:47.977648 41590 net.cpp:260] Setting up conv5_6/sep/bn
+I0607 22:55:47.977663 41590 net.cpp:267] TRAIN Top shape for layer 75 'conv5_6/sep/bn' 64 512 7 7 (1605632)
+I0607 22:55:47.977680 41590 layer_factory.hpp:172] Creating layer 'relu5_6/sep' of type 'ReLU'
+I0607 22:55:47.977699 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.977725 41590 net.cpp:200] Created Layer relu5_6/sep (76)
+I0607 22:55:47.977748 41590 net.cpp:572] relu5_6/sep <- conv5_6/sep
+I0607 22:55:47.977779 41590 net.cpp:527] relu5_6/sep -> conv5_6/sep (in-place)
+I0607 22:55:47.977813 41590 net.cpp:260] Setting up relu5_6/sep
+I0607 22:55:47.977854 41590 net.cpp:267] TRAIN Top shape for layer 76 'relu5_6/sep' 64 512 7 7 (1605632)
+I0607 22:55:47.977898 41590 layer_factory.hpp:172] Creating layer 'conv6/dw' of type 'Convolution'
+I0607 22:55:47.977983 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.978052 41590 net.cpp:200] Created Layer conv6/dw (77)
+I0607 22:55:47.978119 41590 net.cpp:572] conv6/dw <- conv5_6/sep
+I0607 22:55:47.978137 41590 net.cpp:542] conv6/dw -> conv6/dw
+I0607 22:55:47.978507 41590 net.cpp:260] Setting up conv6/dw
+I0607 22:55:47.978525 41590 net.cpp:267] TRAIN Top shape for layer 77 'conv6/dw' 64 512 7 7 (1605632)
+I0607 22:55:47.978540 41590 layer_factory.hpp:172] Creating layer 'conv6/dw/bn' of type 'BatchNorm'
+I0607 22:55:47.978549 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.978567 41590 net.cpp:200] Created Layer conv6/dw/bn (78)
+I0607 22:55:47.978590 41590 net.cpp:572] conv6/dw/bn <- conv6/dw
+I0607 22:55:47.978647 41590 net.cpp:527] conv6/dw/bn -> conv6/dw (in-place)
+I0607 22:55:47.979101 41590 net.cpp:260] Setting up conv6/dw/bn
+I0607 22:55:47.979146 41590 net.cpp:267] TRAIN Top shape for layer 78 'conv6/dw/bn' 64 512 7 7 (1605632)
+I0607 22:55:47.979192 41590 layer_factory.hpp:172] Creating layer 'relu6/dw' of type 'ReLU'
+I0607 22:55:47.979214 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.979348 41590 net.cpp:200] Created Layer relu6/dw (79)
+I0607 22:55:47.979420 41590 net.cpp:572] relu6/dw <- conv6/dw
+I0607 22:55:47.979511 41590 net.cpp:527] relu6/dw -> conv6/dw (in-place)
+I0607 22:55:47.979686 41590 net.cpp:260] Setting up relu6/dw
+I0607 22:55:47.979735 41590 net.cpp:267] TRAIN Top shape for layer 79 'relu6/dw' 64 512 7 7 (1605632)
+I0607 22:55:47.979816 41590 layer_factory.hpp:172] Creating layer 'conv6/sep' of type 'Convolution'
+I0607 22:55:47.979871 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.979929 41590 net.cpp:200] Created Layer conv6/sep (80)
+I0607 22:55:47.980041 41590 net.cpp:572] conv6/sep <- conv6/dw
+I0607 22:55:47.980109 41590 net.cpp:542] conv6/sep -> conv6/sep
+I0607 22:55:47.985852 41590 net.cpp:260] Setting up conv6/sep
+I0607 22:55:47.985872 41590 net.cpp:267] TRAIN Top shape for layer 80 'conv6/sep' 64 512 7 7 (1605632)
+I0607 22:55:47.985883 41590 layer_factory.hpp:172] Creating layer 'conv6/sep/bn' of type 'BatchNorm'
+I0607 22:55:47.985893 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.985906 41590 net.cpp:200] Created Layer conv6/sep/bn (81)
+I0607 22:55:47.985924 41590 net.cpp:572] conv6/sep/bn <- conv6/sep
+I0607 22:55:47.985939 41590 net.cpp:527] conv6/sep/bn -> conv6/sep (in-place)
+I0607 22:55:47.986233 41590 net.cpp:260] Setting up conv6/sep/bn
+I0607 22:55:47.986245 41590 net.cpp:267] TRAIN Top shape for layer 81 'conv6/sep/bn' 64 512 7 7 (1605632)
+I0607 22:55:47.986258 41590 layer_factory.hpp:172] Creating layer 'relu6/sep' of type 'ReLU'
+I0607 22:55:47.986266 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.986280 41590 net.cpp:200] Created Layer relu6/sep (82)
+I0607 22:55:47.986299 41590 net.cpp:572] relu6/sep <- conv6/sep
+I0607 22:55:47.986312 41590 net.cpp:527] relu6/sep -> conv6/sep (in-place)
+I0607 22:55:47.986335 41590 net.cpp:260] Setting up relu6/sep
+I0607 22:55:47.986372 41590 net.cpp:267] TRAIN Top shape for layer 82 'relu6/sep' 64 512 7 7 (1605632)
+I0607 22:55:47.986418 41590 layer_factory.hpp:172] Creating layer 'pool6' of type 'Pooling'
+I0607 22:55:47.986543 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.986601 41590 net.cpp:200] Created Layer pool6 (83)
+I0607 22:55:47.986632 41590 net.cpp:572] pool6 <- conv6/sep
+I0607 22:55:47.986691 41590 net.cpp:542] pool6 -> pool6
+I0607 22:55:47.986835 41590 net.cpp:260] Setting up pool6
+I0607 22:55:47.986917 41590 net.cpp:267] TRAIN Top shape for layer 83 'pool6' 64 512 1 1 (32768)
+I0607 22:55:47.987001 41590 layer_factory.hpp:172] Creating layer 'fc7' of type 'Convolution'
+I0607 22:55:47.987025 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.987169 41590 net.cpp:200] Created Layer fc7 (84)
+I0607 22:55:47.987244 41590 net.cpp:572] fc7 <- pool6
+I0607 22:55:47.987277 41590 net.cpp:542] fc7 -> fc7
+I0607 22:55:47.999284 41590 net.cpp:260] Setting up fc7
+I0607 22:55:47.999318 41590 net.cpp:267] TRAIN Top shape for layer 84 'fc7' 64 1000 1 1 (64000)
+I0607 22:55:47.999333 41590 layer_factory.hpp:172] Creating layer 'loss' of type 'SoftmaxWithLoss'
+I0607 22:55:47.999347 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:47.999370 41590 net.cpp:200] Created Layer loss (85)
+I0607 22:55:47.999382 41590 net.cpp:572] loss <- fc7
+I0607 22:55:47.999413 41590 net.cpp:572] loss <- label
+I0607 22:55:47.999440 41590 net.cpp:542] loss -> loss
+I0607 22:55:48.000764 41590 net.cpp:260] Setting up loss
+I0607 22:55:48.000789 41590 net.cpp:267] TRAIN Top shape for layer 85 'loss' (1)
+I0607 22:55:48.000799 41590 net.cpp:271]     with loss weight 1
+I0607 22:55:48.000828 41590 net.cpp:336] loss needs backward computation.
+I0607 22:55:48.000849 41590 net.cpp:336] fc7 needs backward computation.
+I0607 22:55:48.000900 41590 net.cpp:336] pool6 needs backward computation.
+I0607 22:55:48.000931 41590 net.cpp:336] relu6/sep needs backward computation.
+I0607 22:55:48.000949 41590 net.cpp:336] conv6/sep/bn needs backward computation.
+I0607 22:55:48.000990 41590 net.cpp:336] conv6/sep needs backward computation.
+I0607 22:55:48.001039 41590 net.cpp:336] relu6/dw needs backward computation.
+I0607 22:55:48.001134 41590 net.cpp:336] conv6/dw/bn needs backward computation.
+I0607 22:55:48.001157 41590 net.cpp:336] conv6/dw needs backward computation.
+I0607 22:55:48.001242 41590 net.cpp:336] relu5_6/sep needs backward computation.
+I0607 22:55:48.001282 41590 net.cpp:336] conv5_6/sep/bn needs backward computation.
+I0607 22:55:48.001350 41590 net.cpp:336] conv5_6/sep needs backward computation.
+I0607 22:55:48.001395 41590 net.cpp:336] relu5_6/dw needs backward computation.
+I0607 22:55:48.001453 41590 net.cpp:336] conv5_6/dw/bn needs backward computation.
+I0607 22:55:48.001477 41590 net.cpp:336] conv5_6/dw needs backward computation.
+I0607 22:55:48.001530 41590 net.cpp:336] relu5_5/sep needs backward computation.
+I0607 22:55:48.001585 41590 net.cpp:336] conv5_5/sep/bn needs backward computation.
+I0607 22:55:48.001669 41590 net.cpp:336] conv5_5/sep needs backward computation.
+I0607 22:55:48.001724 41590 net.cpp:336] relu5_5/dw needs backward computation.
+I0607 22:55:48.001854 41590 net.cpp:336] conv5_5/dw/bn needs backward computation.
+I0607 22:55:48.001891 41590 net.cpp:336] conv5_5/dw needs backward computation.
+I0607 22:55:48.001972 41590 net.cpp:336] relu5_4/sep needs backward computation.
+I0607 22:55:48.002048 41590 net.cpp:336] conv5_4/sep/bn needs backward computation.
+I0607 22:55:48.002066 41590 net.cpp:336] conv5_4/sep needs backward computation.
+I0607 22:55:48.002135 41590 net.cpp:336] relu5_4/dw needs backward computation.
+I0607 22:55:48.002183 41590 net.cpp:336] conv5_4/dw/bn needs backward computation.
+I0607 22:55:48.002251 41590 net.cpp:336] conv5_4/dw needs backward computation.
+I0607 22:55:48.002327 41590 net.cpp:336] relu5_3/sep needs backward computation.
+I0607 22:55:48.002426 41590 net.cpp:336] conv5_3/sep/bn needs backward computation.
+I0607 22:55:48.002480 41590 net.cpp:336] conv5_3/sep needs backward computation.
+I0607 22:55:48.002521 41590 net.cpp:336] relu5_3/dw needs backward computation.
+I0607 22:55:48.002642 41590 net.cpp:336] conv5_3/dw/bn needs backward computation.
+I0607 22:55:48.002671 41590 net.cpp:336] conv5_3/dw needs backward computation.
+I0607 22:55:48.002791 41590 net.cpp:336] relu5_2/sep needs backward computation.
+I0607 22:55:48.002827 41590 net.cpp:336] conv5_2/sep/bn needs backward computation.
+I0607 22:55:48.002904 41590 net.cpp:336] conv5_2/sep needs backward computation.
+I0607 22:55:48.002990 41590 net.cpp:336] relu5_2/dw needs backward computation.
+I0607 22:55:48.003070 41590 net.cpp:336] conv5_2/dw/bn needs backward computation.
+I0607 22:55:48.003142 41590 net.cpp:336] conv5_2/dw needs backward computation.
+I0607 22:55:48.003214 41590 net.cpp:336] relu5_1/sep needs backward computation.
+I0607 22:55:48.003283 41590 net.cpp:336] conv5_1/sep/bn needs backward computation.
+I0607 22:55:48.003300 41590 net.cpp:336] conv5_1/sep needs backward computation.
+I0607 22:55:48.003376 41590 net.cpp:336] relu5_1/dw needs backward computation.
+I0607 22:55:48.003439 41590 net.cpp:336] conv5_1/dw/bn needs backward computation.
+I0607 22:55:48.003484 41590 net.cpp:336] conv5_1/dw needs backward computation.
+I0607 22:55:48.003520 41590 net.cpp:336] relu4_2/sep needs backward computation.
+I0607 22:55:48.003561 41590 net.cpp:336] conv4_2/sep/bn needs backward computation.
+I0607 22:55:48.003628 41590 net.cpp:336] conv4_2/sep needs backward computation.
+I0607 22:55:48.003743 41590 net.cpp:336] relu4_2/dw needs backward computation.
+I0607 22:55:48.003762 41590 net.cpp:336] conv4_2/dw/bn needs backward computation.
+I0607 22:55:48.003810 41590 net.cpp:336] conv4_2/dw needs backward computation.
+I0607 22:55:48.003870 41590 net.cpp:336] relu4_1/sep needs backward computation.
+I0607 22:55:48.003928 41590 net.cpp:336] conv4_1/sep/bn needs backward computation.
+I0607 22:55:48.003960 41590 net.cpp:336] conv4_1/sep needs backward computation.
+I0607 22:55:48.004027 41590 net.cpp:336] relu4_1/dw needs backward computation.
+I0607 22:55:48.004081 41590 net.cpp:336] conv4_1/dw/bn needs backward computation.
+I0607 22:55:48.004135 41590 net.cpp:336] conv4_1/dw needs backward computation.
+I0607 22:55:48.004153 41590 net.cpp:336] relu3_2/sep needs backward computation.
+I0607 22:55:48.004324 41590 net.cpp:336] conv3_2/sep/bn needs backward computation.
+I0607 22:55:48.004369 41590 net.cpp:336] conv3_2/sep needs backward computation.
+I0607 22:55:48.004513 41590 net.cpp:336] relu3_2/dw needs backward computation.
+I0607 22:55:48.004540 41590 net.cpp:336] conv3_2/dw/bn needs backward computation.
+I0607 22:55:48.004600 41590 net.cpp:336] conv3_2/dw needs backward computation.
+I0607 22:55:48.004657 41590 net.cpp:336] relu3_1/sep needs backward computation.
+I0607 22:55:48.004675 41590 net.cpp:336] conv3_1/sep/bn needs backward computation.
+I0607 22:55:48.004734 41590 net.cpp:336] conv3_1/sep needs backward computation.
+I0607 22:55:48.004783 41590 net.cpp:336] relu3_1/dw needs backward computation.
+I0607 22:55:48.004815 41590 net.cpp:336] conv3_1/dw/bn needs backward computation.
+I0607 22:55:48.004887 41590 net.cpp:336] conv3_1/dw needs backward computation.
+I0607 22:55:48.004954 41590 net.cpp:336] relu2_2/sep needs backward computation.
+I0607 22:55:48.005008 41590 net.cpp:336] conv2_2/sep/bn needs backward computation.
+I0607 22:55:48.005098 41590 net.cpp:336] conv2_2/sep needs backward computation.
+I0607 22:55:48.005148 41590 net.cpp:336] relu2_2/dw needs backward computation.
+I0607 22:55:48.005175 41590 net.cpp:336] conv2_2/dw/bn needs backward computation.
+I0607 22:55:48.005224 41590 net.cpp:336] conv2_2/dw needs backward computation.
+I0607 22:55:48.005297 41590 net.cpp:336] relu2_1/sep needs backward computation.
+I0607 22:55:48.005342 41590 net.cpp:336] conv2_1/sep/bn needs backward computation.
+I0607 22:55:48.005391 41590 net.cpp:336] conv2_1/sep needs backward computation.
+I0607 22:55:48.005432 41590 net.cpp:336] relu2_1/dw needs backward computation.
+I0607 22:55:48.005476 41590 net.cpp:336] conv2_1/dw/bn needs backward computation.
+I0607 22:55:48.005558 41590 net.cpp:336] conv2_1/dw needs backward computation.
+I0607 22:55:48.005594 41590 net.cpp:336] relu1 needs backward computation.
+I0607 22:55:48.005697 41590 net.cpp:336] conv1/bn needs backward computation.
+I0607 22:55:48.005730 41590 net.cpp:336] conv1 needs backward computation.
+I0607 22:55:48.005784 41590 net.cpp:338] data/bias does not need backward computation.
+I0607 22:55:48.005838 41590 net.cpp:338] data does not need backward computation.
+I0607 22:55:48.005861 41590 net.cpp:380] This network produces output loss
+I0607 22:55:48.006023 41590 net.cpp:403] Top memory (TRAIN) required for data: 2013849864 diff: 2013849864
+I0607 22:55:48.006038 41590 net.cpp:406] Bottom memory (TRAIN) required for data: 2013849856 diff: 2013849856
+I0607 22:55:48.006057 41590 net.cpp:409] Shared (in-place) memory (TRAIN) by data: 1290928128 diff: 1290928128
+I0607 22:55:48.006106 41590 net.cpp:412] Parameters memory (TRAIN) required for data: 5370376 diff: 5370376
+I0607 22:55:48.006165 41590 net.cpp:415] Parameters shared memory (TRAIN) by data: 0 diff: 0
+I0607 22:55:48.006259 41590 net.cpp:421] Network initialization done.
+I0607 22:55:48.006994 41590 solver.cpp:175] Creating test net (#0) specified by test_net file: training/imagenet_mobilenet-0.5_2018-06-07_22-55-32/initial/test.prototxt
+I0607 22:55:48.007279 41590 net.cpp:80] Initializing net from parameters: 
+name: "mobilenet-0.5_test"
+state {
+  phase: TEST
+}
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  top: "label"
+  transform_param {
+    scale: 0.017
+    mirror: false
+    crop_size: 224
+    mean_value: 103.94
+    mean_value: 116.78
+    mean_value: 123.68
+  }
+  data_param {
+    source: "/data/hdd/datasets/object-detect/other/ilsvrc/2012/lmdb/size256/ilsvrc12_val_lmdb"
+    batch_size: 50
+    backend: LMDB
+    threads: 1
+    parser_threads: 1
+  }
+}
+layer {
+  name: "data/bias"
+  type: "Bias"
+  bottom: "data"
+  top: "data/bias"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  bias_param {
+    filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data/bias"
+  top: "conv1"
+  convolution_param {
+    num_output: 16
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 1
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv1/bn"
+  type: "BatchNorm"
+  bottom: "conv1"
+  top: "conv1"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "conv2_1/dw"
+  type: "Convolution"
+  bottom: "conv1"
+  top: "conv2_1/dw"
+  convolution_param {
+    num_output: 16
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 16
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv2_1/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv2_1/dw"
+  top: "conv2_1/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu2_1/dw"
+  type: "ReLU"
+  bottom: "conv2_1/dw"
+  top: "conv2_1/dw"
+}
+layer {
+  name: "conv2_1/sep"
+  type: "Convolution"
+  bottom: "conv2_1/dw"
+  top: "conv2_1/sep"
+  convolution_param {
+    num_output: 32
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv2_1/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv2_1/sep"
+  top: "conv2_1/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu2_1/sep"
+  type: "ReLU"
+  bottom: "conv2_1/sep"
+  top: "conv2_1/sep"
+}
+layer {
+  name: "conv2_2/dw"
+  type: "Convolution"
+  bottom: "conv2_1/sep"
+  top: "conv2_2/dw"
+  convolution_param {
+    num_output: 32
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 32
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv2_2/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv2_2/dw"
+  top: "conv2_2/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu2_2/dw"
+  type: "ReLU"
+  bottom: "conv2_2/dw"
+  top: "conv2_2/dw"
+}
+layer {
+  name: "conv2_2/sep"
+  type: "Convolution"
+  bottom: "conv2_2/dw"
+  top: "conv2_2/sep"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv2_2/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv2_2/sep"
+  top: "conv2_2/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu2_2/sep"
+  type: "ReLU"
+  bottom: "conv2_2/sep"
+  top: "conv2_2/sep"
+}
+layer {
+  name: "conv3_1/dw"
+  type: "Convolution"
+  bottom: "conv2_2/sep"
+  top: "conv3_1/dw"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 64
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv3_1/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv3_1/dw"
+  top: "conv3_1/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu3_1/dw"
+  type: "ReLU"
+  bottom: "conv3_1/dw"
+  top: "conv3_1/dw"
+}
+layer {
+  name: "conv3_1/sep"
+  type: "Convolution"
+  bottom: "conv3_1/dw"
+  top: "conv3_1/sep"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv3_1/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv3_1/sep"
+  top: "conv3_1/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu3_1/sep"
+  type: "ReLU"
+  bottom: "conv3_1/sep"
+  top: "conv3_1/sep"
+}
+layer {
+  name: "conv3_2/dw"
+  type: "Convolution"
+  bottom: "conv3_1/sep"
+  top: "conv3_2/dw"
+  convolution_param {
+    num_output: 64
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 64
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv3_2/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv3_2/dw"
+  top: "conv3_2/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu3_2/dw"
+  type: "ReLU"
+  bottom: "conv3_2/dw"
+  top: "conv3_2/dw"
+}
+layer {
+  name: "conv3_2/sep"
+  type: "Convolution"
+  bottom: "conv3_2/dw"
+  top: "conv3_2/sep"
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv3_2/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv3_2/sep"
+  top: "conv3_2/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu3_2/sep"
+  type: "ReLU"
+  bottom: "conv3_2/sep"
+  top: "conv3_2/sep"
+}
+layer {
+  name: "conv4_1/dw"
+  type: "Convolution"
+  bottom: "conv3_2/sep"
+  top: "conv4_1/dw"
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 128
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv4_1/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv4_1/dw"
+  top: "conv4_1/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu4_1/dw"
+  type: "ReLU"
+  bottom: "conv4_1/dw"
+  top: "conv4_1/dw"
+}
+layer {
+  name: "conv4_1/sep"
+  type: "Convolution"
+  bottom: "conv4_1/dw"
+  top: "conv4_1/sep"
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv4_1/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv4_1/sep"
+  top: "conv4_1/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu4_1/sep"
+  type: "ReLU"
+  bottom: "conv4_1/sep"
+  top: "conv4_1/sep"
+}
+layer {
+  name: "conv4_2/dw"
+  type: "Convolution"
+  bottom: "conv4_1/sep"
+  top: "conv4_2/dw"
+  convolution_param {
+    num_output: 128
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 128
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv4_2/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv4_2/dw"
+  top: "conv4_2/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu4_2/dw"
+  type: "ReLU"
+  bottom: "conv4_2/dw"
+  top: "conv4_2/dw"
+}
+layer {
+  name: "conv4_2/sep"
+  type: "Convolution"
+  bottom: "conv4_2/dw"
+  top: "conv4_2/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv4_2/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv4_2/sep"
+  top: "conv4_2/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu4_2/sep"
+  type: "ReLU"
+  bottom: "conv4_2/sep"
+  top: "conv4_2/sep"
+}
+layer {
+  name: "conv5_1/dw"
+  type: "Convolution"
+  bottom: "conv4_2/sep"
+  top: "conv5_1/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_1/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_1/dw"
+  top: "conv5_1/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_1/dw"
+  type: "ReLU"
+  bottom: "conv5_1/dw"
+  top: "conv5_1/dw"
+}
+layer {
+  name: "conv5_1/sep"
+  type: "Convolution"
+  bottom: "conv5_1/dw"
+  top: "conv5_1/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_1/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_1/sep"
+  top: "conv5_1/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_1/sep"
+  type: "ReLU"
+  bottom: "conv5_1/sep"
+  top: "conv5_1/sep"
+}
+layer {
+  name: "conv5_2/dw"
+  type: "Convolution"
+  bottom: "conv5_1/sep"
+  top: "conv5_2/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_2/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_2/dw"
+  top: "conv5_2/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_2/dw"
+  type: "ReLU"
+  bottom: "conv5_2/dw"
+  top: "conv5_2/dw"
+}
+layer {
+  name: "conv5_2/sep"
+  type: "Convolution"
+  bottom: "conv5_2/dw"
+  top: "conv5_2/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_2/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_2/sep"
+  top: "conv5_2/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_2/sep"
+  type: "ReLU"
+  bottom: "conv5_2/sep"
+  top: "conv5_2/sep"
+}
+layer {
+  name: "conv5_3/dw"
+  type: "Convolution"
+  bottom: "conv5_2/sep"
+  top: "conv5_3/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_3/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_3/dw"
+  top: "conv5_3/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_3/dw"
+  type: "ReLU"
+  bottom: "conv5_3/dw"
+  top: "conv5_3/dw"
+}
+layer {
+  name: "conv5_3/sep"
+  type: "Convolution"
+  bottom: "conv5_3/dw"
+  top: "conv5_3/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_3/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_3/sep"
+  top: "conv5_3/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_3/sep"
+  type: "ReLU"
+  bottom: "conv5_3/sep"
+  top: "conv5_3/sep"
+}
+layer {
+  name: "conv5_4/dw"
+  type: "Convolution"
+  bottom: "conv5_3/sep"
+  top: "conv5_4/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_4/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_4/dw"
+  top: "conv5_4/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_4/dw"
+  type: "ReLU"
+  bottom: "conv5_4/dw"
+  top: "conv5_4/dw"
+}
+layer {
+  name: "conv5_4/sep"
+  type: "Convolution"
+  bottom: "conv5_4/dw"
+  top: "conv5_4/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_4/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_4/sep"
+  top: "conv5_4/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_4/sep"
+  type: "ReLU"
+  bottom: "conv5_4/sep"
+  top: "conv5_4/sep"
+}
+layer {
+  name: "conv5_5/dw"
+  type: "Convolution"
+  bottom: "conv5_4/sep"
+  top: "conv5_5/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_5/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_5/dw"
+  top: "conv5_5/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_5/dw"
+  type: "ReLU"
+  bottom: "conv5_5/dw"
+  top: "conv5_5/dw"
+}
+layer {
+  name: "conv5_5/sep"
+  type: "Convolution"
+  bottom: "conv5_5/dw"
+  top: "conv5_5/sep"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_5/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_5/sep"
+  top: "conv5_5/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_5/sep"
+  type: "ReLU"
+  bottom: "conv5_5/sep"
+  top: "conv5_5/sep"
+}
+layer {
+  name: "conv5_6/dw"
+  type: "Convolution"
+  bottom: "conv5_5/sep"
+  top: "conv5_6/dw"
+  convolution_param {
+    num_output: 256
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 256
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_6/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv5_6/dw"
+  top: "conv5_6/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_6/dw"
+  type: "ReLU"
+  bottom: "conv5_6/dw"
+  top: "conv5_6/dw"
+}
+layer {
+  name: "conv5_6/sep"
+  type: "Convolution"
+  bottom: "conv5_6/dw"
+  top: "conv5_6/sep"
+  convolution_param {
+    num_output: 512
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv5_6/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv5_6/sep"
+  top: "conv5_6/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu5_6/sep"
+  type: "ReLU"
+  bottom: "conv5_6/sep"
+  top: "conv5_6/sep"
+}
+layer {
+  name: "conv6/dw"
+  type: "Convolution"
+  bottom: "conv5_6/sep"
+  top: "conv6/dw"
+  convolution_param {
+    num_output: 512
+    bias_term: false
+    pad: 1
+    kernel_size: 3
+    group: 512
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv6/dw/bn"
+  type: "BatchNorm"
+  bottom: "conv6/dw"
+  top: "conv6/dw"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu6/dw"
+  type: "ReLU"
+  bottom: "conv6/dw"
+  top: "conv6/dw"
+}
+layer {
+  name: "conv6/sep"
+  type: "Convolution"
+  bottom: "conv6/dw"
+  top: "conv6/sep"
+  convolution_param {
+    num_output: 512
+    bias_term: false
+    pad: 0
+    kernel_size: 1
+    group: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    dilation: 1
+  }
+}
+layer {
+  name: "conv6/sep/bn"
+  type: "BatchNorm"
+  bottom: "conv6/sep"
+  top: "conv6/sep"
+  batch_norm_param {
+    scale_bias: true
+  }
+}
+layer {
+  name: "relu6/sep"
+  type: "ReLU"
+  bottom: "conv6/sep"
+  top: "conv6/sep"
+}
+layer {
+  name: "pool6"
+  type: "Pooling"
+  bottom: "conv6/sep"
+  top: "pool6"
+  pooling_param {
+    pool: AVE
+    global_pooling: true
+  }
+}
+layer {
+  name: "fc7"
+  type: "Convolution"
+  bottom: "pool6"
+  top: "fc7"
+  convolution_param {
+    num_output: 1000
+    pad: 0
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc7"
+  bottom: "label"
+  top: "loss"
+  propagate_down: true
+  propagate_down: false
+}
+layer {
+  name: "accuracy/top1"
+  type: "Accuracy"
+  bottom: "fc7"
+  bottom: "label"
+  top: "accuracy/top1"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "accuracy/top5"
+  type: "Accuracy"
+  bottom: "fc7"
+  bottom: "label"
+  top: "accuracy/top5"
+  include {
+    phase: TEST
+  }
+  accuracy_param {
+    top_k: 5
+  }
+}
+I0607 22:55:48.007684 41590 net.cpp:110] Using FLOAT as default forward math type
+I0607 22:55:48.007702 41590 net.cpp:116] Using FLOAT as default backward math type
+I0607 22:55:48.007720 41590 layer_factory.hpp:172] Creating layer 'data' of type 'Data'
+I0607 22:55:48.007769 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.007882 41590 internal_thread.cpp:19] Starting 1 internal thread(s) on device 0
+I0607 22:55:48.007997 41590 net.cpp:200] Created Layer data (0)
+I0607 22:55:48.008038 41590 net.cpp:542] data -> data
+I0607 22:55:48.010541 41590 net.cpp:542] data -> label
+I0607 22:55:48.010581 41590 data_reader.cpp:58] Data Reader threads: 1, out queues: 1, depth: 50
+I0607 22:55:48.010617 41590 internal_thread.cpp:19] Starting 1 internal thread(s) on device 0
+I0607 22:55:48.022810 41695 db_lmdb.cpp:36] Opened lmdb /data/hdd/datasets/object-detect/other/ilsvrc/2012/lmdb/size256/ilsvrc12_val_lmdb
+I0607 22:55:48.023150 41590 data_layer.cpp:199] (0) Output data size: 50, 3, 224, 224
+I0607 22:55:48.023208 41590 internal_thread.cpp:19] Starting 1 internal thread(s) on device 0
+I0607 22:55:48.023483 41590 net.cpp:260] Setting up data
+I0607 22:55:48.023582 41590 net.cpp:267] TEST Top shape for layer 0 'data' 50 3 224 224 (7526400)
+I0607 22:55:48.025192 41696 data_layer.cpp:105] (0) Parser threads: 1
+I0607 22:55:48.025197 41590 net.cpp:267] TEST Top shape for layer 0 'data' 50 (50)
+I0607 22:55:48.025244 41696 data_layer.cpp:107] (0) Transformer threads: 1
+I0607 22:55:48.025298 41590 layer_factory.hpp:172] Creating layer 'label_data_1_split' of type 'Split'
+I0607 22:55:48.025321 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.025346 41590 net.cpp:200] Created Layer label_data_1_split (1)
+I0607 22:55:48.025372 41590 net.cpp:572] label_data_1_split <- label
+I0607 22:55:48.025394 41590 net.cpp:542] label_data_1_split -> label_data_1_split_0
+I0607 22:55:48.025418 41590 net.cpp:542] label_data_1_split -> label_data_1_split_1
+I0607 22:55:48.025449 41590 net.cpp:542] label_data_1_split -> label_data_1_split_2
+I0607 22:55:48.032781 41590 net.cpp:260] Setting up label_data_1_split
+I0607 22:55:48.032876 41590 net.cpp:267] TEST Top shape for layer 1 'label_data_1_split' 50 (50)
+I0607 22:55:48.032902 41590 net.cpp:267] TEST Top shape for layer 1 'label_data_1_split' 50 (50)
+I0607 22:55:48.032924 41590 net.cpp:267] TEST Top shape for layer 1 'label_data_1_split' 50 (50)
+I0607 22:55:48.032946 41590 layer_factory.hpp:172] Creating layer 'data/bias' of type 'Bias'
+I0607 22:55:48.033015 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.033059 41590 net.cpp:200] Created Layer data/bias (2)
+I0607 22:55:48.033104 41590 net.cpp:572] data/bias <- data
+I0607 22:55:48.033200 41590 net.cpp:542] data/bias -> data/bias
+I0607 22:55:48.033550 41590 net.cpp:260] Setting up data/bias
+I0607 22:55:48.033591 41590 net.cpp:267] TEST Top shape for layer 2 'data/bias' 50 3 224 224 (7526400)
+I0607 22:55:48.033627 41590 layer_factory.hpp:172] Creating layer 'conv1' of type 'Convolution'
+I0607 22:55:48.033675 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.033725 41590 net.cpp:200] Created Layer conv1 (3)
+I0607 22:55:48.033743 41590 net.cpp:572] conv1 <- data/bias
+I0607 22:55:48.033771 41590 net.cpp:542] conv1 -> conv1
+I0607 22:55:48.034432 41590 net.cpp:260] Setting up conv1
+I0607 22:55:48.034473 41590 net.cpp:267] TEST Top shape for layer 3 'conv1' 50 16 112 112 (10035200)
+I0607 22:55:48.034513 41590 layer_factory.hpp:172] Creating layer 'conv1/bn' of type 'BatchNorm'
+I0607 22:55:48.034540 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.034572 41590 net.cpp:200] Created Layer conv1/bn (4)
+I0607 22:55:48.034703 41590 net.cpp:572] conv1/bn <- conv1
+I0607 22:55:48.034747 41590 net.cpp:527] conv1/bn -> conv1 (in-place)
+I0607 22:55:48.035681 41590 net.cpp:260] Setting up conv1/bn
+I0607 22:55:48.035712 41590 net.cpp:267] TEST Top shape for layer 4 'conv1/bn' 50 16 112 112 (10035200)
+I0607 22:55:48.035743 41590 layer_factory.hpp:172] Creating layer 'relu1' of type 'ReLU'
+I0607 22:55:48.035761 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.035779 41590 net.cpp:200] Created Layer relu1 (5)
+I0607 22:55:48.035791 41590 net.cpp:572] relu1 <- conv1
+I0607 22:55:48.035804 41590 net.cpp:527] relu1 -> conv1 (in-place)
+I0607 22:55:48.035840 41590 net.cpp:260] Setting up relu1
+I0607 22:55:48.035862 41590 net.cpp:267] TEST Top shape for layer 5 'relu1' 50 16 112 112 (10035200)
+I0607 22:55:48.035877 41590 layer_factory.hpp:172] Creating layer 'conv2_1/dw' of type 'Convolution'
+I0607 22:55:48.035895 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.035944 41590 net.cpp:200] Created Layer conv2_1/dw (6)
+I0607 22:55:48.035985 41590 net.cpp:572] conv2_1/dw <- conv1
+I0607 22:55:48.036021 41590 net.cpp:542] conv2_1/dw -> conv2_1/dw
+I0607 22:55:48.036373 41590 net.cpp:260] Setting up conv2_1/dw
+I0607 22:55:48.036404 41590 net.cpp:267] TEST Top shape for layer 6 'conv2_1/dw' 50 16 112 112 (10035200)
+I0607 22:55:48.036422 41590 layer_factory.hpp:172] Creating layer 'conv2_1/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.036440 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.036463 41590 net.cpp:200] Created Layer conv2_1/dw/bn (7)
+I0607 22:55:48.036486 41590 net.cpp:572] conv2_1/dw/bn <- conv2_1/dw
+I0607 22:55:48.036514 41590 net.cpp:527] conv2_1/dw/bn -> conv2_1/dw (in-place)
+I0607 22:55:48.037117 41590 net.cpp:260] Setting up conv2_1/dw/bn
+I0607 22:55:48.037142 41590 net.cpp:267] TEST Top shape for layer 7 'conv2_1/dw/bn' 50 16 112 112 (10035200)
+I0607 22:55:48.037165 41590 layer_factory.hpp:172] Creating layer 'relu2_1/dw' of type 'ReLU'
+I0607 22:55:48.037184 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.037205 41590 net.cpp:200] Created Layer relu2_1/dw (8)
+I0607 22:55:48.037223 41590 net.cpp:572] relu2_1/dw <- conv2_1/dw
+I0607 22:55:48.037250 41590 net.cpp:527] relu2_1/dw -> conv2_1/dw (in-place)
+I0607 22:55:48.037273 41590 net.cpp:260] Setting up relu2_1/dw
+I0607 22:55:48.037292 41590 net.cpp:267] TEST Top shape for layer 8 'relu2_1/dw' 50 16 112 112 (10035200)
+I0607 22:55:48.037313 41590 layer_factory.hpp:172] Creating layer 'conv2_1/sep' of type 'Convolution'
+I0607 22:55:48.037340 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.037390 41590 net.cpp:200] Created Layer conv2_1/sep (9)
+I0607 22:55:48.037498 41590 net.cpp:572] conv2_1/sep <- conv2_1/dw
+I0607 22:55:48.037525 41590 net.cpp:542] conv2_1/sep -> conv2_1/sep
+I0607 22:55:48.037838 41590 net.cpp:260] Setting up conv2_1/sep
+I0607 22:55:48.037892 41590 net.cpp:267] TEST Top shape for layer 9 'conv2_1/sep' 50 32 112 112 (20070400)
+I0607 22:55:48.037937 41590 layer_factory.hpp:172] Creating layer 'conv2_1/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.037997 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.038069 41590 net.cpp:200] Created Layer conv2_1/sep/bn (10)
+I0607 22:55:48.038136 41590 net.cpp:572] conv2_1/sep/bn <- conv2_1/sep
+I0607 22:55:48.038167 41590 net.cpp:527] conv2_1/sep/bn -> conv2_1/sep (in-place)
+I0607 22:55:48.038550 41590 net.cpp:260] Setting up conv2_1/sep/bn
+I0607 22:55:48.038581 41590 net.cpp:267] TEST Top shape for layer 10 'conv2_1/sep/bn' 50 32 112 112 (20070400)
+I0607 22:55:48.038609 41590 layer_factory.hpp:172] Creating layer 'relu2_1/sep' of type 'ReLU'
+I0607 22:55:48.038631 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.038653 41590 net.cpp:200] Created Layer relu2_1/sep (11)
+I0607 22:55:48.038694 41590 net.cpp:572] relu2_1/sep <- conv2_1/sep
+I0607 22:55:48.038717 41590 net.cpp:527] relu2_1/sep -> conv2_1/sep (in-place)
+I0607 22:55:48.038789 41590 net.cpp:260] Setting up relu2_1/sep
+I0607 22:55:48.038815 41590 net.cpp:267] TEST Top shape for layer 11 'relu2_1/sep' 50 32 112 112 (20070400)
+I0607 22:55:48.038833 41590 layer_factory.hpp:172] Creating layer 'conv2_2/dw' of type 'Convolution'
+I0607 22:55:48.038910 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.038938 41590 net.cpp:200] Created Layer conv2_2/dw (12)
+I0607 22:55:48.038974 41590 net.cpp:572] conv2_2/dw <- conv2_1/sep
+I0607 22:55:48.038995 41590 net.cpp:542] conv2_2/dw -> conv2_2/dw
+I0607 22:55:48.039257 41590 net.cpp:260] Setting up conv2_2/dw
+I0607 22:55:48.039279 41590 net.cpp:267] TEST Top shape for layer 12 'conv2_2/dw' 50 32 56 56 (5017600)
+I0607 22:55:48.039306 41590 layer_factory.hpp:172] Creating layer 'conv2_2/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.039351 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.039382 41590 net.cpp:200] Created Layer conv2_2/dw/bn (13)
+I0607 22:55:48.039418 41590 net.cpp:572] conv2_2/dw/bn <- conv2_2/dw
+I0607 22:55:48.039469 41590 net.cpp:527] conv2_2/dw/bn -> conv2_2/dw (in-place)
+I0607 22:55:48.039854 41590 net.cpp:260] Setting up conv2_2/dw/bn
+I0607 22:55:48.039880 41590 net.cpp:267] TEST Top shape for layer 13 'conv2_2/dw/bn' 50 32 56 56 (5017600)
+I0607 22:55:48.039911 41590 layer_factory.hpp:172] Creating layer 'relu2_2/dw' of type 'ReLU'
+I0607 22:55:48.039933 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.039952 41590 net.cpp:200] Created Layer relu2_2/dw (14)
+I0607 22:55:48.039974 41590 net.cpp:572] relu2_2/dw <- conv2_2/dw
+I0607 22:55:48.039993 41590 net.cpp:527] relu2_2/dw -> conv2_2/dw (in-place)
+I0607 22:55:48.040019 41590 net.cpp:260] Setting up relu2_2/dw
+I0607 22:55:48.040037 41590 net.cpp:267] TEST Top shape for layer 14 'relu2_2/dw' 50 32 56 56 (5017600)
+I0607 22:55:48.040060 41590 layer_factory.hpp:172] Creating layer 'conv2_2/sep' of type 'Convolution'
+I0607 22:55:48.040428 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.040460 41590 net.cpp:200] Created Layer conv2_2/sep (15)
+I0607 22:55:48.040500 41590 net.cpp:572] conv2_2/sep <- conv2_2/dw
+I0607 22:55:48.040536 41590 net.cpp:542] conv2_2/sep -> conv2_2/sep
+I0607 22:55:48.040874 41590 net.cpp:260] Setting up conv2_2/sep
+I0607 22:55:48.040920 41590 net.cpp:267] TEST Top shape for layer 15 'conv2_2/sep' 50 64 56 56 (10035200)
+I0607 22:55:48.040951 41590 layer_factory.hpp:172] Creating layer 'conv2_2/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.041095 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.041136 41590 net.cpp:200] Created Layer conv2_2/sep/bn (16)
+I0607 22:55:48.041198 41590 net.cpp:572] conv2_2/sep/bn <- conv2_2/sep
+I0607 22:55:48.041247 41590 net.cpp:527] conv2_2/sep/bn -> conv2_2/sep (in-place)
+I0607 22:55:48.041630 41590 net.cpp:260] Setting up conv2_2/sep/bn
+I0607 22:55:48.041657 41590 net.cpp:267] TEST Top shape for layer 16 'conv2_2/sep/bn' 50 64 56 56 (10035200)
+I0607 22:55:48.041698 41590 layer_factory.hpp:172] Creating layer 'relu2_2/sep' of type 'ReLU'
+I0607 22:55:48.041725 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.041743 41590 net.cpp:200] Created Layer relu2_2/sep (17)
+I0607 22:55:48.041779 41590 net.cpp:572] relu2_2/sep <- conv2_2/sep
+I0607 22:55:48.041806 41590 net.cpp:527] relu2_2/sep -> conv2_2/sep (in-place)
+I0607 22:55:48.041846 41590 net.cpp:260] Setting up relu2_2/sep
+I0607 22:55:48.041878 41590 net.cpp:267] TEST Top shape for layer 17 'relu2_2/sep' 50 64 56 56 (10035200)
+I0607 22:55:48.041923 41590 layer_factory.hpp:172] Creating layer 'conv3_1/dw' of type 'Convolution'
+I0607 22:55:48.041954 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.041986 41590 net.cpp:200] Created Layer conv3_1/dw (18)
+I0607 22:55:48.042008 41590 net.cpp:572] conv3_1/dw <- conv2_2/sep
+I0607 22:55:48.042094 41590 net.cpp:542] conv3_1/dw -> conv3_1/dw
+I0607 22:55:48.042373 41590 net.cpp:260] Setting up conv3_1/dw
+I0607 22:55:48.042400 41590 net.cpp:267] TEST Top shape for layer 18 'conv3_1/dw' 50 64 56 56 (10035200)
+I0607 22:55:48.042423 41590 layer_factory.hpp:172] Creating layer 'conv3_1/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.042445 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.042469 41590 net.cpp:200] Created Layer conv3_1/dw/bn (19)
+I0607 22:55:48.042490 41590 net.cpp:572] conv3_1/dw/bn <- conv3_1/dw
+I0607 22:55:48.042536 41590 net.cpp:527] conv3_1/dw/bn -> conv3_1/dw (in-place)
+I0607 22:55:48.042910 41590 net.cpp:260] Setting up conv3_1/dw/bn
+I0607 22:55:48.042930 41590 net.cpp:267] TEST Top shape for layer 19 'conv3_1/dw/bn' 50 64 56 56 (10035200)
+I0607 22:55:48.042953 41590 layer_factory.hpp:172] Creating layer 'relu3_1/dw' of type 'ReLU'
+I0607 22:55:48.042968 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.043004 41590 net.cpp:200] Created Layer relu3_1/dw (20)
+I0607 22:55:48.043022 41590 net.cpp:572] relu3_1/dw <- conv3_1/dw
+I0607 22:55:48.043045 41590 net.cpp:527] relu3_1/dw -> conv3_1/dw (in-place)
+I0607 22:55:48.043071 41590 net.cpp:260] Setting up relu3_1/dw
+I0607 22:55:48.043103 41590 net.cpp:267] TEST Top shape for layer 20 'relu3_1/dw' 50 64 56 56 (10035200)
+I0607 22:55:48.043130 41590 layer_factory.hpp:172] Creating layer 'conv3_1/sep' of type 'Convolution'
+I0607 22:55:48.043153 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.043184 41590 net.cpp:200] Created Layer conv3_1/sep (21)
+I0607 22:55:48.043202 41590 net.cpp:572] conv3_1/sep <- conv3_1/dw
+I0607 22:55:48.043229 41590 net.cpp:542] conv3_1/sep -> conv3_1/sep
+I0607 22:55:48.043622 41590 net.cpp:260] Setting up conv3_1/sep
+I0607 22:55:48.043644 41590 net.cpp:267] TEST Top shape for layer 21 'conv3_1/sep' 50 64 56 56 (10035200)
+I0607 22:55:48.043663 41590 layer_factory.hpp:172] Creating layer 'conv3_1/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.043680 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.043699 41590 net.cpp:200] Created Layer conv3_1/sep/bn (22)
+I0607 22:55:48.043716 41590 net.cpp:572] conv3_1/sep/bn <- conv3_1/sep
+I0607 22:55:48.043735 41590 net.cpp:527] conv3_1/sep/bn -> conv3_1/sep (in-place)
+I0607 22:55:48.044113 41590 net.cpp:260] Setting up conv3_1/sep/bn
+I0607 22:55:48.044131 41590 net.cpp:267] TEST Top shape for layer 22 'conv3_1/sep/bn' 50 64 56 56 (10035200)
+I0607 22:55:48.044153 41590 layer_factory.hpp:172] Creating layer 'relu3_1/sep' of type 'ReLU'
+I0607 22:55:48.044167 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.044329 41590 net.cpp:200] Created Layer relu3_1/sep (23)
+I0607 22:55:48.044351 41590 net.cpp:572] relu3_1/sep <- conv3_1/sep
+I0607 22:55:48.044401 41590 net.cpp:527] relu3_1/sep -> conv3_1/sep (in-place)
+I0607 22:55:48.044432 41590 net.cpp:260] Setting up relu3_1/sep
+I0607 22:55:48.044456 41590 net.cpp:267] TEST Top shape for layer 23 'relu3_1/sep' 50 64 56 56 (10035200)
+I0607 22:55:48.044486 41590 layer_factory.hpp:172] Creating layer 'conv3_2/dw' of type 'Convolution'
+I0607 22:55:48.044513 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.044549 41590 net.cpp:200] Created Layer conv3_2/dw (24)
+I0607 22:55:48.044589 41590 net.cpp:572] conv3_2/dw <- conv3_1/sep
+I0607 22:55:48.044607 41590 net.cpp:542] conv3_2/dw -> conv3_2/dw
+I0607 22:55:48.044931 41590 net.cpp:260] Setting up conv3_2/dw
+I0607 22:55:48.044967 41590 net.cpp:267] TEST Top shape for layer 24 'conv3_2/dw' 50 64 28 28 (2508800)
+I0607 22:55:48.044986 41590 layer_factory.hpp:172] Creating layer 'conv3_2/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.045008 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.045035 41590 net.cpp:200] Created Layer conv3_2/dw/bn (25)
+I0607 22:55:48.045063 41590 net.cpp:572] conv3_2/dw/bn <- conv3_2/dw
+I0607 22:55:48.045099 41590 net.cpp:527] conv3_2/dw/bn -> conv3_2/dw (in-place)
+I0607 22:55:48.045467 41590 net.cpp:260] Setting up conv3_2/dw/bn
+I0607 22:55:48.045485 41590 net.cpp:267] TEST Top shape for layer 25 'conv3_2/dw/bn' 50 64 28 28 (2508800)
+I0607 22:55:48.045507 41590 layer_factory.hpp:172] Creating layer 'relu3_2/dw' of type 'ReLU'
+I0607 22:55:48.045526 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.045557 41590 net.cpp:200] Created Layer relu3_2/dw (26)
+I0607 22:55:48.045593 41590 net.cpp:572] relu3_2/dw <- conv3_2/dw
+I0607 22:55:48.045615 41590 net.cpp:527] relu3_2/dw -> conv3_2/dw (in-place)
+I0607 22:55:48.045639 41590 net.cpp:260] Setting up relu3_2/dw
+I0607 22:55:48.045660 41590 net.cpp:267] TEST Top shape for layer 26 'relu3_2/dw' 50 64 28 28 (2508800)
+I0607 22:55:48.045692 41590 layer_factory.hpp:172] Creating layer 'conv3_2/sep' of type 'Convolution'
+I0607 22:55:48.045732 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.045872 41590 net.cpp:200] Created Layer conv3_2/sep (27)
+I0607 22:55:48.045935 41590 net.cpp:572] conv3_2/sep <- conv3_2/dw
+I0607 22:55:48.045984 41590 net.cpp:542] conv3_2/sep -> conv3_2/sep
+I0607 22:55:48.046494 41590 net.cpp:260] Setting up conv3_2/sep
+I0607 22:55:48.046512 41590 net.cpp:267] TEST Top shape for layer 27 'conv3_2/sep' 50 128 28 28 (5017600)
+I0607 22:55:48.046525 41590 layer_factory.hpp:172] Creating layer 'conv3_2/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.046535 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.046550 41590 net.cpp:200] Created Layer conv3_2/sep/bn (28)
+I0607 22:55:48.046567 41590 net.cpp:572] conv3_2/sep/bn <- conv3_2/sep
+I0607 22:55:48.046586 41590 net.cpp:527] conv3_2/sep/bn -> conv3_2/sep (in-place)
+I0607 22:55:48.046934 41590 net.cpp:260] Setting up conv3_2/sep/bn
+I0607 22:55:48.046949 41590 net.cpp:267] TEST Top shape for layer 28 'conv3_2/sep/bn' 50 128 28 28 (5017600)
+I0607 22:55:48.046964 41590 layer_factory.hpp:172] Creating layer 'relu3_2/sep' of type 'ReLU'
+I0607 22:55:48.046978 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.047014 41590 net.cpp:200] Created Layer relu3_2/sep (29)
+I0607 22:55:48.047041 41590 net.cpp:572] relu3_2/sep <- conv3_2/sep
+I0607 22:55:48.047068 41590 net.cpp:527] relu3_2/sep -> conv3_2/sep (in-place)
+I0607 22:55:48.047117 41590 net.cpp:260] Setting up relu3_2/sep
+I0607 22:55:48.047135 41590 net.cpp:267] TEST Top shape for layer 29 'relu3_2/sep' 50 128 28 28 (5017600)
+I0607 22:55:48.047180 41590 layer_factory.hpp:172] Creating layer 'conv4_1/dw' of type 'Convolution'
+I0607 22:55:48.047257 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.047293 41590 net.cpp:200] Created Layer conv4_1/dw (30)
+I0607 22:55:48.047351 41590 net.cpp:572] conv4_1/dw <- conv3_2/sep
+I0607 22:55:48.047379 41590 net.cpp:542] conv4_1/dw -> conv4_1/dw
+I0607 22:55:48.047631 41590 net.cpp:260] Setting up conv4_1/dw
+I0607 22:55:48.047650 41590 net.cpp:267] TEST Top shape for layer 30 'conv4_1/dw' 50 128 28 28 (5017600)
+I0607 22:55:48.047668 41590 layer_factory.hpp:172] Creating layer 'conv4_1/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.047699 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.047749 41590 net.cpp:200] Created Layer conv4_1/dw/bn (31)
+I0607 22:55:48.047803 41590 net.cpp:572] conv4_1/dw/bn <- conv4_1/dw
+I0607 22:55:48.047825 41590 net.cpp:527] conv4_1/dw/bn -> conv4_1/dw (in-place)
+I0607 22:55:48.048182 41590 net.cpp:260] Setting up conv4_1/dw/bn
+I0607 22:55:48.048303 41590 net.cpp:267] TEST Top shape for layer 31 'conv4_1/dw/bn' 50 128 28 28 (5017600)
+I0607 22:55:48.048318 41590 layer_factory.hpp:172] Creating layer 'relu4_1/dw' of type 'ReLU'
+I0607 22:55:48.048328 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.048346 41590 net.cpp:200] Created Layer relu4_1/dw (32)
+I0607 22:55:48.048364 41590 net.cpp:572] relu4_1/dw <- conv4_1/dw
+I0607 22:55:48.048374 41590 net.cpp:527] relu4_1/dw -> conv4_1/dw (in-place)
+I0607 22:55:48.048393 41590 net.cpp:260] Setting up relu4_1/dw
+I0607 22:55:48.048424 41590 net.cpp:267] TEST Top shape for layer 32 'relu4_1/dw' 50 128 28 28 (5017600)
+I0607 22:55:48.048446 41590 layer_factory.hpp:172] Creating layer 'conv4_1/sep' of type 'Convolution'
+I0607 22:55:48.048501 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.048527 41590 net.cpp:200] Created Layer conv4_1/sep (33)
+I0607 22:55:48.048545 41590 net.cpp:572] conv4_1/sep <- conv4_1/dw
+I0607 22:55:48.048581 41590 net.cpp:542] conv4_1/sep -> conv4_1/sep
+I0607 22:55:48.049356 41590 net.cpp:260] Setting up conv4_1/sep
+I0607 22:55:48.049376 41590 net.cpp:267] TEST Top shape for layer 33 'conv4_1/sep' 50 128 28 28 (5017600)
+I0607 22:55:48.049397 41590 layer_factory.hpp:172] Creating layer 'conv4_1/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.049415 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.049433 41590 net.cpp:200] Created Layer conv4_1/sep/bn (34)
+I0607 22:55:48.049444 41590 net.cpp:572] conv4_1/sep/bn <- conv4_1/sep
+I0607 22:55:48.049463 41590 net.cpp:527] conv4_1/sep/bn -> conv4_1/sep (in-place)
+I0607 22:55:48.049885 41590 net.cpp:260] Setting up conv4_1/sep/bn
+I0607 22:55:48.049902 41590 net.cpp:267] TEST Top shape for layer 34 'conv4_1/sep/bn' 50 128 28 28 (5017600)
+I0607 22:55:48.049926 41590 layer_factory.hpp:172] Creating layer 'relu4_1/sep' of type 'ReLU'
+I0607 22:55:48.049943 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.049962 41590 net.cpp:200] Created Layer relu4_1/sep (35)
+I0607 22:55:48.049971 41590 net.cpp:572] relu4_1/sep <- conv4_1/sep
+I0607 22:55:48.049989 41590 net.cpp:527] relu4_1/sep -> conv4_1/sep (in-place)
+I0607 22:55:48.050016 41590 net.cpp:260] Setting up relu4_1/sep
+I0607 22:55:48.050040 41590 net.cpp:267] TEST Top shape for layer 35 'relu4_1/sep' 50 128 28 28 (5017600)
+I0607 22:55:48.050076 41590 layer_factory.hpp:172] Creating layer 'conv4_2/dw' of type 'Convolution'
+I0607 22:55:48.050107 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.050148 41590 net.cpp:200] Created Layer conv4_2/dw (36)
+I0607 22:55:48.050196 41590 net.cpp:572] conv4_2/dw <- conv4_1/sep
+I0607 22:55:48.050232 41590 net.cpp:542] conv4_2/dw -> conv4_2/dw
+I0607 22:55:48.050478 41590 net.cpp:260] Setting up conv4_2/dw
+I0607 22:55:48.050498 41590 net.cpp:267] TEST Top shape for layer 36 'conv4_2/dw' 50 128 14 14 (1254400)
+I0607 22:55:48.050515 41590 layer_factory.hpp:172] Creating layer 'conv4_2/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.050534 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.050555 41590 net.cpp:200] Created Layer conv4_2/dw/bn (37)
+I0607 22:55:48.050573 41590 net.cpp:572] conv4_2/dw/bn <- conv4_2/dw
+I0607 22:55:48.050591 41590 net.cpp:527] conv4_2/dw/bn -> conv4_2/dw (in-place)
+I0607 22:55:48.051141 41590 net.cpp:260] Setting up conv4_2/dw/bn
+I0607 22:55:48.051160 41590 net.cpp:267] TEST Top shape for layer 37 'conv4_2/dw/bn' 50 128 14 14 (1254400)
+I0607 22:55:48.051175 41590 layer_factory.hpp:172] Creating layer 'relu4_2/dw' of type 'ReLU'
+I0607 22:55:48.051190 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.051208 41590 net.cpp:200] Created Layer relu4_2/dw (38)
+I0607 22:55:48.051226 41590 net.cpp:572] relu4_2/dw <- conv4_2/dw
+I0607 22:55:48.051249 41590 net.cpp:527] relu4_2/dw -> conv4_2/dw (in-place)
+I0607 22:55:48.051293 41590 net.cpp:260] Setting up relu4_2/dw
+I0607 22:55:48.051326 41590 net.cpp:267] TEST Top shape for layer 38 'relu4_2/dw' 50 128 14 14 (1254400)
+I0607 22:55:48.051347 41590 layer_factory.hpp:172] Creating layer 'conv4_2/sep' of type 'Convolution'
+I0607 22:55:48.051374 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.051406 41590 net.cpp:200] Created Layer conv4_2/sep (39)
+I0607 22:55:48.051446 41590 net.cpp:572] conv4_2/sep <- conv4_2/dw
+I0607 22:55:48.051491 41590 net.cpp:542] conv4_2/sep -> conv4_2/sep
+I0607 22:55:48.052958 41590 net.cpp:260] Setting up conv4_2/sep
+I0607 22:55:48.052980 41590 net.cpp:267] TEST Top shape for layer 39 'conv4_2/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.053007 41590 layer_factory.hpp:172] Creating layer 'conv4_2/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.053025 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.053043 41590 net.cpp:200] Created Layer conv4_2/sep/bn (40)
+I0607 22:55:48.053058 41590 net.cpp:572] conv4_2/sep/bn <- conv4_2/sep
+I0607 22:55:48.053081 41590 net.cpp:527] conv4_2/sep/bn -> conv4_2/sep (in-place)
+I0607 22:55:48.053465 41590 net.cpp:260] Setting up conv4_2/sep/bn
+I0607 22:55:48.053478 41590 net.cpp:267] TEST Top shape for layer 40 'conv4_2/sep/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.053496 41590 layer_factory.hpp:172] Creating layer 'relu4_2/sep' of type 'ReLU'
+I0607 22:55:48.053519 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.053550 41590 net.cpp:200] Created Layer relu4_2/sep (41)
+I0607 22:55:48.053568 41590 net.cpp:572] relu4_2/sep <- conv4_2/sep
+I0607 22:55:48.053596 41590 net.cpp:527] relu4_2/sep -> conv4_2/sep (in-place)
+I0607 22:55:48.053622 41590 net.cpp:260] Setting up relu4_2/sep
+I0607 22:55:48.053649 41590 net.cpp:267] TEST Top shape for layer 41 'relu4_2/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.053676 41590 layer_factory.hpp:172] Creating layer 'conv5_1/dw' of type 'Convolution'
+I0607 22:55:48.053730 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.053784 41590 net.cpp:200] Created Layer conv5_1/dw (42)
+I0607 22:55:48.053829 41590 net.cpp:572] conv5_1/dw <- conv4_2/sep
+I0607 22:55:48.053889 41590 net.cpp:542] conv5_1/dw -> conv5_1/dw
+I0607 22:55:48.054214 41590 net.cpp:260] Setting up conv5_1/dw
+I0607 22:55:48.054253 41590 net.cpp:267] TEST Top shape for layer 42 'conv5_1/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.054294 41590 layer_factory.hpp:172] Creating layer 'conv5_1/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.054322 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.054348 41590 net.cpp:200] Created Layer conv5_1/dw/bn (43)
+I0607 22:55:48.054415 41590 net.cpp:572] conv5_1/dw/bn <- conv5_1/dw
+I0607 22:55:48.054442 41590 net.cpp:527] conv5_1/dw/bn -> conv5_1/dw (in-place)
+I0607 22:55:48.054837 41590 net.cpp:260] Setting up conv5_1/dw/bn
+I0607 22:55:48.054860 41590 net.cpp:267] TEST Top shape for layer 43 'conv5_1/dw/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.054882 41590 layer_factory.hpp:172] Creating layer 'relu5_1/dw' of type 'ReLU'
+I0607 22:55:48.054900 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.054919 41590 net.cpp:200] Created Layer relu5_1/dw (44)
+I0607 22:55:48.054941 41590 net.cpp:572] relu5_1/dw <- conv5_1/dw
+I0607 22:55:48.054972 41590 net.cpp:527] relu5_1/dw -> conv5_1/dw (in-place)
+I0607 22:55:48.054996 41590 net.cpp:260] Setting up relu5_1/dw
+I0607 22:55:48.055035 41590 net.cpp:267] TEST Top shape for layer 44 'relu5_1/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.055058 41590 layer_factory.hpp:172] Creating layer 'conv5_1/sep' of type 'Convolution'
+I0607 22:55:48.055089 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.055125 41590 net.cpp:200] Created Layer conv5_1/sep (45)
+I0607 22:55:48.055147 41590 net.cpp:572] conv5_1/sep <- conv5_1/dw
+I0607 22:55:48.055183 41590 net.cpp:542] conv5_1/sep -> conv5_1/sep
+I0607 22:55:48.057597 41590 net.cpp:260] Setting up conv5_1/sep
+I0607 22:55:48.057624 41590 net.cpp:267] TEST Top shape for layer 45 'conv5_1/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.057642 41590 layer_factory.hpp:172] Creating layer 'conv5_1/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.057673 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.057705 41590 net.cpp:200] Created Layer conv5_1/sep/bn (46)
+I0607 22:55:48.057723 41590 net.cpp:572] conv5_1/sep/bn <- conv5_1/sep
+I0607 22:55:48.057741 41590 net.cpp:527] conv5_1/sep/bn -> conv5_1/sep (in-place)
+I0607 22:55:48.058132 41590 net.cpp:260] Setting up conv5_1/sep/bn
+I0607 22:55:48.058156 41590 net.cpp:267] TEST Top shape for layer 46 'conv5_1/sep/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.058182 41590 layer_factory.hpp:172] Creating layer 'relu5_1/sep' of type 'ReLU'
+I0607 22:55:48.058209 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.058245 41590 net.cpp:200] Created Layer relu5_1/sep (47)
+I0607 22:55:48.058300 41590 net.cpp:572] relu5_1/sep <- conv5_1/sep
+I0607 22:55:48.058375 41590 net.cpp:527] relu5_1/sep -> conv5_1/sep (in-place)
+I0607 22:55:48.058415 41590 net.cpp:260] Setting up relu5_1/sep
+I0607 22:55:48.058506 41590 net.cpp:267] TEST Top shape for layer 47 'relu5_1/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.058547 41590 layer_factory.hpp:172] Creating layer 'conv5_2/dw' of type 'Convolution'
+I0607 22:55:48.058573 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.058614 41590 net.cpp:200] Created Layer conv5_2/dw (48)
+I0607 22:55:48.058645 41590 net.cpp:572] conv5_2/dw <- conv5_1/sep
+I0607 22:55:48.058672 41590 net.cpp:542] conv5_2/dw -> conv5_2/dw
+I0607 22:55:48.058979 41590 net.cpp:260] Setting up conv5_2/dw
+I0607 22:55:48.059002 41590 net.cpp:267] TEST Top shape for layer 48 'conv5_2/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.059042 41590 layer_factory.hpp:172] Creating layer 'conv5_2/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.059065 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.059101 41590 net.cpp:200] Created Layer conv5_2/dw/bn (49)
+I0607 22:55:48.059146 41590 net.cpp:572] conv5_2/dw/bn <- conv5_2/dw
+I0607 22:55:48.059204 41590 net.cpp:527] conv5_2/dw/bn -> conv5_2/dw (in-place)
+I0607 22:55:48.059640 41590 net.cpp:260] Setting up conv5_2/dw/bn
+I0607 22:55:48.059689 41590 net.cpp:267] TEST Top shape for layer 49 'conv5_2/dw/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.059712 41590 layer_factory.hpp:172] Creating layer 'relu5_2/dw' of type 'ReLU'
+I0607 22:55:48.059739 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.059767 41590 net.cpp:200] Created Layer relu5_2/dw (50)
+I0607 22:55:48.059788 41590 net.cpp:572] relu5_2/dw <- conv5_2/dw
+I0607 22:55:48.059806 41590 net.cpp:527] relu5_2/dw -> conv5_2/dw (in-place)
+I0607 22:55:48.059839 41590 net.cpp:260] Setting up relu5_2/dw
+I0607 22:55:48.059887 41590 net.cpp:267] TEST Top shape for layer 50 'relu5_2/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.059950 41590 layer_factory.hpp:172] Creating layer 'conv5_2/sep' of type 'Convolution'
+I0607 22:55:48.059995 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.060031 41590 net.cpp:200] Created Layer conv5_2/sep (51)
+I0607 22:55:48.060071 41590 net.cpp:572] conv5_2/sep <- conv5_2/dw
+I0607 22:55:48.060089 41590 net.cpp:542] conv5_2/sep -> conv5_2/sep
+I0607 22:55:48.062608 41590 net.cpp:260] Setting up conv5_2/sep
+I0607 22:55:48.062661 41590 net.cpp:267] TEST Top shape for layer 51 'conv5_2/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.062688 41590 layer_factory.hpp:172] Creating layer 'conv5_2/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.062711 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.062752 41590 net.cpp:200] Created Layer conv5_2/sep/bn (52)
+I0607 22:55:48.062810 41590 net.cpp:572] conv5_2/sep/bn <- conv5_2/sep
+I0607 22:55:48.062832 41590 net.cpp:527] conv5_2/sep/bn -> conv5_2/sep (in-place)
+I0607 22:55:48.063248 41590 net.cpp:260] Setting up conv5_2/sep/bn
+I0607 22:55:48.063271 41590 net.cpp:267] TEST Top shape for layer 52 'conv5_2/sep/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.063292 41590 layer_factory.hpp:172] Creating layer 'relu5_2/sep' of type 'ReLU'
+I0607 22:55:48.063310 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.063364 41590 net.cpp:200] Created Layer relu5_2/sep (53)
+I0607 22:55:48.063387 41590 net.cpp:572] relu5_2/sep <- conv5_2/sep
+I0607 22:55:48.063397 41590 net.cpp:527] relu5_2/sep -> conv5_2/sep (in-place)
+I0607 22:55:48.063416 41590 net.cpp:260] Setting up relu5_2/sep
+I0607 22:55:48.063457 41590 net.cpp:267] TEST Top shape for layer 53 'relu5_2/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.063479 41590 layer_factory.hpp:172] Creating layer 'conv5_3/dw' of type 'Convolution'
+I0607 22:55:48.063503 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.063556 41590 net.cpp:200] Created Layer conv5_3/dw (54)
+I0607 22:55:48.063618 41590 net.cpp:572] conv5_3/dw <- conv5_2/sep
+I0607 22:55:48.063663 41590 net.cpp:542] conv5_3/dw -> conv5_3/dw
+I0607 22:55:48.063971 41590 net.cpp:260] Setting up conv5_3/dw
+I0607 22:55:48.063993 41590 net.cpp:267] TEST Top shape for layer 54 'conv5_3/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.064011 41590 layer_factory.hpp:172] Creating layer 'conv5_3/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.064029 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.064060 41590 net.cpp:200] Created Layer conv5_3/dw/bn (55)
+I0607 22:55:48.064079 41590 net.cpp:572] conv5_3/dw/bn <- conv5_3/dw
+I0607 22:55:48.064096 41590 net.cpp:527] conv5_3/dw/bn -> conv5_3/dw (in-place)
+I0607 22:55:48.064653 41590 net.cpp:260] Setting up conv5_3/dw/bn
+I0607 22:55:48.064671 41590 net.cpp:267] TEST Top shape for layer 55 'conv5_3/dw/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.064689 41590 layer_factory.hpp:172] Creating layer 'relu5_3/dw' of type 'ReLU'
+I0607 22:55:48.064704 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.064723 41590 net.cpp:200] Created Layer relu5_3/dw (56)
+I0607 22:55:48.064736 41590 net.cpp:572] relu5_3/dw <- conv5_3/dw
+I0607 22:55:48.064750 41590 net.cpp:527] relu5_3/dw -> conv5_3/dw (in-place)
+I0607 22:55:48.064774 41590 net.cpp:260] Setting up relu5_3/dw
+I0607 22:55:48.064813 41590 net.cpp:267] TEST Top shape for layer 56 'relu5_3/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.064853 41590 layer_factory.hpp:172] Creating layer 'conv5_3/sep' of type 'Convolution'
+I0607 22:55:48.064880 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.064913 41590 net.cpp:200] Created Layer conv5_3/sep (57)
+I0607 22:55:48.064949 41590 net.cpp:572] conv5_3/sep <- conv5_3/dw
+I0607 22:55:48.064975 41590 net.cpp:542] conv5_3/sep -> conv5_3/sep
+I0607 22:55:48.067366 41590 net.cpp:260] Setting up conv5_3/sep
+I0607 22:55:48.067394 41590 net.cpp:267] TEST Top shape for layer 57 'conv5_3/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.067411 41590 layer_factory.hpp:172] Creating layer 'conv5_3/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.067425 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.067443 41590 net.cpp:200] Created Layer conv5_3/sep/bn (58)
+I0607 22:55:48.067459 41590 net.cpp:572] conv5_3/sep/bn <- conv5_3/sep
+I0607 22:55:48.067471 41590 net.cpp:527] conv5_3/sep/bn -> conv5_3/sep (in-place)
+I0607 22:55:48.067839 41590 net.cpp:260] Setting up conv5_3/sep/bn
+I0607 22:55:48.067854 41590 net.cpp:267] TEST Top shape for layer 58 'conv5_3/sep/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.067873 41590 layer_factory.hpp:172] Creating layer 'relu5_3/sep' of type 'ReLU'
+I0607 22:55:48.067891 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.067914 41590 net.cpp:200] Created Layer relu5_3/sep (59)
+I0607 22:55:48.067940 41590 net.cpp:572] relu5_3/sep <- conv5_3/sep
+I0607 22:55:48.067958 41590 net.cpp:527] relu5_3/sep -> conv5_3/sep (in-place)
+I0607 22:55:48.068022 41590 net.cpp:260] Setting up relu5_3/sep
+I0607 22:55:48.068053 41590 net.cpp:267] TEST Top shape for layer 59 'relu5_3/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.068076 41590 layer_factory.hpp:172] Creating layer 'conv5_4/dw' of type 'Convolution'
+I0607 22:55:48.068099 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.068125 41590 net.cpp:200] Created Layer conv5_4/dw (60)
+I0607 22:55:48.068373 41590 net.cpp:572] conv5_4/dw <- conv5_3/sep
+I0607 22:55:48.068404 41590 net.cpp:542] conv5_4/dw -> conv5_4/dw
+I0607 22:55:48.068748 41590 net.cpp:260] Setting up conv5_4/dw
+I0607 22:55:48.068766 41590 net.cpp:267] TEST Top shape for layer 60 'conv5_4/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.068778 41590 layer_factory.hpp:172] Creating layer 'conv5_4/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.068802 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.068820 41590 net.cpp:200] Created Layer conv5_4/dw/bn (61)
+I0607 22:55:48.068838 41590 net.cpp:572] conv5_4/dw/bn <- conv5_4/dw
+I0607 22:55:48.068850 41590 net.cpp:527] conv5_4/dw/bn -> conv5_4/dw (in-place)
+I0607 22:55:48.069376 41590 net.cpp:260] Setting up conv5_4/dw/bn
+I0607 22:55:48.069401 41590 net.cpp:267] TEST Top shape for layer 61 'conv5_4/dw/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.069417 41590 layer_factory.hpp:172] Creating layer 'relu5_4/dw' of type 'ReLU'
+I0607 22:55:48.069432 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.069468 41590 net.cpp:200] Created Layer relu5_4/dw (62)
+I0607 22:55:48.069485 41590 net.cpp:572] relu5_4/dw <- conv5_4/dw
+I0607 22:55:48.069496 41590 net.cpp:527] relu5_4/dw -> conv5_4/dw (in-place)
+I0607 22:55:48.069509 41590 net.cpp:260] Setting up relu5_4/dw
+I0607 22:55:48.069526 41590 net.cpp:267] TEST Top shape for layer 62 'relu5_4/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.069567 41590 layer_factory.hpp:172] Creating layer 'conv5_4/sep' of type 'Convolution'
+I0607 22:55:48.069589 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.069634 41590 net.cpp:200] Created Layer conv5_4/sep (63)
+I0607 22:55:48.069679 41590 net.cpp:572] conv5_4/sep <- conv5_4/dw
+I0607 22:55:48.069778 41590 net.cpp:542] conv5_4/sep -> conv5_4/sep
+I0607 22:55:48.072139 41590 net.cpp:260] Setting up conv5_4/sep
+I0607 22:55:48.072170 41590 net.cpp:267] TEST Top shape for layer 63 'conv5_4/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.072319 41590 layer_factory.hpp:172] Creating layer 'conv5_4/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.072345 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.072377 41590 net.cpp:200] Created Layer conv5_4/sep/bn (64)
+I0607 22:55:48.072413 41590 net.cpp:572] conv5_4/sep/bn <- conv5_4/sep
+I0607 22:55:48.072471 41590 net.cpp:527] conv5_4/sep/bn -> conv5_4/sep (in-place)
+I0607 22:55:48.072865 41590 net.cpp:260] Setting up conv5_4/sep/bn
+I0607 22:55:48.072882 41590 net.cpp:267] TEST Top shape for layer 64 'conv5_4/sep/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.072897 41590 layer_factory.hpp:172] Creating layer 'relu5_4/sep' of type 'ReLU'
+I0607 22:55:48.072907 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.072919 41590 net.cpp:200] Created Layer relu5_4/sep (65)
+I0607 22:55:48.072933 41590 net.cpp:572] relu5_4/sep <- conv5_4/sep
+I0607 22:55:48.072952 41590 net.cpp:527] relu5_4/sep -> conv5_4/sep (in-place)
+I0607 22:55:48.072968 41590 net.cpp:260] Setting up relu5_4/sep
+I0607 22:55:48.072978 41590 net.cpp:267] TEST Top shape for layer 65 'relu5_4/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.072993 41590 layer_factory.hpp:172] Creating layer 'conv5_5/dw' of type 'Convolution'
+I0607 22:55:48.073014 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.073055 41590 net.cpp:200] Created Layer conv5_5/dw (66)
+I0607 22:55:48.073077 41590 net.cpp:572] conv5_5/dw <- conv5_4/sep
+I0607 22:55:48.073132 41590 net.cpp:542] conv5_5/dw -> conv5_5/dw
+I0607 22:55:48.073519 41590 net.cpp:260] Setting up conv5_5/dw
+I0607 22:55:48.073559 41590 net.cpp:267] TEST Top shape for layer 66 'conv5_5/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.073591 41590 layer_factory.hpp:172] Creating layer 'conv5_5/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.073618 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.073668 41590 net.cpp:200] Created Layer conv5_5/dw/bn (67)
+I0607 22:55:48.073685 41590 net.cpp:572] conv5_5/dw/bn <- conv5_5/dw
+I0607 22:55:48.073712 41590 net.cpp:527] conv5_5/dw/bn -> conv5_5/dw (in-place)
+I0607 22:55:48.074090 41590 net.cpp:260] Setting up conv5_5/dw/bn
+I0607 22:55:48.074102 41590 net.cpp:267] TEST Top shape for layer 67 'conv5_5/dw/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.074146 41590 layer_factory.hpp:172] Creating layer 'relu5_5/dw' of type 'ReLU'
+I0607 22:55:48.074163 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.074175 41590 net.cpp:200] Created Layer relu5_5/dw (68)
+I0607 22:55:48.074198 41590 net.cpp:572] relu5_5/dw <- conv5_5/dw
+I0607 22:55:48.074234 41590 net.cpp:527] relu5_5/dw -> conv5_5/dw (in-place)
+I0607 22:55:48.074260 41590 net.cpp:260] Setting up relu5_5/dw
+I0607 22:55:48.074287 41590 net.cpp:267] TEST Top shape for layer 68 'relu5_5/dw' 50 256 14 14 (2508800)
+I0607 22:55:48.074355 41590 layer_factory.hpp:172] Creating layer 'conv5_5/sep' of type 'Convolution'
+I0607 22:55:48.074378 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.074409 41590 net.cpp:200] Created Layer conv5_5/sep (69)
+I0607 22:55:48.074440 41590 net.cpp:572] conv5_5/sep <- conv5_5/dw
+I0607 22:55:48.074458 41590 net.cpp:542] conv5_5/sep -> conv5_5/sep
+I0607 22:55:48.076895 41590 net.cpp:260] Setting up conv5_5/sep
+I0607 22:55:48.076915 41590 net.cpp:267] TEST Top shape for layer 69 'conv5_5/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.076927 41590 layer_factory.hpp:172] Creating layer 'conv5_5/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.076938 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.076966 41590 net.cpp:200] Created Layer conv5_5/sep/bn (70)
+I0607 22:55:48.076979 41590 net.cpp:572] conv5_5/sep/bn <- conv5_5/sep
+I0607 22:55:48.076992 41590 net.cpp:527] conv5_5/sep/bn -> conv5_5/sep (in-place)
+I0607 22:55:48.078585 41590 net.cpp:260] Setting up conv5_5/sep/bn
+I0607 22:55:48.078608 41590 net.cpp:267] TEST Top shape for layer 70 'conv5_5/sep/bn' 50 256 14 14 (2508800)
+I0607 22:55:48.078624 41590 layer_factory.hpp:172] Creating layer 'relu5_5/sep' of type 'ReLU'
+I0607 22:55:48.078639 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.078666 41590 net.cpp:200] Created Layer relu5_5/sep (71)
+I0607 22:55:48.078677 41590 net.cpp:572] relu5_5/sep <- conv5_5/sep
+I0607 22:55:48.078688 41590 net.cpp:527] relu5_5/sep -> conv5_5/sep (in-place)
+I0607 22:55:48.078716 41590 net.cpp:260] Setting up relu5_5/sep
+I0607 22:55:48.078760 41590 net.cpp:267] TEST Top shape for layer 71 'relu5_5/sep' 50 256 14 14 (2508800)
+I0607 22:55:48.078778 41590 layer_factory.hpp:172] Creating layer 'conv5_6/dw' of type 'Convolution'
+I0607 22:55:48.078796 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.078837 41590 net.cpp:200] Created Layer conv5_6/dw (72)
+I0607 22:55:48.078873 41590 net.cpp:572] conv5_6/dw <- conv5_5/sep
+I0607 22:55:48.078904 41590 net.cpp:542] conv5_6/dw -> conv5_6/dw
+I0607 22:55:48.079205 41590 net.cpp:260] Setting up conv5_6/dw
+I0607 22:55:48.079221 41590 net.cpp:267] TEST Top shape for layer 72 'conv5_6/dw' 50 256 7 7 (627200)
+I0607 22:55:48.079239 41590 layer_factory.hpp:172] Creating layer 'conv5_6/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.079257 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.079293 41590 net.cpp:200] Created Layer conv5_6/dw/bn (73)
+I0607 22:55:48.079315 41590 net.cpp:572] conv5_6/dw/bn <- conv5_6/dw
+I0607 22:55:48.079339 41590 net.cpp:527] conv5_6/dw/bn -> conv5_6/dw (in-place)
+I0607 22:55:48.079771 41590 net.cpp:260] Setting up conv5_6/dw/bn
+I0607 22:55:48.079792 41590 net.cpp:267] TEST Top shape for layer 73 'conv5_6/dw/bn' 50 256 7 7 (627200)
+I0607 22:55:48.079812 41590 layer_factory.hpp:172] Creating layer 'relu5_6/dw' of type 'ReLU'
+I0607 22:55:48.079829 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.079847 41590 net.cpp:200] Created Layer relu5_6/dw (74)
+I0607 22:55:48.079862 41590 net.cpp:572] relu5_6/dw <- conv5_6/dw
+I0607 22:55:48.079872 41590 net.cpp:527] relu5_6/dw -> conv5_6/dw (in-place)
+I0607 22:55:48.079912 41590 net.cpp:260] Setting up relu5_6/dw
+I0607 22:55:48.079962 41590 net.cpp:267] TEST Top shape for layer 74 'relu5_6/dw' 50 256 7 7 (627200)
+I0607 22:55:48.079998 41590 layer_factory.hpp:172] Creating layer 'conv5_6/sep' of type 'Convolution'
+I0607 22:55:48.080066 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.080102 41590 net.cpp:200] Created Layer conv5_6/sep (75)
+I0607 22:55:48.080124 41590 net.cpp:572] conv5_6/sep <- conv5_6/dw
+I0607 22:55:48.080160 41590 net.cpp:542] conv5_6/sep -> conv5_6/sep
+I0607 22:55:48.084980 41590 net.cpp:260] Setting up conv5_6/sep
+I0607 22:55:48.085007 41590 net.cpp:267] TEST Top shape for layer 75 'conv5_6/sep' 50 512 7 7 (1254400)
+I0607 22:55:48.085022 41590 layer_factory.hpp:172] Creating layer 'conv5_6/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.085032 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.085052 41590 net.cpp:200] Created Layer conv5_6/sep/bn (76)
+I0607 22:55:48.085070 41590 net.cpp:572] conv5_6/sep/bn <- conv5_6/sep
+I0607 22:55:48.085093 41590 net.cpp:527] conv5_6/sep/bn -> conv5_6/sep (in-place)
+I0607 22:55:48.085502 41590 net.cpp:260] Setting up conv5_6/sep/bn
+I0607 22:55:48.085615 41590 net.cpp:267] TEST Top shape for layer 76 'conv5_6/sep/bn' 50 512 7 7 (1254400)
+I0607 22:55:48.085642 41590 layer_factory.hpp:172] Creating layer 'relu5_6/sep' of type 'ReLU'
+I0607 22:55:48.085687 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.085723 41590 net.cpp:200] Created Layer relu5_6/sep (77)
+I0607 22:55:48.085746 41590 net.cpp:572] relu5_6/sep <- conv5_6/sep
+I0607 22:55:48.085840 41590 net.cpp:527] relu5_6/sep -> conv5_6/sep (in-place)
+I0607 22:55:48.085898 41590 net.cpp:260] Setting up relu5_6/sep
+I0607 22:55:48.085922 41590 net.cpp:267] TEST Top shape for layer 77 'relu5_6/sep' 50 512 7 7 (1254400)
+I0607 22:55:48.085970 41590 layer_factory.hpp:172] Creating layer 'conv6/dw' of type 'Convolution'
+I0607 22:55:48.085988 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.086047 41590 net.cpp:200] Created Layer conv6/dw (78)
+I0607 22:55:48.086110 41590 net.cpp:572] conv6/dw <- conv5_6/sep
+I0607 22:55:48.086146 41590 net.cpp:542] conv6/dw -> conv6/dw
+I0607 22:55:48.086536 41590 net.cpp:260] Setting up conv6/dw
+I0607 22:55:48.086561 41590 net.cpp:267] TEST Top shape for layer 78 'conv6/dw' 50 512 7 7 (1254400)
+I0607 22:55:48.086580 41590 layer_factory.hpp:172] Creating layer 'conv6/dw/bn' of type 'BatchNorm'
+I0607 22:55:48.086601 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.086619 41590 net.cpp:200] Created Layer conv6/dw/bn (79)
+I0607 22:55:48.086637 41590 net.cpp:572] conv6/dw/bn <- conv6/dw
+I0607 22:55:48.086683 41590 net.cpp:527] conv6/dw/bn -> conv6/dw (in-place)
+I0607 22:55:48.088434 41590 net.cpp:260] Setting up conv6/dw/bn
+I0607 22:55:48.088471 41590 net.cpp:267] TEST Top shape for layer 79 'conv6/dw/bn' 50 512 7 7 (1254400)
+I0607 22:55:48.088497 41590 layer_factory.hpp:172] Creating layer 'relu6/dw' of type 'ReLU'
+I0607 22:55:48.088515 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.088537 41590 net.cpp:200] Created Layer relu6/dw (80)
+I0607 22:55:48.088555 41590 net.cpp:572] relu6/dw <- conv6/dw
+I0607 22:55:48.088596 41590 net.cpp:527] relu6/dw -> conv6/dw (in-place)
+I0607 22:55:48.088627 41590 net.cpp:260] Setting up relu6/dw
+I0607 22:55:48.088650 41590 net.cpp:267] TEST Top shape for layer 80 'relu6/dw' 50 512 7 7 (1254400)
+I0607 22:55:48.088690 41590 layer_factory.hpp:172] Creating layer 'conv6/sep' of type 'Convolution'
+I0607 22:55:48.088713 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.088758 41590 net.cpp:200] Created Layer conv6/sep (81)
+I0607 22:55:48.088785 41590 net.cpp:572] conv6/sep <- conv6/dw
+I0607 22:55:48.088835 41590 net.cpp:542] conv6/sep -> conv6/sep
+I0607 22:55:48.096524 41590 net.cpp:260] Setting up conv6/sep
+I0607 22:55:48.096565 41590 net.cpp:267] TEST Top shape for layer 81 'conv6/sep' 50 512 7 7 (1254400)
+I0607 22:55:48.096596 41590 layer_factory.hpp:172] Creating layer 'conv6/sep/bn' of type 'BatchNorm'
+I0607 22:55:48.096614 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.096637 41590 net.cpp:200] Created Layer conv6/sep/bn (82)
+I0607 22:55:48.096668 41590 net.cpp:572] conv6/sep/bn <- conv6/sep
+I0607 22:55:48.096695 41590 net.cpp:527] conv6/sep/bn -> conv6/sep (in-place)
+I0607 22:55:48.097019 41590 net.cpp:260] Setting up conv6/sep/bn
+I0607 22:55:48.097038 41590 net.cpp:267] TEST Top shape for layer 82 'conv6/sep/bn' 50 512 7 7 (1254400)
+I0607 22:55:48.097055 41590 layer_factory.hpp:172] Creating layer 'relu6/sep' of type 'ReLU'
+I0607 22:55:48.097100 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.097177 41590 net.cpp:200] Created Layer relu6/sep (83)
+I0607 22:55:48.097194 41590 net.cpp:572] relu6/sep <- conv6/sep
+I0607 22:55:48.097218 41590 net.cpp:527] relu6/sep -> conv6/sep (in-place)
+I0607 22:55:48.097239 41590 net.cpp:260] Setting up relu6/sep
+I0607 22:55:48.097275 41590 net.cpp:267] TEST Top shape for layer 83 'relu6/sep' 50 512 7 7 (1254400)
+I0607 22:55:48.097311 41590 layer_factory.hpp:172] Creating layer 'pool6' of type 'Pooling'
+I0607 22:55:48.097343 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.097370 41590 net.cpp:200] Created Layer pool6 (84)
+I0607 22:55:48.097437 41590 net.cpp:572] pool6 <- conv6/sep
+I0607 22:55:48.097491 41590 net.cpp:542] pool6 -> pool6
+I0607 22:55:48.097542 41590 net.cpp:260] Setting up pool6
+I0607 22:55:48.097573 41590 net.cpp:267] TEST Top shape for layer 84 'pool6' 50 512 1 1 (25600)
+I0607 22:55:48.097604 41590 layer_factory.hpp:172] Creating layer 'fc7' of type 'Convolution'
+I0607 22:55:48.097653 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.097685 41590 net.cpp:200] Created Layer fc7 (85)
+I0607 22:55:48.097730 41590 net.cpp:572] fc7 <- pool6
+I0607 22:55:48.097757 41590 net.cpp:542] fc7 -> fc7
+I0607 22:55:48.116626 41590 net.cpp:260] Setting up fc7
+I0607 22:55:48.116684 41590 net.cpp:267] TEST Top shape for layer 85 'fc7' 50 1000 1 1 (50000)
+I0607 22:55:48.116715 41590 layer_factory.hpp:172] Creating layer 'fc7_fc7_0_split' of type 'Split'
+I0607 22:55:48.116742 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.116796 41590 net.cpp:200] Created Layer fc7_fc7_0_split (86)
+I0607 22:55:48.116823 41590 net.cpp:572] fc7_fc7_0_split <- fc7
+I0607 22:55:48.116847 41590 net.cpp:542] fc7_fc7_0_split -> fc7_fc7_0_split_0
+I0607 22:55:48.116883 41590 net.cpp:542] fc7_fc7_0_split -> fc7_fc7_0_split_1
+I0607 22:55:48.116945 41590 net.cpp:542] fc7_fc7_0_split -> fc7_fc7_0_split_2
+I0607 22:55:48.117188 41590 net.cpp:260] Setting up fc7_fc7_0_split
+I0607 22:55:48.117223 41590 net.cpp:267] TEST Top shape for layer 86 'fc7_fc7_0_split' 50 1000 1 1 (50000)
+I0607 22:55:48.117251 41590 net.cpp:267] TEST Top shape for layer 86 'fc7_fc7_0_split' 50 1000 1 1 (50000)
+I0607 22:55:48.117291 41590 net.cpp:267] TEST Top shape for layer 86 'fc7_fc7_0_split' 50 1000 1 1 (50000)
+I0607 22:55:48.117421 41590 layer_factory.hpp:172] Creating layer 'loss' of type 'SoftmaxWithLoss'
+I0607 22:55:48.117471 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.117511 41590 net.cpp:200] Created Layer loss (87)
+I0607 22:55:48.117529 41590 net.cpp:572] loss <- fc7_fc7_0_split_0
+I0607 22:55:48.117574 41590 net.cpp:572] loss <- label_data_1_split_0
+I0607 22:55:48.117619 41590 net.cpp:542] loss -> loss
+I0607 22:55:48.117825 41590 net.cpp:260] Setting up loss
+I0607 22:55:48.117851 41590 net.cpp:267] TEST Top shape for layer 87 'loss' (1)
+I0607 22:55:48.117892 41590 net.cpp:271]     with loss weight 1
+I0607 22:55:48.117945 41590 layer_factory.hpp:172] Creating layer 'accuracy/top1' of type 'Accuracy'
+I0607 22:55:48.117990 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.118022 41590 net.cpp:200] Created Layer accuracy/top1 (88)
+I0607 22:55:48.118058 41590 net.cpp:572] accuracy/top1 <- fc7_fc7_0_split_1
+I0607 22:55:48.118098 41590 net.cpp:572] accuracy/top1 <- label_data_1_split_1
+I0607 22:55:48.118149 41590 net.cpp:542] accuracy/top1 -> accuracy/top1
+I0607 22:55:48.118170 41590 net.cpp:260] Setting up accuracy/top1
+I0607 22:55:48.118247 41590 net.cpp:267] TEST Top shape for layer 88 'accuracy/top1' (1)
+I0607 22:55:48.118269 41590 layer_factory.hpp:172] Creating layer 'accuracy/top5' of type 'Accuracy'
+I0607 22:55:48.118288 41590 layer_factory.hpp:184] Layer's types are Ftype:FLOAT Btype:FLOAT Fmath:FLOAT Bmath:FLOAT
+I0607 22:55:48.118305 41590 net.cpp:200] Created Layer accuracy/top5 (89)
+I0607 22:55:48.118324 41590 net.cpp:572] accuracy/top5 <- fc7_fc7_0_split_2
+I0607 22:55:48.118350 41590 net.cpp:572] accuracy/top5 <- label_data_1_split_2
+I0607 22:55:48.118377 41590 net.cpp:542] accuracy/top5 -> accuracy/top5
+I0607 22:55:48.118413 41590 net.cpp:260] Setting up accuracy/top5
+I0607 22:55:48.118445 41590 net.cpp:267] TEST Top shape for layer 89 'accuracy/top5' (1)
+I0607 22:55:48.118468 41590 net.cpp:338] accuracy/top5 does not need backward computation.
+I0607 22:55:48.118490 41590 net.cpp:338] accuracy/top1 does not need backward computation.
+I0607 22:55:48.118517 41590 net.cpp:336] loss needs backward computation.
+I0607 22:55:48.118540 41590 net.cpp:336] fc7_fc7_0_split needs backward computation.
+I0607 22:55:48.118557 41590 net.cpp:336] fc7 needs backward computation.
+I0607 22:55:48.118589 41590 net.cpp:336] pool6 needs backward computation.
+I0607 22:55:48.118607 41590 net.cpp:336] relu6/sep needs backward computation.
+I0607 22:55:48.118656 41590 net.cpp:336] conv6/sep/bn needs backward computation.
+I0607 22:55:48.118688 41590 net.cpp:336] conv6/sep needs backward computation.
+I0607 22:55:48.118706 41590 net.cpp:336] relu6/dw needs backward computation.
+I0607 22:55:48.118724 41590 net.cpp:336] conv6/dw/bn needs backward computation.
+I0607 22:55:48.118742 41590 net.cpp:336] conv6/dw needs backward computation.
+I0607 22:55:48.118760 41590 net.cpp:336] relu5_6/sep needs backward computation.
+I0607 22:55:48.118778 41590 net.cpp:336] conv5_6/sep/bn needs backward computation.
+I0607 22:55:48.118805 41590 net.cpp:336] conv5_6/sep needs backward computation.
+I0607 22:55:48.118832 41590 net.cpp:336] relu5_6/dw needs backward computation.
+I0607 22:55:48.118854 41590 net.cpp:336] conv5_6/dw/bn needs backward computation.
+I0607 22:55:48.118872 41590 net.cpp:336] conv5_6/dw needs backward computation.
+I0607 22:55:48.118891 41590 net.cpp:336] relu5_5/sep needs backward computation.
+I0607 22:55:48.118908 41590 net.cpp:336] conv5_5/sep/bn needs backward computation.
+I0607 22:55:48.118927 41590 net.cpp:336] conv5_5/sep needs backward computation.
+I0607 22:55:48.118944 41590 net.cpp:336] relu5_5/dw needs backward computation.
+I0607 22:55:48.118989 41590 net.cpp:336] conv5_5/dw/bn needs backward computation.
+I0607 22:55:48.119025 41590 net.cpp:336] conv5_5/dw needs backward computation.
+I0607 22:55:48.119052 41590 net.cpp:336] relu5_4/sep needs backward computation.
+I0607 22:55:48.119071 41590 net.cpp:336] conv5_4/sep/bn needs backward computation.
+I0607 22:55:48.119088 41590 net.cpp:336] conv5_4/sep needs backward computation.
+I0607 22:55:48.119112 41590 net.cpp:336] relu5_4/dw needs backward computation.
+I0607 22:55:48.119133 41590 net.cpp:336] conv5_4/dw/bn needs backward computation.
+I0607 22:55:48.119156 41590 net.cpp:336] conv5_4/dw needs backward computation.
+I0607 22:55:48.119179 41590 net.cpp:336] relu5_3/sep needs backward computation.
+I0607 22:55:48.119223 41590 net.cpp:336] conv5_3/sep/bn needs backward computation.
+I0607 22:55:48.119256 41590 net.cpp:336] conv5_3/sep needs backward computation.
+I0607 22:55:48.119287 41590 net.cpp:336] relu5_3/dw needs backward computation.
+I0607 22:55:48.119326 41590 net.cpp:336] conv5_3/dw/bn needs backward computation.
+I0607 22:55:48.119344 41590 net.cpp:336] conv5_3/dw needs backward computation.
+I0607 22:55:48.119371 41590 net.cpp:336] relu5_2/sep needs backward computation.
+I0607 22:55:48.119395 41590 net.cpp:336] conv5_2/sep/bn needs backward computation.
+I0607 22:55:48.119416 41590 net.cpp:336] conv5_2/sep needs backward computation.
+I0607 22:55:48.119434 41590 net.cpp:336] relu5_2/dw needs backward computation.
+I0607 22:55:48.119452 41590 net.cpp:336] conv5_2/dw/bn needs backward computation.
+I0607 22:55:48.119488 41590 net.cpp:336] conv5_2/dw needs backward computation.
+I0607 22:55:48.119524 41590 net.cpp:336] relu5_1/sep needs backward computation.
+I0607 22:55:48.119556 41590 net.cpp:336] conv5_1/sep/bn needs backward computation.
+I0607 22:55:48.119583 41590 net.cpp:336] conv5_1/sep needs backward computation.
+I0607 22:55:48.119611 41590 net.cpp:336] relu5_1/dw needs backward computation.
+I0607 22:55:48.119632 41590 net.cpp:336] conv5_1/dw/bn needs backward computation.
+I0607 22:55:48.119659 41590 net.cpp:336] conv5_1/dw needs backward computation.
+I0607 22:55:48.119691 41590 net.cpp:336] relu4_2/sep needs backward computation.
+I0607 22:55:48.119714 41590 net.cpp:336] conv4_2/sep/bn needs backward computation.
+I0607 22:55:48.119740 41590 net.cpp:336] conv4_2/sep needs backward computation.
+I0607 22:55:48.119758 41590 net.cpp:336] relu4_2/dw needs backward computation.
+I0607 22:55:48.119776 41590 net.cpp:336] conv4_2/dw/bn needs backward computation.
+I0607 22:55:48.119808 41590 net.cpp:336] conv4_2/dw needs backward computation.
+I0607 22:55:48.119848 41590 net.cpp:336] relu4_1/sep needs backward computation.
+I0607 22:55:48.119866 41590 net.cpp:336] conv4_1/sep/bn needs backward computation.
+I0607 22:55:48.119889 41590 net.cpp:336] conv4_1/sep needs backward computation.
+I0607 22:55:48.119916 41590 net.cpp:336] relu4_1/dw needs backward computation.
+I0607 22:55:48.119943 41590 net.cpp:336] conv4_1/dw/bn needs backward computation.
+I0607 22:55:48.119976 41590 net.cpp:336] conv4_1/dw needs backward computation.
+I0607 22:55:48.119993 41590 net.cpp:336] relu3_2/sep needs backward computation.
+I0607 22:55:48.120029 41590 net.cpp:336] conv3_2/sep/bn needs backward computation.
+I0607 22:55:48.120048 41590 net.cpp:336] conv3_2/sep needs backward computation.
+I0607 22:55:48.120069 41590 net.cpp:336] relu3_2/dw needs backward computation.
+I0607 22:55:48.120092 41590 net.cpp:336] conv3_2/dw/bn needs backward computation.
+I0607 22:55:48.120110 41590 net.cpp:336] conv3_2/dw needs backward computation.
+I0607 22:55:48.120128 41590 net.cpp:336] relu3_1/sep needs backward computation.
+I0607 22:55:48.120146 41590 net.cpp:336] conv3_1/sep/bn needs backward computation.
+I0607 22:55:48.120177 41590 net.cpp:336] conv3_1/sep needs backward computation.
+I0607 22:55:48.120425 41590 net.cpp:336] relu3_1/dw needs backward computation.
+I0607 22:55:48.120461 41590 net.cpp:336] conv3_1/dw/bn needs backward computation.
+I0607 22:55:48.120483 41590 net.cpp:336] conv3_1/dw needs backward computation.
+I0607 22:55:48.120515 41590 net.cpp:336] relu2_2/sep needs backward computation.
+I0607 22:55:48.120533 41590 net.cpp:336] conv2_2/sep/bn needs backward computation.
+I0607 22:55:48.120560 41590 net.cpp:336] conv2_2/sep needs backward computation.
+I0607 22:55:48.120579 41590 net.cpp:336] relu2_2/dw needs backward computation.
+I0607 22:55:48.120610 41590 net.cpp:336] conv2_2/dw/bn needs backward computation.
+I0607 22:55:48.120633 41590 net.cpp:336] conv2_2/dw needs backward computation.
+I0607 22:55:48.120656 41590 net.cpp:336] relu2_1/sep needs backward computation.
+I0607 22:55:48.120678 41590 net.cpp:336] conv2_1/sep/bn needs backward computation.
+I0607 22:55:48.120700 41590 net.cpp:336] conv2_1/sep needs backward computation.
+I0607 22:55:48.120718 41590 net.cpp:336] relu2_1/dw needs backward computation.
+I0607 22:55:48.120736 41590 net.cpp:336] conv2_1/dw/bn needs backward computation.
+I0607 22:55:48.120754 41590 net.cpp:336] conv2_1/dw needs backward computation.
+I0607 22:55:48.120776 41590 net.cpp:336] relu1 needs backward computation.
+I0607 22:55:48.120808 41590 net.cpp:336] conv1/bn needs backward computation.
+I0607 22:55:48.120836 41590 net.cpp:336] conv1 needs backward computation.
+I0607 22:55:48.120853 41590 net.cpp:338] data/bias does not need backward computation.
+I0607 22:55:48.120872 41590 net.cpp:338] label_data_1_split does not need backward computation.
+I0607 22:55:48.120889 41590 net.cpp:338] data does not need backward computation.
+I0607 22:55:48.120911 41590 net.cpp:380] This network produces output accuracy/top1
+I0607 22:55:48.120934 41590 net.cpp:380] This network produces output accuracy/top5
+I0607 22:55:48.120952 41590 net.cpp:380] This network produces output loss
+I0607 22:55:48.121110 41590 net.cpp:403] Top memory (TEST) required for data: 1573920824 diff: 1573920824
+I0607 22:55:48.121137 41590 net.cpp:406] Bottom memory (TEST) required for data: 1573920800 diff: 1573920800
+I0607 22:55:48.121155 41590 net.cpp:409] Shared (in-place) memory (TEST) by data: 1008537600 diff: 1008537600
+I0607 22:55:48.121173 41590 net.cpp:412] Parameters memory (TEST) required for data: 5370376 diff: 5370376
+I0607 22:55:48.121191 41590 net.cpp:415] Parameters shared memory (TEST) by data: 0 diff: 0
+I0607 22:55:48.121209 41590 net.cpp:421] Network initialization done.
+I0607 22:55:48.121390 41590 solver.cpp:55] Solver scaffolding done.
+I0607 22:55:48.127779 41590 caffe.cpp:260] Starting Optimization
+I0607 22:55:48.127818 41590 solver.cpp:453] Solving mobilenet-0.5_train
+I0607 22:55:48.127836 41590 solver.cpp:454] Learning Rate Policy: poly
+I0607 22:55:48.127899 41590 net.cpp:1483] [0] Reserving 5328384 bytes of shared learnable space for type FLOAT
+I0607 22:55:48.132951 41590 solver.cpp:269] Initial Test started...
+I0607 22:55:48.132988 41590 solver.cpp:538] Iteration 0, Testing net (#0)
+I0607 22:55:48.135735 41697 common.cpp:528] NVML initialized, thread 41697
+I0607 22:55:48.192965 41697 common.cpp:550] NVML succeeded to set CPU affinity on device 0, thread 41697
+I0607 22:55:48.239867 41590 solver.cpp:624]     Test net output #0: accuracy/top1 = 0
+I0607 22:55:48.239898 41590 solver.cpp:624]     Test net output #1: accuracy/top5 = 0
+I0607 22:55:48.239912 41590 solver.cpp:624]     Test net output #2: loss = 6.90775 (* 1 = 6.90775 loss)
+I0607 22:55:48.239943 41590 solver.cpp:274] Initial Test completed in 0.106943s
