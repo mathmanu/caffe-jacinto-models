@@ -8,6 +8,7 @@ import math
 #set to 'fused' to use NVIDIA/caffe style fused batch norm that incorporates scale_bias (faster)
 BN_TYPE_TO_USE = 'fused' #'bvlc' #'fused'
 SEG_OUTPUT_STRIDE = 32  #16, 32
+SEG_INTERMEDIATE_CHANS = 256
 
 ###############################################################
 def width_multiplier(value, base, min_val):
@@ -242,7 +243,8 @@ def mobiledetnetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn
 
 ###############################################################
 def mobilesegnetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
-                   num_output=20, wide_factor=1.0, num_intermediate=256, expansion_t=6, use_aspp=False):
+                   num_output=20, wide_factor=1.0, num_intermediate=SEG_INTERMEDIATE_CHANS,
+                   expansion_t=6, use_aspp=False):
     output_stride = SEG_OUTPUT_STRIDE
     out_layer, num_channels, intermediate_layer = MobileNetV2Body(net, from_layer=from_layer, freeze_layers=freeze_layers,
                                               num_output=num_output, wide_factor=wide_factor, enable_fc=False,
