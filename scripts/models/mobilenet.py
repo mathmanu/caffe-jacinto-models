@@ -66,7 +66,7 @@ def ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=True, num_output=0
 ###############################################################
 def ConvDWBlockMobileNet(net, from_layer, out_name, use_relu=True, num_input=0, num_output=0,
     stride=1, dilation=1, group=1, expansion_t=1, bn_type='bvlc', use_residual=False):
-  
+
   input_layer = '{}'.format(from_layer)
 
   out_layer = '{}/dw'.format(out_name)
@@ -120,7 +120,7 @@ def MobileNetBody(net, from_layer='data', dropout=False, freeze_layers=None, num
   from_layer = out_layer
 
   num_stages = len(channels_c)  
-  
+  num_channels = {}
   for stg_idx in range(1,num_stages):
       for n in range(repeats_n[stg_idx]):
           xt = 1 if stg_idx < 2 else expansion_t
@@ -132,6 +132,7 @@ def MobileNetBody(net, from_layer='data', dropout=False, freeze_layers=None, num
               dilation=dilation, bn_type=bn_type, expansion_t=xt)
           num_input = channels_c[stg_idx]
           from_layer = out_layer
+          num_channels[out_layer] = channels_c[stg_idx]
 
   if enable_fc:
     # Add global pooling layer.
@@ -148,22 +149,22 @@ def MobileNetBody(net, from_layer='data', dropout=False, freeze_layers=None, num
     kwargs_conv = {'weight_filler': {'type': 'msra'}}
     net[out_layer] = L.Convolution(net[from_layer], kernel_size=1, pad=0, num_output=num_output_fc, **kwargs_conv)
   
-  return out_layer
+  return out_layer, num_channels
 
 
 ###############################################################
 def mobilenet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, expansion_t=1):
-  return MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
+  out_layer, _ = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
+  return out_layer
 
 
 ###############################################################
 def mobiledetnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
-  num_output=1000, wide_factor=1.0, use_batchnorm=True, use_relu=True, num_intermediate=512, expansion_t=1):
-  
-  out_layer = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
+  num_output=1000, wide_factor=1.0, num_intermediate=512, expansion_t=1):
+  out_layer, num_channels = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=False, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
   
@@ -192,32 +193,35 @@ def mobiledetnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_t
   
   #from_layer = 'relu4_1/sep'
   #out_layer = 'ctx_output????'
-  #out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=use_relu, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type) 
+  #num_input = num_channels[from_layer]
+  #out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate, bn_type=bn_type, expansion_t=1)
   #out_layer_names += [out_layer]
   
   from_layer = 'relu5_5/sep'
   out_layer = 'ctx_output1'
-  out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=use_relu, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type)  
+  num_input = num_channels[from_layer]
+  out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate, bn_type=bn_type, expansion_t=1)
   out_layer_names += [out_layer]
   
   from_layer = 'relu6/sep'
   out_layer = 'ctx_output2'
-  out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=use_relu, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type) 
+  num_input = num_channels[from_layer]
+  out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate, bn_type=bn_type, expansion_t=1)
   out_layer_names += [out_layer]
   
   from_layer = 'pool6'
   out_layer = 'ctx_output3'
-  out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=use_relu, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type)              
+  out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate, bn_type=bn_type, expansion_t=1)
   out_layer_names += [out_layer]
   
   from_layer = 'pool7'
   out_layer = 'ctx_output4'
-  out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=use_relu, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type)        
+  out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate, bn_type=bn_type, expansion_t=1)
   out_layer_names += [out_layer]
   
   from_layer = 'pool8'
   out_layer = 'ctx_output5'
-  out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=use_relu, num_output=num_intermediate, kernel_size=1, pad=0, stride=1, group=1, dilation=1, bn_type=bn_type)        
+  out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate, bn_type=bn_type, expansion_t=1)
   out_layer_names += [out_layer]
   
   return out_layer, out_layer_names
