@@ -28,20 +28,19 @@ def ConvBNLayerMobileNet(net, from_layer, out_layer, use_relu=True, num_output=0
   conv_name = '{}'.format(out_layer)
   bn_name = '{}/bn'.format(out_layer)
   scale_name = '{}/scale'.format(out_layer)
-  relu_name = out_layer.replace('conv','relu')
-
-  out_layer = conv_name
+  relu_name = out_layer.replace('conv','relu') if 'conv' in out_layer else '{}/relu'.format(out_layer)
   
   #lower the decay of dw layer as per MobilenetV1 paper (seems not needed for MobilenetV2)
   #may not be working - harder to train
   #decay_mult =  0.01 if group == num_output else 1
   #kwargs_conv = {'param':{'lr_mult':1, 'decay_mult':decay_mult}, 'weight_filler': {'type': 'msra'}}
   kwargs_conv = {'weight_filler': {'type': 'msra'}}
-    
+
+  out_layer = conv_name
   net[out_layer] = L.Convolution(net[from_layer], num_output=num_output,
       kernel_size=kernel_size, pad=pad*dilation, stride=stride, group=group, dilation=dilation, bias_term=False, **kwargs_conv)
   from_layer = out_layer
-      
+
   if bn_type == 'bvlc':
       out_layer = bn_name
       net[out_layer] = L.BatchNorm(net[from_layer], in_place=bn_in_place)
