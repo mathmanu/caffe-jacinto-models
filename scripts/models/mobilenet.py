@@ -7,7 +7,8 @@ import math
 ###############################################################
 #set to 'fused' to use NVIDIA/caffe style fused batch norm that incorporates scale_bias (faster)
 BN_TYPE_TO_USE = 'fused' #'bvlc' #'fused'
-
+SEG_OUTPUT_STRIDE = 32  #16, 32
+SEG_INTERMEDIATE_CHANS = 256
 
 ###############################################################
 def width_multiplier(value, base, min_val):
@@ -118,6 +119,9 @@ def MobileNetBody(net, from_layer='data', dropout=False, freeze_layers=None, num
   num_input = channels_c[0]
   from_layer = out_layer
 
+  cumulative_stride = 2
+  intermediate_layer = None
+
   num_stages = len(channels_c)  
   num_channels = {}
   for stg_idx in range(1,num_stages):
@@ -132,6 +136,9 @@ def MobileNetBody(net, from_layer='data', dropout=False, freeze_layers=None, num
           num_input = channels_c[stg_idx]
           from_layer = out_layer
           num_channels[out_layer] = channels_c[stg_idx]
+          cumulative_stride = cumulative_stride * stride
+          if cumulative_stride == 4:
+              intermediate_layer = '{}'.format(out_layer)
 
   if enable_fc:
     # Add global pooling layer.
@@ -148,13 +155,13 @@ def MobileNetBody(net, from_layer='data', dropout=False, freeze_layers=None, num
     kwargs_conv = {'weight_filler': {'type': 'msra'}}
     net[out_layer] = L.Convolution(net[from_layer], kernel_size=1, pad=0, num_output=num_output_fc, **kwargs_conv)
   
-  return out_layer, num_channels
+  return out_layer, num_channels, intermediate_layer
 
 
 ###############################################################
 def mobilenet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, expansion_t=1):
-  out_layer, _ = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
+  out_layer, _ ,_ = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
   return out_layer
@@ -163,7 +170,7 @@ def mobilenet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type
 ###############################################################
 def mobiledetnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
   num_output=1000, wide_factor=1.0, num_intermediate=512, expansion_t=1):
-  out_layer, num_channels = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
+  out_layer, num_channels, _ = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=False, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
   
@@ -224,4 +231,92 @@ def mobiledetnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_t
   out_layer_names += [out_layer]
   
   return out_layer, out_layer_names
- 
+
+
+def mobilesegnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
+                   num_output=20, wide_factor=1.0, num_intermediate=SEG_INTERMEDIATE_CHANS,
+                   expansion_t=1, use_aspp=False):
+
+    output_stride = SEG_OUTPUT_STRIDE
+    out_layer, num_channels, intermediate_layer = MobileNetBody(net, from_layer=from_layer, freeze_layers=freeze_layers,
+                                              num_output=num_output, wide_factor=wide_factor, enable_fc=False,
+                                              output_stride=output_stride, bn_type=bn_type, dropout=dropout,
+                                              expansion_t = expansion_t)
+
+    from_layer = out_layer
+    out_layer_names = []
+
+    if use_aspp:
+        ValueError('ASPP Module is not yet supported')
+    else:
+        out_layer = '{}/conv_down'.format(from_layer)
+        out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, num_output=num_intermediate,
+                             kernel_size=1, pad=0, stride=1,
+                             dilation=1, bn_type=bn_type)
+        from_layer = out_layer
+
+    # upsample x2
+    deconv_kwargs = {'param': {'lr_mult': 0, 'decay_mult': 0},
+                     'convolution_param': {'num_output': num_intermediate, 'bias_term': False, 'pad': 1,
+                                           'kernel_size': 4, 'group': num_intermediate, 'stride': 2,
+                                           'weight_filler': {'type': 'bilinear'}}}
+    out_layer = '{}/up2'.format(out_layer)
+    net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)
+    from_layer = out_layer
+
+    # upsample x4
+    out_layer = '{}/up4'.format(out_layer)
+    net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)
+    from_layer = out_layer
+
+    # upsample x8 - one extra upsamplig required for output stride 32
+    if output_stride > 16:
+        from_layer = out_layer
+        out_layer = '{}/up8'.format(out_layer)
+        net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)
+        from_layer = out_layer
+
+    out_shortcut_layer = '{}/conv_shortcut'.format(intermediate_layer)
+    out_shortcut_layer = ConvBNLayerMobileNet(net, intermediate_layer, out_shortcut_layer,
+                               num_output=num_intermediate//4, kernel_size=1, pad=0, stride=1,
+                               dilation=1, bn_type=bn_type)
+
+    out_layer = 'cat_block'
+    net[out_layer] = L.Concat(net[from_layer], net[out_shortcut_layer])
+    from_layer = out_layer
+    num_intermediate_concat = (num_intermediate + num_intermediate // 4)
+
+    # context blocks
+    out_layer = 'ctx_block1'
+    out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_intermediate_concat,
+                              num_output=num_intermediate_concat, bn_type=bn_type, expansion_t=1 )
+
+    from_layer = out_layer
+
+    out_layer = 'ctx_block2'
+    out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_intermediate_concat,
+                              num_output=num_intermediate_concat, bn_type=bn_type, expansion_t=1 )
+    from_layer = out_layer
+
+    #output block
+    out_layer = 'ctx_final'
+    kwargs_conv = {'weight_filler': {'type': 'msra'}}
+    net[out_layer] = L.Convolution(net[from_layer], kernel_size=1, pad=0, num_output=num_output, **kwargs_conv)
+    from_layer = out_layer
+
+    # upsample x8 or x16
+    deconv_kwargs = {'param': {'lr_mult': 0, 'decay_mult': 0},
+                     'convolution_param': {'num_output': num_output, 'bias_term': False, 'pad': 1,
+                                           'kernel_size': 4, 'group': num_output, 'stride': 2,
+                                           'weight_filler': {'type': 'bilinear'}}}
+    out_layer = 'ctx_final/up16' if output_stride > 16 else 'ctx_final/up8'
+    net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)
+    from_layer = out_layer
+
+    # upsample x16 or x32
+    out_layer = 'ctx_output' #''ctx_final/up32' if output_stride > 16 else 'ctx_final/up16'
+    net[out_layer] = L.Deconvolution(net[from_layer], **deconv_kwargs)
+    from_layer = out_layer
+
+    out_layer_names += [out_layer]
+    return out_layer, out_layer_names
