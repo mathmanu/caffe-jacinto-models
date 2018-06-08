@@ -9,7 +9,7 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 gpus="0,1"        #"0,1,2"
 
 #-------------------------------------------------------
-model_name=mobilesegnetv2-1.0    #jsegnet21v2 #mobilesegnetv2-1.0 #mobilesegnetv2-0.5
+model_name=mobilesegnet-1.0    #jsegnet21v2 #mobilesegnet-1.0 #mobilesegnetv2-1.0 #mobilesegnetv2-0.5
 dataset=cityscapes5
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
@@ -20,7 +20,9 @@ echo Logging output to "$LOG"
 
 #------------------------------------------------
 #Download the pretrained weights
-weights_dst="/data/mmcodec_video2_tier3/users/manu/experiments/object/classification/2018.06/net_surgery_from_shicai_mobilenetv2/imagenet_mobilenet_v2_shicaistrides_fusedbn/test_quantize/MobileNetV2_new_NV_fused_bn.caffemodel"
+#weights_dst="../trained/image_classification/cifar10_jacintonet11v2/initial/cifar10_jacintonet11v2_iter_64000.caffemodel"
+#weights_dst="training/mobilenetv2-1.0.caffemodel"
+weights_dst="training/mobilenet-1.0.caffemodel"
 
 #-------------------------------------------------------
 #Initial training

@@ -160,7 +160,8 @@ def MobileNetBody(net, from_layer='data', dropout=False, freeze_layers=None, num
 
 ###############################################################
 def mobilenet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
-  num_output=1000, wide_factor=1.0, expansion_t=1):
+  num_output=1000, wide_factor=1.0, expansion_t=None):
+  expansion_t = 1 if expansion_t is None else expansion_t
   out_layer, _ ,_ = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
@@ -169,7 +170,8 @@ def mobilenet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type
 
 ###############################################################
 def mobiledetnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
-  num_output=1000, wide_factor=1.0, num_intermediate=512, expansion_t=1):
+  num_output=1000, wide_factor=1.0, num_intermediate=512, expansion_t=None):
+  expansion_t = 1 if expansion_t is None else expansion_t
   out_layer, num_channels, _ = MobileNetBody(net, from_layer=from_layer, dropout=dropout, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=False, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
@@ -235,8 +237,8 @@ def mobiledetnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_t
 
 def mobilesegnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
                    num_output=20, wide_factor=1.0, num_intermediate=SEG_INTERMEDIATE_CHANS,
-                   expansion_t=1, use_aspp=False):
-
+                   expansion_t=None, use_aspp=False):
+    expansion_t = 1 if expansion_t is None else expansion_t
     output_stride = SEG_OUTPUT_STRIDE
     out_layer, num_channels, intermediate_layer = MobileNetBody(net, from_layer=from_layer, freeze_layers=freeze_layers,
                                               num_output=num_output, wide_factor=wide_factor, enable_fc=False,

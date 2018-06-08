@@ -267,13 +267,15 @@ def CoreNetwork(config_param, net, from_layer):
           num_intermediate=config_param.num_intermediate, rhead_name_non_linear=config_param.rhead_name_non_linear,
           chop_num_heads=config_param.chop_num_heads)
     elif 'mobiledetnetv2' in config_param.model_name:
-        expansion_t = float(config_param.model_name.split('netv2t')[1].split('-')[0]) if 'v2t' in config_param.model_name else 6
+        expansion_t = float(config_param.model_name.split('netv2t')[1].split('-')[0]) if 'v2t' in config_param.model_name else None
         wide_factor = float(config_param.model_name.split('-')[1]) if '-' in config_param.model_name else 1.0
         out_layer, out_layer_names = models.mobilenetv2.mobiledetnetv2(net, from_layer=from_layer, wide_factor=wide_factor, expansion_t=expansion_t, 
-            num_intermediate=config_param.num_intermediate)
+                num_intermediate=config_param.num_intermediate)
     elif 'mobiledetnet' in config_param.model_name:
+        expansion_t = float(config_param.model_name.split('nett')[1].split('-')[0]) if 'nett' in config_param.model_name else None
         wide_factor = float(config_param.model_name.split('-')[1])
-        out_layer, out_layer_names = models.mobilenet.mobiledetnet(net, from_layer=from_layer, wide_factor=wide_factor, num_intermediate=config_param.num_intermediate)
+        out_layer, out_layer_names = models.mobilenet.mobiledetnet(net, from_layer=from_layer, wide_factor=wide_factor,
+                num_intermediate=config_param.num_intermediate, expansion_t=expansion_t)
     else:
         ValueError("Invalid model name")
 

@@ -164,7 +164,8 @@ def MobileNetV2Body(net, from_layer='data', dropout=False, freeze_layers=None, n
 
 ###############################################################
 def mobilenetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
-  num_output=1000, wide_factor=1.0, expansion_t=6):
+  num_output=1000, wide_factor=1.0, expansion_t=None):
+  expansion_t = 6 if expansion_t is None else expansion_t
   out_layer, _, _ = MobileNetV2Body(net, from_layer=from_layer, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=True, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
@@ -173,7 +174,8 @@ def mobilenetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn_ty
 
 ###############################################################        
 def mobiledetnetv2(net, from_layer='data', dropout=False, freeze_layers=None, bn_type=BN_TYPE_TO_USE,
-  num_output=1000, wide_factor=1.0, num_intermediate=512, expansion_t=6):
+  num_output=1000, wide_factor=1.0, num_intermediate=512, expansion_t=None):
+  expansion_t = 6 if expansion_t is None else expansion_t
   out_layer, num_channels, intermediate_layer = MobileNetV2Body(net, from_layer=from_layer, freeze_layers=freeze_layers,
       num_output=num_output, wide_factor=wide_factor, enable_fc=False, output_stride=32, bn_type=bn_type,
       expansion_t=expansion_t)
