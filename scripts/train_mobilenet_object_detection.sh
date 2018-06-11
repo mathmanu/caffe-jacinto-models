@@ -7,7 +7,7 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #------------------------------------------------
 #IMPORTANT: change gpus and batch_size depending on the number of GPUs available.
 gpus="0"          #"0,1,2,3" #"0,1" #"0"
-batch_size=8      #32        #16    #"8"
+batch_size=32     #32        #16    #"8"
 
 #-------------------------------------------------------
 model_name=mobiledetnet-0.5      #ssdJacintoNetV2  #mobiledetnet-0.5  #mobiledetnet-1.0 
@@ -57,6 +57,7 @@ stepvalue3=300000
 
 #num op ch for creating mbox heads
 num_intermediate=512
+
 rhead_name_non_linear=0
 
 #1: difficult GT will be used for eval, 0: difficult GT will not be used for evaluation
@@ -117,8 +118,10 @@ then
   num_test_image=4952
   num_classes=21
 
+  #IMPOARTANT: the detection accuracy seems to be quite sensitive to this parameter
+  #try -1 or width or height and see which one gives the best result.
   #set to -1 to use auto mode - average of min and max dimensions
-  min_dim=-1
+  min_dim=512 #-1
 
   resize_width=512  
   resize_height=256 

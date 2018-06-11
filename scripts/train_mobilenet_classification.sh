@@ -65,7 +65,7 @@ config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights','mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param,\
 'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
-'caffe':'$caffe test'}" 
+'caffe_cmd':'test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -84,7 +84,7 @@ config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights','mean_value':0,'train_transform_param':$train_transform_param,'test_transform_param':$test_transform_param,\
 'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
-'caffe':'$caffe test'}"
+'caffe_cmd':'test'}"
 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param

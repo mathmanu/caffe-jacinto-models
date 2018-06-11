@@ -198,17 +198,19 @@ def mobiledetnet(net, from_layer='data', dropout=False, freeze_layers=None, bn_t
   
   #---------------------------       
   out_layer_names = []
-  
+
+  #reduce channels to decrease complexity
   #from_layer = 'relu4_1/sep'
   #out_layer = 'ctx_output????'
   #num_input = num_channels[from_layer]
-  #out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate, bn_type=bn_type, expansion_t=1)
+  #out_layer = ConvBNLayerMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate//2, bn_type=bn_type, expansion_t=1)
   #out_layer_names += [out_layer]
-  
+
+  #reduce channels to decrease complexity
   from_layer = 'relu5_5/sep'
   out_layer = 'ctx_output1'
   num_input = num_channels[from_layer]
-  out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate, bn_type=bn_type, expansion_t=1)
+  out_layer = ConvDWBlockMobileNet(net, from_layer, out_layer, num_input=num_input, num_output=num_intermediate//2, bn_type=bn_type, expansion_t=1)
   out_layer_names += [out_layer]
   
   from_layer = 'relu6/sep'

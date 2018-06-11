@@ -113,7 +113,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'accum_batch_size':$batch_size,'batch_size':$batch_size,\
 'train_data':'./data/cifar10_train_lmdb','test_data':'./data/cifar10_test_lmdb',\
 'num_test_image':10000,'test_batch_size':50,\
-'caffe':'$caffe test'}" 
+'caffe_cmd':'test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
 #config_name_prev=$config_name
@@ -135,7 +135,7 @@ config_param="{'config_name':'$config_name','model_name':'$model_name','dataset'
 'accum_batch_size':$batch_size,'batch_size':$batch_size,\
 'train_data':'./data/cifar10_train_lmdb','test_data':'./data/cifar10_test_lmdb',\
 'num_test_image':10000,'test_batch_size':50,\
-'caffe':'$caffe test'}" 
+'caffe_cmd':'test'}" 
 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$test_solver_param
 
