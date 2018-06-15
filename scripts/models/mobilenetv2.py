@@ -106,6 +106,9 @@ def MobileNetV2Body(net, from_layer='data', dropout=False, freeze_layers=None, n
 
   channels = [32, 16, 24, 32, 64, 96, 160, 320, 1280]
   channels_c = map(lambda x: width_multiplier8(x * wide_factor), channels)
+
+  #for the first conv, don't increase above 32
+  channels_c[0] = min(channels[0], channels_c[0])
   #for the last conv layer, do not reduce below 1280
   channels_c[-1] = max(channels[-1], channels_c[-1])
 
