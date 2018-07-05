@@ -151,7 +151,7 @@ then
   #IMPOARTANT: the detection accuracy seems to be quite sensitive to this parameter
   #try -1 or width or height and see which one gives the best result.
   #set to -1 to use auto mode - average of min and max dimensions
-  min_dim=512 #-1
+  min_dim=768 #-1
 
   resize_width=768
   resize_height=320 
