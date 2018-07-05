@@ -10,8 +10,8 @@ gpus="0"          #"0,1,2,3" #"0,1" #"0"
 batch_size=32     #32        #16    #"8"
 
 #-------------------------------------------------------
-model_name=mobiledetnet-0.5      #ssdJacintoNetV2  #mobiledetnet-0.5  #mobiledetnet-1.0 
-dataset=voc0712                  #voc0712,ti-custom-cfg1,ti-custom-cfg2
+model_name=mobiledetnet-0.5      #mobiledetnet-0.5  #mobiledetnet-1.0 #ssdJacintoNetV2  
+dataset=voc0712-768x320          #voc0712-512x256, voc0712-768x320
 #------------------------------------------------
 
 #Download the pretrained weights
@@ -106,7 +106,7 @@ use_image_list=0
 shuffle=0        
 
 #-------------------------------------------------------
-if [ $dataset = "voc0712" ]
+if [ $dataset = "voc0712-512x256" ]
 then
 
   train_data="../../caffe-jacinto/examples/VOC0712/VOC0712_trainval_lmdb"
@@ -137,77 +137,36 @@ then
   #use batch norm ofr mbox layer1:enable,0:disable
   use_batchnorm_mbox=1
 
-elif [ $dataset = "ti-custom-cfg1" ]
+elif [ $dataset = "voc0712-768x320" ]
 then
-  #In V2 removed V153,154(part of TI Demo) and V002(anno has been corrected so no need to use VGG generated)     
- 
-  train_data="../../caffe-jacinto/examples/ti-custom-cfg1/ti-custom-cfg1_trainval_lmdb"
-  test_data="../../caffe-jacinto/examples/ti-custom-cfg1/ti-custom-cfg1_test_lmdb"
+  train_data="../../caffe-jacinto/examples/VOC0712/VOC0712_trainval_lmdb"
+  test_data="../../caffe-jacinto/examples/VOC0712/VOC0712_test_lmdb"
 
-  name_size_file="../../caffe-jacinto/data/ti-custom-cfg1/test_name_size.txt"
-  label_map_file="../../caffe-jacinto/data/ti-custom-cfg1/labelmap.prototxt"
+  name_size_file="../../caffe-jacinto/data/VOC0712/test_name_size.txt"
+  label_map_file="../../caffe-jacinto/data/VOC0712/labelmap_voc.prototxt"
  
-  num_test_image=3609
-  num_classes=4
+  num_test_image=4952
+  num_classes=21
 
-  min_dim=368
- 
-  resize_width=720
-  resize_height=368
-  crop_width=720
-  crop_height=368
-  use_difficult_gt=0
-  small_objs=1
-  ker_mbox_loc_conf=1
+  #IMPOARTANT: the detection accuracy seems to be quite sensitive to this parameter
+  #try -1 or width or height and see which one gives the best result.
+  #set to -1 to use auto mode - average of min and max dimensions
+  min_dim=512 #-1
+
+  resize_width=768
+  resize_height=320 
+  crop_width=768 
+  crop_height=320
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
   max_iter=120000    #120000  #64000   #32000
-  stepvalue1=30000   #60000   #32000   #16000
-  stepvalue2=45000   #90000   #48000   #24000
-  base_lr=1e-3       #1e-2    #1e-4    #1e-3
-  lr_policy="poly"
-  #set it to 4.0 for poly
-  power=4.0
-
-  #0.0005 (orignal SSD), 0.0001
-  weight_decay_L2=0.0005
-  use_batchnorm_mbox=0
-elif [ $dataset = "ti-custom-cfg2" ]
-then
-  train_data="../../caffe-jacinto/examples/ti-custom-cfg2/ti-custom-cfg2_trainval_lmdb"
-  test_data="../../caffe-jacinto/examples/ti-custom-cfg2/ti-custom-cfg2_test_lmdb"
-
-  name_size_file="../../caffe-jacinto/data/ti-custom-cfg2/test_name_size.txt"
-  label_map_file="../../caffe-jacinto/data/ti-custom-cfg2/labelmap.prototxt"
-
-  num_test_image=294
-  num_classes=3 
-
-  min_dim=256
-  ssd_size='512x512'
- 
-  resize_width=512
-  resize_height=256
-  crop_width=512
-  crop_height=256
-  small_objs=0
-  ker_mbox_loc_conf=1
-
-  #ignore lables are marked as diff in TI dataset 
-  use_difficult_gt=1
-  
-  #solver params
-  type="SGD"         #"SGD"   #Adam    #"Adam"
-  max_iter=50000     #120000  #64000   #32000
-  stepvalue1=30000   #60000   #32000   #16000
-  stepvalue2=40000   #90000   #48000   #24000
+  stepvalue1=60000   #60000   #32000   #16000
+  stepvalue2=90000   #90000   #48000   #24000
   base_lr=1e-2       #1e-2    #1e-4    #1e-3
-  #set it to 4.0 for poly
-  power=1.0
-
-  #0.0005 (orignal SSD), 0.0001
-  weight_decay_L2=0.0001
+  
+  #use batch norm ofr mbox layer1:enable,0:disable
   use_batchnorm_mbox=1
+  
 else
   echo "Invalid dataset name"
   exit
@@ -219,7 +178,7 @@ then
   model_name_to_print="JDetNet" 
 fi  
 
-folder_name=training/"$dataset"/"$model_name_to_print"/"$DATE_TIME"_"ds_PSP_dsFac_32_hdDS8_1";mkdir training/"$dataset";mkdir training/"$dataset"/"$model_name_to_print";mkdir $folder_name
+folder_name=training/"$dataset"/"$model_name_to_print"/"$dataset"_"$model_name"_"$DATE_TIME";mkdir training/"$dataset";mkdir training/"$dataset"/"$model_name_to_print";mkdir $folder_name
 
 #------------------------------------------------
 LOG=$folder_name/train-log_"$DATE_TIME".txt
