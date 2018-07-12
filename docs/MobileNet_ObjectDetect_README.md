@@ -26,6 +26,6 @@ The validation accuracy in the form of mean average precision (mAP) is printed i
 |Model Name       | Image Resolution | Train Dataset | Val Dataset | mAP     | Notes     |
 | ---             | ---              | ---           | ---         | ---     | ---       |
 |mobiledetnet-0.5 | 512x256          | VOV0712       | VOC07       | 62.51   |           |
-|mobiledetnet-0.5 | 768x320          | VOV0712       | VOC07       | TODO    |           |
+|mobiledetnet-0.5 | 512x512          | VOV0712       | VOC07       | TODO    |           |
 
 

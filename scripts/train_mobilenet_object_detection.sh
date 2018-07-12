@@ -6,12 +6,12 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 
 #------------------------------------------------
 #IMPORTANT: change gpus and batch_size depending on the number of GPUs available.
-gpus="0"          #"0,1,2,3" #"0,1" #"0"
-batch_size=32     #32        #16    #"8"
+gpus="0,1"          #"0,1,2,3" #"0,1" #"0"
+batch_size=32       #32        #16    #"8"
 
 #-------------------------------------------------------
 model_name=mobiledetnet-0.5      #mobiledetnet-0.5  #mobiledetnet-1.0 #ssdJacintoNetV2  
-dataset=voc0712-768x320          #voc0712-512x256, voc0712-768x320
+dataset=voc0712-512x512          #voc0712-512x256, voc0712-512x512
 #------------------------------------------------
 
 #Download the pretrained weights
@@ -137,7 +137,7 @@ then
   #use batch norm ofr mbox layer1:enable,0:disable
   use_batchnorm_mbox=1
 
-elif [ $dataset = "voc0712-768x320" ]
+elif [ $dataset = "voc0712-512x512" ]
 then
   train_data="../../caffe-jacinto/examples/VOC0712/VOC0712_trainval_lmdb"
   test_data="../../caffe-jacinto/examples/VOC0712/VOC0712_test_lmdb"
@@ -151,12 +151,12 @@ then
   #IMPOARTANT: the detection accuracy seems to be quite sensitive to this parameter
   #try -1 or width or height and see which one gives the best result.
   #set to -1 to use auto mode - average of min and max dimensions
-  min_dim=768 #-1
+  min_dim=-1
 
-  resize_width=768
-  resize_height=320 
-  crop_width=768 
-  crop_height=320
+  resize_width=512
+  resize_height=512 
+  crop_width=512 
+  crop_height=512
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
   max_iter=120000    #120000  #64000   #32000
