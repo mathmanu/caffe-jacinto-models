@@ -5,7 +5,8 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
 #-------------------------------------------------------
-#IMPORTANT: change gpus and batch_size depending on the number of GPUs available.
+#IMPORTANT: change gpus depending on the number of GPUs available.
+#IMPORTANT: reduce the batch size, if the script crashes due to GPU memory shortage
 gpus="0"           #"0,1,2,3"  #"0,1"   #"0"
 batch_size=64      #256        #128     #64
 

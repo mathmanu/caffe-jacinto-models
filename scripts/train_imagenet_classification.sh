@@ -5,7 +5,10 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
 #-------------------------------------------------------
-gpus="0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
+#IMPORTANT: change gpus depending on the number of GPUs available.
+#IMPORTANT: reduce the batch size, if the script crashes due to GPU memory shortage
+gpus="0"               #"0,1,2,3"  #"0,1"   #"0"
+batch_size=256         #256        #128     #64
 
 #-------------------------------------------------------
 model_name=jacintonet11v2
@@ -28,7 +31,7 @@ solver_param="{'type':'SGD','base_lr':$base_lr,'max_iter':$max_iter}"
 #-------------------------------------------------------
 stage="initial"
 config_name=$folder_name/$stage;mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':None}" 
 python ./models/image_classification.py --config_param="$config_param" --solver_param="$solver_param"
 config_name_prev=$config_name
@@ -52,7 +55,7 @@ sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
 'sparsity_step_iter':1000,'sparsity_step_factor':0.01}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights'}" 
 python ./models/image_classification.py --config_param="$config_param" --solver_param=$sparse_solver_param
 config_name_prev=$config_name
@@ -68,7 +71,7 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
 'sparse_mode':1,'display_sparsity':1000}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights',\
 'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
 'caffe_cmd':'test','display_sparsity':1}" 
@@ -87,7 +90,7 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,\
 'sparse_mode':1,'display_sparsity':1000}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights',\
 'num_output':1000,'image_width':224,'image_height':224,'crop_size':224,\
 'caffe_cmd':'test'}" 

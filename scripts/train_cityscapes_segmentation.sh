@@ -4,8 +4,11 @@
 DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 #-------------------------------------------------------
 
-#------------------------------------------------
-gpus="0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
+#-------------------------------------------------------
+#IMPORTANT: change gpus depending on the number of GPUs available.
+#IMPORTANT: reduce the batch size, if the script crashes due to GPU memory shortage
+gpus="0"               #"0,1,2,3"  #"0,1"   #"0"
+batch_size=16          #32         #16      #8
 
 #-------------------------------------------------------
 model_name=jsegnet21v2
@@ -37,7 +40,7 @@ shuffle=1
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
 solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_policy':'multistep','stepvalue':[$stepvalue1,$stepvalue2]}"
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512}" 
 
@@ -58,7 +61,7 @@ l1reg_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_
 'regularization_type':'L1','weight_decay':1e-5}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512}" 
 
@@ -79,7 +82,7 @@ sparse_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr
 'sparsity_step_iter':1000,'sparsity_step_factor':0.01}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512}" 
 
@@ -96,7 +99,7 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_p
 'sparse_mode':1,'display_sparsity':1000}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512,\
 'num_test_image':500,'test_batch_size':10,\
@@ -115,7 +118,7 @@ test_solver_param="{'type':'$type','base_lr':$base_lr,'max_iter':$max_iter,'lr_p
 'sparse_mode':1,'display_sparsity':1000}"
 
 config_name="$folder_name"/$stage; echo $config_name; mkdir $config_name
-config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus',\
+config_param="{'config_name':'$config_name','model_name':'$model_name','dataset':'$dataset','gpus':'$gpus','batch_size':$batch_size,\
 'pretrain_model':'$weights','use_image_list':$use_image_list,'shuffle':$shuffle,'num_output':8,\
 'image_width':1024,'image_height':512,\
 'num_test_image':500,'test_batch_size':10,\

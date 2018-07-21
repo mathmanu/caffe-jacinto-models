@@ -5,9 +5,10 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-#IMPORTANT: change gpus and batch_size depending on the number of GPUs available.
-gpus="0,1"          #"0,1,2,3" #"0,1" #"0"
-batch_size=32       #32        #16    #"8"
+#IMPORTANT: change gpus depending on the number of GPUs available.
+#IMPORTANT: reduce the batch size, if the script crashes due to GPU memory shortage
+gpus="0"            #"0,1,2,3" #"0,1" #"0"
+batch_size=16       #32        #16    #"8"
 
 #-------------------------------------------------------
 model_name=mobiledetnet-0.5      #mobiledetnet-0.5  #mobiledetnet-1.0 #ssdJacintoNetV2  
