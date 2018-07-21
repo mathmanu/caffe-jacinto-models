@@ -8,7 +8,7 @@ DATE_TIME=`date +'%Y-%m-%d_%H-%M-%S'`
 gpus="0,1,2"          #IMPORTANT: change this to "0" if you have only one GPU
 
 #-------------------------------------------------------
-model_name=mobilenet-1.0
+model_name=jacintonet11v2
 dataset=imagenet
 folder_name=training/"$dataset"_"$model_name"_"$DATE_TIME";mkdir $folder_name
 
