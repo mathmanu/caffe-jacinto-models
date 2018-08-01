@@ -98,7 +98,12 @@ def main():
     
     #more threads doesn't seem to help speed up - but you can try increasing this, at the cost of system becoming more slugginsh to respond if you are doing something else parallely.
     config_param.threads = 1 #4
-    
+                  
+    config_param.train_data = "data/train-image-list.txt" if config_param.use_image_list else 'data/train-image-lmdb'
+    config_param.train_label = "data/train-label-list.txt" if config_param.use_image_list else 'data/train-label-lmdb'    
+    config_param.test_data = "data/val-image-list.txt" if config_param.use_image_list else 'data/val-image-lmdb'
+    config_param.test_label = "data/val-label-list.txt" if config_param.use_image_list else 'data/val-label-lmdb'
+	
     #Update from params given from outside
     #if args.config_param != None:
     #  config_param.update(args.config_param)   
@@ -106,12 +111,7 @@ def main():
       for k in args.config_param.keys():
         config_param.__setattr__(k,args.config_param[k])
         config_param.__setitem__(k,args.config_param[k])		
-              
-    config_param.train_data = "data/train-image-list.txt" if config_param.use_image_list else 'data/train-image-lmdb'
-    config_param.train_label = "data/train-label-list.txt" if config_param.use_image_list else 'data/train-label-lmdb'    
-    config_param.test_data = "data/val-image-list.txt" if config_param.use_image_list else 'data/val-image-lmdb'
-    config_param.test_label = "data/val-label-list.txt" if config_param.use_image_list else 'data/val-label-lmdb'
-                  
+		
     # Modify the job name if you want.
     config_param.base_name = config_param.config_name
     config_param.job_name = config_param.base_name
