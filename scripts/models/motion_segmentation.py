@@ -149,7 +149,8 @@ def main():
 
     # Solver parameters.
     config_param.gpulist = config_param.gpus.split(",")
-    config_param.num_gpus = len(config_param.gpulist)
+    config_param.num_gpus = 0 if (config_param.gpulist=='' or len(config_param.gpulist)>0 and config_param.gpulist[0]=='') else len(config_param.gpulist)
+    print("num_gpus:", config_param.num_gpus, " gpulist:", config_param.gpulist)
 
     # Divide the mini-batch to different GPUs.
 	# In BVLC caffe, this has to be divided by num GPUs - not required in NVIDIA/caffe

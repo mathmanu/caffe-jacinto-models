@@ -47,7 +47,7 @@ def main():
     if config_param.caffe_root == None:
       config_param.caffe_root = os.environ['CAFFE_HOME'] if 'CAFFE_HOME' in os.environ else None
     if config_param.caffe_root != None:
-      config_param.caffe_root = config_param.caffe_root + '/build/tools/caffe.bin'
+      config_param.caffe_root = config_param.caffe_root + '/build/tools/caffe'
     config_param.caffe_cmd = 'train'
 
     # Set true if you want to start training right after generating all files.
@@ -147,7 +147,8 @@ def main():
 
     # Solver parameters.
     config_param.gpulist = config_param.gpus.split(",")
-    config_param.num_gpus = len(config_param.gpulist)
+    config_param.num_gpus = 0 if (config_param.gpulist=='' or len(config_param.gpulist)>0 and config_param.gpulist[0]=='') else len(config_param.gpulist)
+    print("num_gpus:", config_param.num_gpus, " gpulist:", config_param.gpulist)
 
     # Divide the mini-batch to different GPUs.
 	# In BVLC caffe, this has to be divided by num GPUs - not required in NVIDIA/caffe
