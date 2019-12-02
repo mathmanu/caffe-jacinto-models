@@ -23,6 +23,8 @@ def get_arguments():
     return parser.parse_args()
       
 def main(): 
+    assert 'CAFFE_ROOT' in os.environ, 'CAFFE_ROOT shell variable must be set to your caffe-jacinto folder path. eg: export CAFFE_ROOT=/user/tomato/work/caffe-jacinto'
+    
     args = get_arguments()
    
     if args.solver_param != None:
@@ -64,7 +66,7 @@ def main():
     config_param.image_height = 640
 
     # Select betwen list based ImageData or lmdb
-    config_param.use_image_list = True
+    config_param.use_image_list = True #set to False to use list based training instead of LMDB
     
     config_param.stride_list = [2,2,2,2,1]
     config_param.dilation_list = [1,1,1,1,2]

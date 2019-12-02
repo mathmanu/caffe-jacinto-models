@@ -21,6 +21,8 @@ def get_arguments():
     return parser.parse_args()
       
 def main(): 
+    assert 'CAFFE_ROOT' in os.environ, 'CAFFE_ROOT shell variable must be set to your caffe-jacinto folder path. eg: export CAFFE_ROOT=/user/tomato/work/caffe-jacinto'
+    
     args = get_arguments()
    
     if args.solver_param != None:

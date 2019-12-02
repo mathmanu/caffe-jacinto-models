@@ -289,6 +289,8 @@ def get_arguments():
     return parser.parse_args()
       
 def main(): 
+    assert 'CAFFE_ROOT' in os.environ, 'CAFFE_ROOT shell variable must be set to your caffe-jacinto folder path. eg: export CAFFE_ROOT=/user/tomato/work/caffe-jacinto'
+    
     args = get_arguments()
    
     if args.solver_param != None:
@@ -982,8 +984,15 @@ def main():
     shutil.copy(py_file, config_param.job_dir)
     
     #copy some other utils scripts
-    shutil.copy(os.getcwd() + '/train_image_object_detection.sh', config_param.job_dir)
-    shutil.copy(os.getcwd() + '/models/jacintonet_v2.py', config_param.job_dir)
+    shutil.copy(os.getcwd() + '/models/image_object_detection.py', config_param.job_dir)
+    if 'mobile' in config_param.model_name:
+      shutil.copy(os.getcwd() + '/train_mobilenet_object_detection.sh', config_param.job_dir)
+      #shutil.copy(os.getcwd() + '/train_mobilenet_object_detection_experimental.sh', config_param.job_dir)
+      shutil.copy(os.getcwd() + '/models/mobilenet.py', config_param.job_dir)
+    else:
+     shutil.copy(os.getcwd() + '/train_image_object_detection.sh', config_param.job_dir)
+     #shutil.copy(os.getcwd() + '/train_image_object_detection_experimental.sh', config_param.job_dir)
+     shutil.copy(os.getcwd() + '/models/jacintonet_v2.py', config_param.job_dir)
 
     # Run the job.
     os.chmod(config_param.job_file, stat.S_IRWXU)
