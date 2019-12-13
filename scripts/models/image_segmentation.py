@@ -66,7 +66,7 @@ def main():
     config_param.image_height = 640
 
     # Select betwen list based ImageData or lmdb
-    config_param.use_image_list = True #set to False to use list based training instead of LMDB
+    config_param.use_image_list = False
     
     config_param.stride_list = [2,2,2,2,1]
     config_param.dilation_list = [1,1,1,1,2]
@@ -98,11 +98,12 @@ def main():
     
     #more threads doesn't seem to help speed up - but you can try increasing this, at the cost of system becoming more slugginsh to respond if you are doing something else parallely.
     config_param.threads = 1 #4
-                  
-    config_param.train_data = "data/train-image-list.txt" if config_param.use_image_list else 'data/train-image-lmdb'
-    config_param.train_label = "data/train-label-list.txt" if config_param.use_image_list else 'data/train-label-lmdb'    
-    config_param.test_data = "data/val-image-list.txt" if config_param.use_image_list else 'data/val-image-lmdb'
-    config_param.test_label = "data/val-label-list.txt" if config_param.use_image_list else 'data/val-label-lmdb'
+
+    use_image_list = args.config_param['use_image_list'] if 'use_image_list' in args.config_param else config_param['use_image_list']              
+    config_param.train_data = "data/train-image-list.txt" if use_image_list else 'data/train-image-lmdb'
+    config_param.train_label = "data/train-label-list.txt" if use_image_list else 'data/train-label-lmdb'    
+    config_param.test_data = "data/val-image-list.txt" if use_image_list else 'data/val-image-lmdb'
+    config_param.test_label = "data/val-label-list.txt" if use_image_list else 'data/val-label-lmdb'
 	
     #Update from params given from outside
     #if args.config_param != None:
