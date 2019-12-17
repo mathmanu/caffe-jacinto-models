@@ -149,7 +149,7 @@ then
     crop_height=320
     small_objs=1
     ker_mbox_loc_conf=1
-    chop_num_heads=1
+    #chop_num_heads=1
     reg_head_at_ds8=0
   fi  
 
@@ -173,7 +173,7 @@ then
   use_difficult_gt=0
   small_objs=1
   ker_mbox_loc_conf=1
-  chop_num_heads=1
+  #chop_num_heads=1
   batch_size=16      #32    #16
 
   type="SGD"         #"SGD"   #Adam    #"Adam"
