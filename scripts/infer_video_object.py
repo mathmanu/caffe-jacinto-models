@@ -87,6 +87,7 @@ def set_common_params(params):
   params.decFreq = 1
   params.enObjTracker=False
   params.maxAgeTh=30
+  params.enObjProp=False
   return
 
 ############################################

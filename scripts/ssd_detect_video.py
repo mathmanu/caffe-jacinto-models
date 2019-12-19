@@ -415,6 +415,8 @@ def wrapMulTiles(imageCurFrame, transformer, net, params, curFrameNum=0,
 def wrapMulScls(imageCurFrame, transformer, net, params, numScales=4, curFrameNum=0, 
     detObjsFile='', writeBboxMap=[], labelmap=''):
 
+  if params.enObjProp:
+    from propagate_obj import propagate_obj
   
   if(curFrameNum == 0):
     wrapMulScls.gPoolDetObjs = np.asarray([])
