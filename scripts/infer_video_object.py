@@ -96,15 +96,15 @@ class Params:
 ############################################
 #SET1: 
 params = Params()
-params.ModelWeights="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/test_ips/20180709_12-04_ds_PSP_dsFac_32_hdDS8_1_kerMbox_1_51.42/initial/ti-201807-720x368_ssdJacintoNetV2_iter_120000_51.42.caffemodel"
-params.Deploy="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/test_ips/20180709_12-04_ds_PSP_dsFac_32_hdDS8_1_kerMbox_1_51.42/initial/deploy.prototxt"
-params.LabelMap="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/test_ips/TI_201807_720x368/labelmap.prototxt"
-params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/debug/"
+params.ModelWeights="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_51.41/sparse_50.52/ti-vgg-720x368-v2_ssdJacintoNetV2_iter_46000_50.52.caffemodel"
+params.Deploy="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/JDetNet/ssd768x320_PSP_dsFac_32_hdDS8_1_kerMbox_1_smallOBj_1_51.41/sparse_50.52/deploy.prototxt"
+params.LabelMap="/user/a0875091/files/work/bitbucket_TI/caffe-jacinto-models/trained/object_detection/ti-720x368/labelmap.prototxt"
+params.OpPath="/data/mmcodec_video2_tier3/users/soyeb/ObjectDetect/ssd/detetctedOp/20180326_JDetNet_768x320_1Gmac_fac0.8_53.26_tda2xIp_test_rel/"
 #if BN is placed at the beginning then mean should not be explictly subtracted. Set to 0 in that case.
 params.MEAN_PIX_VEC =[0,0,0]
 params.IP_SCALE  = 1.0
-params.TileSizeW = 720
-params.TileSizeH = 368
+params.TileSizeW = 768
+params.TileSizeH = 320
 params.CONF_TH = 0.4
 params.EVAL_OBJ = False
 set_common_params(params)

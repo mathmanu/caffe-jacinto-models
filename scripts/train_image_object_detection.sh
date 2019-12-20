@@ -5,11 +5,11 @@ DATE_TIME=`date +'%Y%m%d_%H-%M'`
 #-------------------------------------------------------
 
 #------------------------------------------------
-gpus="0" #"0,1,2"
+gpus="0,1" #"0,1,2"
 
 #-------------------------------------------------------
 model_name=ssdJacintoNetV2       #ssdJacintoNetV2       
-dataset=ti-custom-cfg2           #voc0712,ti-custom-cfg1,ti-custom-cfg2
+dataset=voc0712                  #voc0712,ti-custom-cfg1,ti-custom-cfg2
 #------------------------------------------------
 
 #Download the pretrained weights
@@ -117,7 +117,7 @@ then
   train_data="../../caffe-jacinto/examples/VOC0712/VOC0712_trainval_lmdb"
   test_data="../../caffe-jacinto/examples/VOC0712/VOC0712_test_lmdb"
 
-  name_size_file="../../caffe-jacinto/examples/VOC0712/test_name_size.txt"
+  name_size_file="../../caffe-jacinto/data/VOC0712/test_name_size.txt"
   label_map_file="../../caffe-jacinto/data/VOC0712/labelmap_voc.prototxt"
  
   num_test_image=4952
@@ -154,14 +154,14 @@ then
 
 elif [ $dataset = "ti-custom-cfg1" ]
 then
-  train_data="../../caffe-jacinto/examples/VOC0712/VOC0712_trainval_lmdb"
-  test_data="../../caffe-jacinto/examples/VOC0712/VOC0712_test_lmdb"
+  train_data="../../caffe-jacinto/examples/ti-custom-cfg1/ti-custom-cfg1_trainval_lmdb"
+  test_data="../../caffe-jacinto/examples/ti-custom-cfg1/ti-custom-cfg1_test_lmdb"
 
-  name_size_file="../../caffe-jacinto/examples/VOC0712/test_name_size.txt"
-  label_map_file="../../caffe-jacinto/data/VOC0712/labelmap_voc.prototxt"
+  name_size_file="../../caffe-jacinto/data/ti-custom-cfg1/test_name_size.txt"
+  label_map_file="../../caffe-jacinto/data/ti-custom-cfg1/labelmap.prototxt"
  
-  num_test_image=4952
-  num_classes=21
+  num_test_image=3609
+  num_classes=4
 
   min_dim=368
  
@@ -188,14 +188,14 @@ then
   use_batchnorm_mbox=0
 elif [ $dataset = "ti-custom-cfg2" ]
 then
-  train_data="../../caffe-jacinto/examples/VOC0712/VOC0712_trainval_lmdb"
-  test_data="../../caffe-jacinto/examples/VOC0712/VOC0712_test_lmdb"
+  train_data="../../caffe-jacinto/examples/ti-custom-cfg2/ti-custom-cfg2_trainval_lmdb"
+  test_data="../../caffe-jacinto/examples/ti-custom-cfg2/ti-custom-cfg2_test_lmdb"
 
-  name_size_file="../../caffe-jacinto/examples/VOC0712/test_name_size.txt"
-  label_map_file="../../caffe-jacinto/data/VOC0712/labelmap_voc.prototxt"
- 
-  num_test_image=4952
-  num_classes=21
+  name_size_file="../../caffe-jacinto/data/ti-custom-cfg2/test_name_size.txt"
+  label_map_file="../../caffe-jacinto/data/ti-custom-cfg2/labelmap.prototxt"
+
+  num_test_image=294
+  num_classes=3 
 
   min_dim=256
   ssd_size='512x512'
