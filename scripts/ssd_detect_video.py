@@ -18,7 +18,6 @@ import sys, getopt
 import os
 
 from get_labelname import get_labelname
-from propagate_obj import propagate_obj
 import csv
 
 #dflt:False
@@ -232,7 +231,7 @@ def writeOneBox(enable=False, bbox=[], label_name='', score=-1.0, fileHndl='',
       newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} {} {} \n'.format(label_name,
         bbox[0],bbox[1],bbox[2], bbox[3], score, age, strng_trk)
     else:  
-      newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} {} {} \n'.format(label_name,
+      newLine = '{} 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 {} \n'.format(label_name,
         bbox[0],bbox[1],bbox[2], bbox[3], score)
 
     #print "newLine: ", newLine
@@ -721,7 +720,7 @@ def ssd_detect_video(ipFileName='', opFileName='', deployFileName='',
   plt.rcParams['image.interpolation'] = 'nearest'
   plt.rcParams['image.cmap'] = 'gray'
 
-  curWorDir = os.getcwd();
+  curWorDir = os.getcwd()
   if externalDet == False:
     # Make sure that caffe is on the python path:
     os.chdir(params.caffe_root)
